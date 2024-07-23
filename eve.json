@@ -1,0 +1,37 @@
+{
+  "app_name": "Firebase Video App",
+  "description": "A video streaming application built using Firebase services.",
+  "features": [
+    "User authentication with Firebase Authentication",
+    "Real-time video streaming with Firebase Realtime Database or Firestore",
+    "Cloud storage for video uploads with Firebase Storage",
+    "Push notifications with Firebase Cloud Messaging",
+    "Analytics and crash reporting with Firebase Analytics and Crashlytics"
+  ],
+  "technologies": [
+    "Firebase SDK",
+    "React Native / Flutter for cross-platform mobile development",
+    "Node.js / Express.js for backend (optional)"
+  ],
+  "contributors": [
+    {
+      "name": "Eve",
+      "role": "Lead Developer"
+    },
+    {
+      "name": "Alice",
+      "role": "Frontend Developer"
+    },
+    {
+      "name": "Bob",
+      "role": "Backend Developer"
+    },
+    {
+      "name": "Charlie",
+      "role": "UX/UI Designer"
+    }
+  ],
+  "repository": "https://github.com/movie-aniyomi/eve.json",
+  "demo_url": "https://demo.firebase-video-app.com",
+  "contact_email": "contact@firebase-video-app.com"
+}
