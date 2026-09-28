@@ -42,6 +42,21 @@ Config.GamePasses = {
 	-- Game Pass: dressing time becomes 10 minutes in rounds you join
 	ExtraTime = 0,
 }
+-- ✨ SPARKLES = the game currency (bids, stall rent, rewards).
+-- Make one Developer Product per bundle and paste its id.
+Config.CurrencyName = "Sparkles"
+Config.CurrencyIcon = "✨"
+Config.SparkleBundles = {
+	{ Name = "Pinch of Sparkles", Amount = 500, Robux = 25, ProductId = 0 },
+	{ Name = "Sparkle Pouch", Amount = 1200, Robux = 50, ProductId = 0 },
+	{ Name = "Sparkle Jar", Amount = 3000, Robux = 110, ProductId = 0 },
+	{ Name = "Sparkle Chest", Amount = 8000, Robux = 250, ProductId = 0 },
+	{ Name = "Galaxy Vault", Amount = 25000, Robux = 700, ProductId = 0 },
+}
+-- Game passes listed in the Store (Extra Time is automatic).
+Config.StorePasses = {
+	{ Name = "⏰ 10 Min Dress Time", Key = "ExtraTime", Desc = "Dress for 10 minutes instead of 8." },
+}
 
 -- ============ AUCTION (limiteds shown on stage) ============
 -- NOTE: Roblox does not let games move limited items between accounts.

@@ -193,7 +193,7 @@ local function refresh(s)
 	local prompt = s.Prompt
 	if prompt then
 		prompt.ActionText = vacant and "Rent Stall" or "Shop"
-		prompt.ObjectText = vacant and ("%d coins / %d min"):format(Config.Stalls.RentCost, Config.Stalls.RentMinutes) or s.Name
+		prompt.ObjectText = vacant and ("✨ %d Sparkles / %d min"):format(Config.Stalls.RentCost, Config.Stalls.RentMinutes) or s.Name
 	end
 	-- slots
 	local slots = m:FindFirstChild("Slots")
@@ -362,7 +362,7 @@ local function handle(player: Player, action: string, stallId, a)
 			return false, "You already rent a stall."
 		end
 		if not DataService.Spend(player, Config.Stalls.RentCost) then
-			return false, ("You need %d coins."):format(Config.Stalls.RentCost)
+			return false, ("You need %d ✨ Sparkles."):format(Config.Stalls.RentCost)
 		end
 		local p = DataService.Get(player)
 		s.OwnerId = player.UserId
@@ -389,7 +389,7 @@ local function handle(player: Player, action: string, stallId, a)
 			return false, "You can extend up to 3 hours ahead."
 		end
 		if not DataService.Spend(player, Config.Stalls.RentCost) then
-			return false, "Not enough coins."
+			return false, "Not enough ✨ Sparkles."
 		end
 		s.ExpiresAt += Config.Stalls.RentMinutes * 60
 		refresh(s)

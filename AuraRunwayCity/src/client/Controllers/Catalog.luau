@@ -18,26 +18,54 @@ local player = Players.LocalPlayer
 local Notify
 
 local A = Enum.AvatarAssetType
+-- flat list of searchable sub-categories: { label, assetTypes, bundleTypes }
 local CATEGORIES = {
-	{ "For You/All" },
-	{ "Accessories", { A.Hat, A.HairAccessory, A.FaceAccessory, A.NeckAccessory, A.ShoulderAccessory, A.FrontAccessory, A.BackAccessory, A.WaistAccessory } },
-	{ "Hats", { A.Hat } },
-	{ "Hair", { A.HairAccessory } },
-	{ "Face", { A.Face, A.FaceAccessory, A.EyebrowAccessory, A.EyelashAccessory } },
-	{ "Tops", { A.ShirtAccessory, A.TShirtAccessory, A.SweaterAccessory, A.JacketAccessory, A.Shirt, A.TShirt } },
-	{ "Bottoms", { A.PantsAccessory, A.ShortsAccessory, A.DressSkirtAccessory, A.Pants } },
-	{ "Dresses", { A.DressSkirtAccessory } },
-	{ "Jackets", { A.JacketAccessory, A.SweaterAccessory } },
-	{ "Shoes", { A.LeftShoeAccessory, A.RightShoeAccessory } },
-	{ "Shoe Sets", nil, { Enum.BundleType.Shoes } },
-	{ "Extras", { A.NeckAccessory, A.ShoulderAccessory, A.FrontAccessory, A.BackAccessory, A.WaistAccessory } },
-	{ "Classics", { A.Shirt, A.Pants, A.TShirt } },
-	{ "Emotes", { A.EmoteAnimation } },
-	{ "Heads", nil, { Enum.BundleType.DynamicHead } },
-	{ "Bodies", nil, { Enum.BundleType.BodyParts } },
-	{ "Animations", nil, { Enum.BundleType.Animations } },
+	{ "All" }, -- 1
+	{ "All Hats", { A.Hat } }, -- 2
+	{ "All Hair", { A.HairAccessory } }, -- 3
+	{ "All Face", { A.Face, A.FaceAccessory, A.EyebrowAccessory, A.EyelashAccessory } }, -- 4
+	{ "Faces", { A.Face } }, -- 5
+	{ "Face Acc.", { A.FaceAccessory } }, -- 6
+	{ "Brows & Lashes", { A.EyebrowAccessory, A.EyelashAccessory } }, -- 7
+	{ "All Tops", { A.ShirtAccessory, A.TShirtAccessory, A.SweaterAccessory, A.JacketAccessory, A.Shirt, A.TShirt } }, -- 8
+	{ "T-Shirts", { A.TShirtAccessory } }, -- 9
+	{ "Shirts", { A.ShirtAccessory } }, -- 10
+	{ "Sweaters", { A.SweaterAccessory } }, -- 11
+	{ "Jackets", { A.JacketAccessory } }, -- 12
+	{ "Classic Tops", { A.Shirt, A.TShirt } }, -- 13
+	{ "All Bottoms", { A.PantsAccessory, A.ShortsAccessory, A.DressSkirtAccessory, A.Pants } }, -- 14
+	{ "Pants", { A.PantsAccessory } }, -- 15
+	{ "Shorts", { A.ShortsAccessory } }, -- 16
+	{ "Dresses & Skirts", { A.DressSkirtAccessory } }, -- 17
+	{ "Classic Pants", { A.Pants } }, -- 18
+	{ "All Shoes", { A.LeftShoeAccessory, A.RightShoeAccessory } }, -- 19
+	{ "Shoe Sets", nil, { Enum.BundleType.Shoes } }, -- 20
+	{ "All Extras", { A.NeckAccessory, A.ShoulderAccessory, A.FrontAccessory, A.BackAccessory, A.WaistAccessory } }, -- 21
+	{ "Neck", { A.NeckAccessory } }, -- 22
+	{ "Shoulder", { A.ShoulderAccessory } }, -- 23
+	{ "Front", { A.FrontAccessory } }, -- 24
+	{ "Back", { A.BackAccessory } }, -- 25
+	{ "Waist", { A.WaistAccessory } }, -- 26
+	{ "Emotes", { A.EmoteAnimation } }, -- 27
+	{ "Heads", nil, { Enum.BundleType.DynamicHead } }, -- 28
+	{ "Bodies", nil, { Enum.BundleType.BodyParts } }, -- 29
+	{ "Animations", nil, { Enum.BundleType.Animations } }, -- 30
 }
-local EMOTE_TAB = 14
+local EMOTE_TAB = 27
+-- 7 main categories (+ All, More and your own stuff) -> their sub-categories
+local MAIN = {
+	{ "✨ All", { 1 } },
+	{ "🎩 Hats", { 2 } },
+	{ "💇 Hair", { 3 } },
+	{ "😊 Face", { 4, 5, 6, 7 } },
+	{ "👚 Tops", { 8, 9, 10, 11, 12, 13 } },
+	{ "👖 Bottoms", { 14, 15, 16, 17, 18 } },
+	{ "👠 Shoes", { 19, 20 } },
+	{ "💍 Extras", { 21, 22, 23, 24, 25, 26 } },
+	{ "💃 More", { 27, 28, 29, 30 } },
+	{ "⭐ Mine", "mine" },
+}
+local mainIndex = 1
 local SORTS = {
 	{ "Relevance", Enum.CatalogSortType.Relevance },
 	{ "Best Selling", Enum.CatalogSortType.Bestselling },
@@ -688,9 +716,9 @@ function Catalog.Init(controllers)
 		end
 	end)
 	-- preview toolbar
-	local bodyBtn = UI.button(prevCard, "🎨 Body", "dark", { Position = UDim2.fromOffset(12, 12), Size = UDim2.fromOffset(92, 42), TextSize = 15 })
-	local undoBtn = UI.button(prevCard, "↩️ Undo", "dark", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -108, 0, 12), Size = UDim2.fromOffset(92, 42), TextSize = 15 })
-	local redoBtn = UI.button(prevCard, "Redo ↪️", "dark", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -12, 0, 12), Size = UDim2.fromOffset(92, 42), TextSize = 15 })
+	local bodyBtn = UI.button(prevCard, "🎨 Body", "light", { Position = UDim2.fromOffset(12, 12), Size = UDim2.fromOffset(92, 42), TextSize = 15 })
+	local undoBtn = UI.button(prevCard, "↩️ Undo", "light", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -108, 0, 12), Size = UDim2.fromOffset(92, 42), TextSize = 15 })
+	local redoBtn = UI.button(prevCard, "Redo ↪️", "light", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -12, 0, 12), Size = UDim2.fromOffset(92, 42), TextSize = 15 })
 	bodyPanel = buildBodyPanel(prevCard)
 	bodyBtn.Activated:Connect(function()
 		bodyPanel.Visible = not bodyPanel.Visible
@@ -741,29 +769,118 @@ function Catalog.Init(controllers)
 		ScrollBarThickness = 6,
 	})
 	UI.list(tabs, Enum.FillDirection.Horizontal, 4, nil, Enum.VerticalAlignment.Center)
-	local close = UI.button(right, "❌", "dark", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 0, 0), Size = UDim2.fromOffset(52, 50), TextSize = 24 })
-	UI.stroke(close, P.Champagne, 1.5, 0.4)
+	-- light close button so the X is clearly visible on the dark window
+	local close = UI.button(right, "X", "light", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 0, 0), Size = UDim2.fromOffset(52, 50), TextSize = 26, Font = UI.Font.Title })
 	close.Activated:Connect(function()
 		UI.close("Catalog")
+	end)
+	-- arrows to scroll the category bar (also swipe / mouse wheel)
+	tabs.Position = UDim2.fromOffset(40, 0)
+	tabs.Size = UDim2.new(1, -80, 1, 0)
+	local leftArrow = UI.button(tabsBar, "◀", "light", { AnchorPoint = Vector2.new(0, 0.5), Position = UDim2.new(0, 4, 0.5, 0), Size = UDim2.fromOffset(32, 38), TextSize = 16, Font = UI.Font.Title })
+	local rightArrow = UI.button(tabsBar, "▶", "light", { AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -4, 0.5, 0), Size = UDim2.fromOffset(32, 38), TextSize = 16, Font = UI.Font.Title })
+	leftArrow.Activated:Connect(function()
+		UI.tween(tabs, 0.25, { CanvasPosition = Vector2.new(math.max(0, tabs.CanvasPosition.X - 160), 0) })
+	end)
+	rightArrow.Activated:Connect(function()
+		UI.tween(tabs, 0.25, { CanvasPosition = Vector2.new(tabs.CanvasPosition.X + 160, 0) })
 	end)
 
 	local tabButtons = {}
 	local function styleTabs()
 		for i, b in tabButtons do
-			b.TextColor3 = i == catIndex and P.Champagne or P.TextLight
-			b.Font = i == catIndex and UI.Font.Title or UI.Font.Bold
+			b.TextColor3 = i == mainIndex and P.Champagne or P.TextLight
+			b.Font = i == mainIndex and UI.Font.Title or UI.Font.Bold
 			local u = b:FindFirstChild("Underline")
 			if u then
-				u.Visible = i == catIndex
+				u.Visible = i == mainIndex
 			end
 		end
 	end
-	for i, c in CATEGORIES do
+
+	-- second row: sub-categories of the chosen main category (scrollable)
+	local subBar = UI.scroll(right, {
+		Position = UDim2.fromOffset(0, 58),
+		Size = UDim2.new(1, 0, 0, 44),
+		AutomaticCanvasSize = Enum.AutomaticSize.X,
+		ScrollingDirection = Enum.ScrollingDirection.X,
+		ScrollBarThickness = 5,
+	})
+	UI.list(subBar, Enum.FillDirection.Horizontal, 6, nil, Enum.VerticalAlignment.Center)
+	local subButtons = {}
+	local MINE = { { "Wearing", "👗 Wearing" }, { "Favorites", "💗 Favorites" }, { "Recent", "🕒 Recent" }, { "Outfits", "💾 My Outfits" } }
+	local sortBtn
+	function Catalog.RefreshSubTabs()
+		for key, b in subButtons do
+			local on
+			if MAIN[mainIndex][2] == "mine" then
+				on = key == subTab
+			else
+				on = subTab == "Featured" and key == catIndex
+			end
+			UI.style(b, on and "light" or "dark")
+		end
+	end
+	local function buildSubs()
+		for _, b in subButtons do
+			b:Destroy()
+		end
+		subButtons = {}
+		local m = MAIN[mainIndex]
+		local function mk(key, label, order, fn)
+			local b = UI.button(subBar, label, "dark", { LayoutOrder = order, Size = UDim2.fromOffset(0, 36), AutomaticSize = Enum.AutomaticSize.X, TextSize = 14 })
+			UI.pad(b, 0, 14)
+			b.Activated:Connect(fn)
+			subButtons[key] = b
+		end
+		if m[2] == "mine" then
+			for i, s in MINE do
+				mk(s[1], s[2], i, function()
+					subTab = s[1]
+					Catalog.RefreshSubTabs()
+					if s[1] == "Outfits" then
+						showOutfits()
+					else
+						runSearch()
+					end
+				end)
+			end
+		else
+			for i, idx in m[2] do
+				mk(idx, CATEGORIES[idx][1], i, function()
+					catIndex = idx
+					subTab = "Featured"
+					Catalog.RefreshSubTabs()
+					runSearch()
+				end)
+			end
+		end
+		Catalog.RefreshSubTabs()
+	end
+	Catalog.BuildSubs = buildSubs
+	local function selectMain(i)
+		mainIndex = i
+		styleTabs()
+		buildSubs()
+		local m = MAIN[i]
+		if m[2] == "mine" then
+			subTab = "Wearing"
+			Catalog.RefreshSubTabs()
+			runSearch()
+		else
+			catIndex = m[2][1]
+			subTab = "Featured"
+			Catalog.RefreshSubTabs()
+			runSearch()
+		end
+	end
+	Catalog.SelectMain = selectMain
+	for i, c in MAIN do
 		local b = UI.new("TextButton", {
 			BackgroundTransparency = 1,
 			Text = c[1],
 			Font = UI.Font.Bold,
-			TextSize = 18,
+			TextSize = 17,
 			TextColor3 = P.TextLight,
 			AutomaticSize = Enum.AutomaticSize.X,
 			Size = UDim2.fromOffset(0, 40),
@@ -773,49 +890,18 @@ function Catalog.Init(controllers)
 		UI.pad(b, 0, 10)
 		UI.new("Frame", { Name = "Underline", BackgroundColor3 = P.Blush, AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.fromScale(0.5, 1), Size = UDim2.new(1, -8, 0, 3), Visible = false, Parent = b })
 		b.Activated:Connect(function()
-			catIndex = i
-			subTab = "Featured"
-			styleTabs()
-			Catalog.RefreshSubTabs()
-			runSearch()
+			selectMain(i)
 		end)
 		tabButtons[i] = b
 	end
 	styleTabs()
-
-	-- sub tabs
-	local subBar = UI.new("Frame", { BackgroundTransparency = 1, Position = UDim2.fromOffset(0, 58), Size = UDim2.new(1, 0, 0, 40), Parent = right })
-	UI.list(subBar, Enum.FillDirection.Horizontal, 6, nil, Enum.VerticalAlignment.Center)
-	local subs = { "Featured", "Wearing", "Favorites", "Recent", "Outfits" }
-	local subLabels = { Featured = "Featured/All", Wearing = "Wearing", Favorites = "Favorites", Recent = "Recent", Outfits = "My Outfits" }
-	local subButtons = {}
-	function Catalog.RefreshSubTabs()
-		for name, b in subButtons do
-			UI.style(b, name == subTab and "light" or "dark")
-		end
-	end
-	for i, name in subs do
-		local b = UI.button(subBar, subLabels[name], "dark", { LayoutOrder = i, Size = UDim2.fromOffset(128, 36), TextSize = 15 })
-		b.Activated:Connect(function()
-			subTab = name
-			Catalog.RefreshSubTabs()
-			if name == "Outfits" then
-				showOutfits()
-			else
-				runSearch()
-			end
-		end)
-		subButtons[name] = b
-	end
-	local sortBtn = UI.button(subBar, "Sort: Relevance", "secondary", { LayoutOrder = 10, Size = UDim2.fromOffset(150, 36), TextSize = 14 })
+	buildSubs()
+	sortBtn = UI.button(right, "Sort", "secondary", { Visible = false })
 	sortBtn.Activated:Connect(function()
 		sortIndex = sortIndex % #SORTS + 1
 		sortBtn.Text = "Sort: " .. SORTS[sortIndex][1]
-		subTab = "Featured"
-		Catalog.RefreshSubTabs()
 		runSearch()
 	end)
-	Catalog.RefreshSubTabs()
 
 	-- grid
 	grid = UI.scroll(right, { Position = UDim2.fromOffset(0, 106), Size = UDim2.new(1, 0, 1, -172) })
@@ -899,9 +985,9 @@ function Catalog.Init(controllers)
 
 	-- ---------- compact (portrait) mode: a side panel so you can watch your character ----------
 	local compact = true
-	local modeBtn = UI.button(right, "↔️", "secondary", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -58, 0, 0), Size = UDim2.fromOffset(52, 50), TextSize = 22 })
-	local undo2 = UI.button(right, "↩️", "dark", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -164, 0, 0), Size = UDim2.fromOffset(48, 50), TextSize = 22 })
-	local redo2 = UI.button(right, "↪️", "dark", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -112, 0, 0), Size = UDim2.fromOffset(48, 50), TextSize = 22 })
+	local modeBtn = UI.button(right, "↔️", "light",{ AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -58, 0, 0), Size = UDim2.fromOffset(52, 50), TextSize = 22 })
+	local undo2 = UI.button(right, "↩️", "light", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -164, 0, 0), Size = UDim2.fromOffset(48, 50), TextSize = 22 })
+	local redo2 = UI.button(right, "↪️", "light", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -112, 0, 0), Size = UDim2.fromOffset(48, 50), TextSize = 22 })
 	undo2.Activated:Connect(function()
 		local snap = table.remove(undoStack)
 		if snap then
@@ -925,7 +1011,6 @@ function Catalog.Init(controllers)
 		redo2.Visible = compact
 		prevCard.Visible = not compact
 		stripCard.Visible = not compact
-		sortBtn.Visible = not compact
 		outfitName.Visible = not compact
 		if compact then
 			holder.Size = UDim2.fromOffset(460, 660)
@@ -939,10 +1024,6 @@ function Catalog.Init(controllers)
 			subBar.Position = UDim2.fromOffset(0, 108)
 			grid.Position = UDim2.fromOffset(0, 152)
 			grid.Size = UDim2.new(1, 0, 1, -214)
-			for _, b in subButtons do
-				b.Size = UDim2.fromOffset(80, 34)
-				b.TextSize = 12
-			end
 			link.Size = UDim2.new(1, -230, 0, 50)
 			tryLink.Position = UDim2.new(1, -224, 0, 3)
 			tryLink.Size = UDim2.fromOffset(80, 44)
@@ -961,10 +1042,6 @@ function Catalog.Init(controllers)
 			subBar.Position = UDim2.fromOffset(0, 58)
 			grid.Position = UDim2.fromOffset(0, 106)
 			grid.Size = UDim2.new(1, 0, 1, -172)
-			for _, b in subButtons do
-				b.Size = UDim2.fromOffset(128, 36)
-				b.TextSize = 15
-			end
 			link.Size = UDim2.fromOffset(330, 50)
 			tryLink.Position = UDim2.fromOffset(340, 3)
 			tryLink.Size = UDim2.fromOffset(110, 44)
@@ -986,13 +1063,9 @@ function Catalog.Init(controllers)
 		State.SetAvatarReply(res)
 		refreshPreview()
 		if Catalog.PendingTab then
-			catIndex = Catalog.PendingTab
 			Catalog.PendingTab = nil
-			subTab = "Featured"
-			styleTabs()
-			Catalog.RefreshSubTabs()
 			first = false
-			runSearch()
+			selectMain(9) -- "More" -> Emotes
 		elseif first then
 			first = false
 			runSearch()

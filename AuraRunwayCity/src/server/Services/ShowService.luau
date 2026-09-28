@@ -354,6 +354,16 @@ function ShowService.Init(deps)
 			local ok = pcall(ShowService.ChangeTheme, buyer)
 			return ok and Enum.ProductPurchaseDecision.PurchaseGranted or Enum.ProductPurchaseDecision.NotProcessedYet
 		end
+		for _, b in Config.SparkleBundles do
+			if b.ProductId ~= 0 and info.ProductId == b.ProductId then
+				local ok = pcall(DataService.AddCoins, buyer, b.Amount)
+				if ok then
+					Util.Notify(buyer, ("+%d ✨ Sparkles! Thank you 💖"):format(b.Amount), "success")
+					return Enum.ProductPurchaseDecision.PurchaseGranted
+				end
+				return Enum.ProductPurchaseDecision.NotProcessedYet
+			end
+		end
 		return Enum.ProductPurchaseDecision.NotProcessedYet
 	end
 	task.spawn(function()

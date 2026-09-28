@@ -27,11 +27,11 @@ function Auction.Init(controllers)
 	local sellerL = UI.label(live, "", { Position = UDim2.fromOffset(234, 46), Size = UDim2.new(1, -250, 0, 20), TextColor3 = P.TextSoft, TextSize = 15, Font = UI.Font.Medium })
 	local bidL = UI.label(live, "", { Position = UDim2.fromOffset(234, 74), Size = UDim2.new(1, -250, 0, 30), TextColor3 = P.Violet, TextSize = 24, Font = UI.Font.Title })
 	local timeL = UI.label(live, "", { Position = UDim2.fromOffset(234, 106), Size = UDim2.new(1, -250, 0, 22), TextColor3 = P.Rose, TextSize = 18 })
-	local bidBox = UI.textbox(live, "Your bid (coins)", { Position = UDim2.fromOffset(234, 140), Size = UDim2.fromOffset(200, 48) })
+	local bidBox = UI.textbox(live, "Your bid (✨ Sparkles)", { Position = UDim2.fromOffset(234, 140), Size = UDim2.fromOffset(200, 48) })
 	local minBtn = UI.button(live, "Min", "light", { Position = UDim2.fromOffset(442, 142), Size = UDim2.fromOffset(70, 44) })
 	local bidBtn = UI.button(live, "Place Bid", "gold", { Position = UDim2.fromOffset(520, 142), Size = UDim2.fromOffset(170, 44), TextSize = 19 })
 	local cancelBtn = UI.button(live, "Cancel", "danger", { Position = UDim2.fromOffset(520, 192), Size = UDim2.fromOffset(170, 30), TextSize = 14, Visible = false })
-	local note = UI.label(live, "Bids use in-game coins (held until you're outbid). The winner and seller complete the swap with Roblox Trade.", { Position = UDim2.fromOffset(234, 192), Size = UDim2.fromOffset(280, 34), TextColor3 = P.TextSoft, TextSize = 11, Font = UI.Font.Medium })
+	local note = UI.label(live, "Bids use ✨ Sparkles (held until you're outbid; buy more in the 🛒 Store). The seller sends the limited to the winner with Roblox Trade 🤝", { Position = UDim2.fromOffset(234, 192), Size = UDim2.fromOffset(280, 34), TextColor3 = P.TextSoft, TextSize = 11, Font = UI.Font.Medium })
 	note.TextWrapped = true
 	local idle = UI.label(live, "No auction right now.\nModels on stage can start one below ✨", { Position = UDim2.fromOffset(234, 40), Size = UDim2.new(1, -250, 0, 80), TextColor3 = P.TextSoft, TextSize = 18 })
 
@@ -62,7 +62,7 @@ function Auction.Init(controllers)
 			sellerL.Text = "Seller: " .. (state:GetAttribute("SellerName") or "")
 			local top = state:GetAttribute("TopBid") or 0
 			local topName = state:GetAttribute("TopBidderName") or ""
-			bidL.Text = (topName ~= "" and ("🪙 %d  —  %s"):format(top, topName)) or ("Starts at 🪙 %d"):format(state:GetAttribute("MinNext") or 0)
+			bidL.Text = (topName ~= "" and ("✨ %d  —  %s"):format(top, topName)) or ("Starts at ✨ %d"):format(state:GetAttribute("MinNext") or 0)
 			local mine = state:GetAttribute("SellerId") == player.UserId
 			bidBox.Visible, minBtn.Visible, bidBtn.Visible = not mine, not mine, not mine
 			cancelBtn.Visible = mine and topName == ""
@@ -117,7 +117,7 @@ function Auction.Init(controllers)
 			if a.WinnerId == player.UserId then
 				Notify.Show(("You won %s! Send %s a Roblox trade request to receive it 🤝"):format(a.Item, a.Seller), "success")
 			elseif a.SellerId == player.UserId then
-				Notify.Show(("%s won your %s for %d coins. Please send it via Roblox Trade 🤝"):format(a.Winner, a.Item, a.Price), "success")
+				Notify.Show(("%s won your %s for %d ✨ Sparkles. Please send it via Roblox Trade 🤝"):format(a.Winner, a.Item, a.Price), "success")
 			end
 		end
 	end)

@@ -56,8 +56,8 @@ local function publish()
 		if bg then
 			bg.Item.Image = ("rbxthumb://type=Asset&id=%d&w=420&h=420"):format(current.AssetId)
 			bg.Title.Text = current.Name
-			bg.Bid.Text = current.TopBidder and ("Top bid: %d coins\nby %s"):format(current.TopBid, current.TopBidder.DisplayName)
-				or ("Starting bid: %d coins"):format(current.StartBid)
+			bg.Bid.Text = current.TopBidder and ("Top bid: ✨ %d Sparkles\nby %s"):format(current.TopBid, current.TopBidder.DisplayName)
+				or ("Starting bid: ✨ %d Sparkles"):format(current.StartBid)
 		end
 	else
 		state:SetAttribute("Active", false)
@@ -100,7 +100,7 @@ local function finish(cancelled: boolean?)
 		if a.Seller.Parent then
 			DataService.AddCoins(a.Seller, a.TopBid)
 		end
-		local msg = ("SOLD! %s won %s for %d coins. %s, please send it with Roblox Trade 🤝"):format(
+		local msg = ("SOLD! %s won %s for %d ✨ Sparkles. %s, please send it with Roblox Trade 🤝"):format(
 			a.TopBidder.DisplayName,
 			a.Name,
 			a.TopBid,
@@ -164,7 +164,7 @@ local function start(player: Player, assetId, startBid)
 		return false, "Enter the item's ID or link."
 	end
 	if startBid < Config.Auction.MinStartBid or startBid > Config.Auction.MaxStartBid then
-		return false, ("Starting bid must be %d-%d coins."):format(Config.Auction.MinStartBid, Config.Auction.MaxStartBid)
+		return false, ("Starting bid must be %d-%d Sparkles."):format(Config.Auction.MinStartBid, Config.Auction.MaxStartBid)
 	end
 	local info = AvatarService.GetInfo(assetId)
 	if not isLimited(info) then
@@ -201,7 +201,7 @@ local function bid(player: Player, amount)
 	end
 	amount = math.floor(tonumber(amount) or 0)
 	if amount < AuctionService.MinNext() then
-		return false, ("Bid at least %d coins."):format(AuctionService.MinNext())
+		return false, ("Bid at least %d Sparkles."):format(AuctionService.MinNext())
 	end
 	local prevBidder, prevBid = a.TopBidder, a.TopBid
 	-- raising your own bid only charges the difference
@@ -210,11 +210,11 @@ local function bid(player: Player, amount)
 		charge = amount - prevBid
 	end
 	if not DataService.Spend(player, charge) then
-		return false, "Not enough coins."
+		return false, "Not enough ✨ Sparkles. Get more in the 🛒 Store!"
 	end
 	if prevBidder and prevBidder ~= player then
 		refund(prevBidder, prevBid)
-		Util.Notify(prevBidder, "You were outbid! Your coins were refunded.", "warn")
+		Util.Notify(prevBidder, "You were outbid! Your Sparkles were refunded.", "warn")
 	end
 	a.TopBid = amount
 	a.TopBidder = player

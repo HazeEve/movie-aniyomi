@@ -169,7 +169,7 @@ function Show.Init(controllers)
 	local resTheme = UI.label(results, "", { Position = UDim2.fromOffset(0, 60), Size = UDim2.new(1, 0, 0, 22), TextXAlignment = Enum.TextXAlignment.Center, TextSize = 16, TextColor3 = P.Lilac })
 	local podium = UI.new("Frame", { BackgroundTransparency = 1, Position = UDim2.fromOffset(20, 96), Size = UDim2.new(1, -40, 0, 250), Parent = results })
 	local others = UI.label(results, "", { Position = UDim2.fromOffset(24, 352), Size = UDim2.new(1, -48, 0, 60), TextSize = 15, TextColor3 = P.Lilac, TextXAlignment = Enum.TextXAlignment.Center })
-	local closeRes = UI.button(results, "❌", "dark", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -12, 0, 12), Size = UDim2.fromOffset(40, 40) })
+	local closeRes = UI.button(results, "X", "light", { Font = UI.Font.Title, TextSize = 22, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -12, 0, 12), Size = UDim2.fromOffset(40, 40) })
 	closeRes.Activated:Connect(function()
 		results.Visible = false
 	end)
@@ -197,7 +197,7 @@ function Show.Init(controllers)
 				UI.label(card, r.DisplayName, { Position = UDim2.fromOffset(8, 122), Size = UDim2.new(1, -16, 0, 24), TextColor3 = P.Text, TextXAlignment = Enum.TextXAlignment.Center, Font = UI.Font.Title, TextTruncate = Enum.TextTruncate.AtEnd })
 				UI.label(card, heartString(r.Score) .. ("  %.1f"):format(r.Score), { Position = UDim2.fromOffset(8, 148), Size = UDim2.new(1, -16, 0, 22), TextColor3 = P.Heart, TextXAlignment = Enum.TextXAlignment.Center, TextSize = 18 })
 				if h > 180 then
-					UI.label(card, ("%d votes  •  +%d 🪙"):format(r.Votes, r.Coins or 0), { Position = UDim2.fromOffset(8, 174), Size = UDim2.new(1, -16, 0, 20), TextColor3 = P.TextSoft, TextXAlignment = Enum.TextXAlignment.Center, TextSize = 14 })
+					UI.label(card, ("%d votes  •  +%d ✨"):format(r.Votes, r.Coins or 0), { Position = UDim2.fromOffset(8, 174), Size = UDim2.new(1, -16, 0, 20), TextColor3 = P.TextSoft, TextXAlignment = Enum.TextXAlignment.Center, TextSize = 14 })
 				end
 			else
 				UI.label(card, "—", { Position = UDim2.fromOffset(0, 80), Size = UDim2.new(1, 0, 0, 40), TextColor3 = P.TextSoft, TextXAlignment = Enum.TextXAlignment.Center, TextSize = 30 })
@@ -216,7 +216,7 @@ function Show.Init(controllers)
 		end)
 		for i, r in list do
 			if r.UserId == player.UserId then
-				controllers.Notify.Show(("You placed #%d with %.1f hearts! +%d coins"):format(i, r.Score, r.Coins or 0), "success")
+				controllers.Notify.Show(("You placed #%d with %.1f hearts! +%d ✨ Sparkles"):format(i, r.Score, r.Coins or 0), "success")
 			end
 		end
 	end

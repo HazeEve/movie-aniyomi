@@ -40,10 +40,10 @@ function HUD.Init(controllers)
 		BackgroundTransparency = 1,
 		AnchorPoint = Vector2.new(0, 0),
 		Position = touch and UDim2.new(0, 10, 0, 96) or UDim2.new(0, 12, 0.2, 0),
-		Size = UDim2.fromOffset(W, (H + 8) * 6),
+		Size = UDim2.fromOffset(W, (H + 8) * 7),
 		Parent = gui,
 	})
-	UI.autoScale(dockHolder, Vector2.new(W, (H + 8) * 6 + 120))
+	UI.autoScale(dockHolder, Vector2.new(W, (H + 8) * 7 + 120))
 	UI.list(dockHolder, Enum.FillDirection.Vertical, 8)
 	local buttons = {}
 	local function dock(label, style, fn)
@@ -77,6 +77,9 @@ function HUD.Init(controllers)
 	dock("🔨  Auction", "light", function()
 		UI.toggle("Auction")
 	end)
+	dock("🛒  Store", "gold", function()
+		UI.toggle("Store")
+	end)
 	dock("🗺️  Teleport", "secondary", function()
 		UI.toggle("Travel")
 	end)
@@ -104,10 +107,15 @@ function HUD.Init(controllers)
 		local l = UI.label(f, icon .. "  0", { Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X, TextSize = 20, Font = UI.Font.Title })
 		return l
 	end
-	local coinsL = pill("🪙")
+	local coinsL = pill("✨")
 	local heartsL = pill("💗")
+	-- tap the Sparkles counter to open the Store
+	local coinHit = UI.new("TextButton", { Text = "", BackgroundTransparency = 1, Size = UDim2.fromScale(1, 1), ZIndex = 5, Parent = coinsL.Parent })
+	coinHit.Activated:Connect(function()
+		UI.open("Store")
+	end)
 	local function refreshData(d)
-		coinsL.Text = "🪙  " .. tostring(d.Coins or 0)
+		coinsL.Text = "✨  " .. tostring(d.Coins or 0) .. "  ＋"
 		heartsL.Text = "💗  " .. tostring(d.Hearts or 0)
 	end
 	State.DataChanged.Event:Connect(refreshData)
@@ -279,6 +287,54 @@ function HUD.Init(controllers)
 		end
 	end
 	UI.registerModal("Travel", holder, rebuild)
+
+	-- ============ Store (Sparkles + game passes) ============
+	local sgui = UI.screen("AuraStore", 20)
+	local sholder, sbody = UI.window(sgui, "Store", "🛒 Sparkle Store", Vector2.new(560, 560))
+	local slist = UI.scroll(sbody, { Size = UDim2.fromScale(1, 1) })
+	UI.list(slist, Enum.FillDirection.Vertical, 10)
+	local function storeRow(order, icon, title, sub, price, style, fn)
+		local r = UI.card(slist, { LayoutOrder = order, Size = UDim2.new(1, -16, 0, 74) })
+		UI.label(r, icon, { Position = UDim2.fromOffset(10, 0), Size = UDim2.fromOffset(52, 74), TextSize = 34, TextXAlignment = Enum.TextXAlignment.Center })
+		UI.label(r, title, { Position = UDim2.fromOffset(68, 10), Size = UDim2.new(1, -210, 0, 26), TextSize = 19, Font = UI.Font.Title, TextColor3 = P.Text })
+		UI.label(r, sub, { Position = UDim2.fromOffset(68, 38), Size = UDim2.new(1, -210, 0, 26), TextSize = 13, TextColor3 = P.TextSoft, Font = UI.Font.Medium, TextWrapped = true })
+		local b = UI.button(r, price, style, { AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -12, 0.5, 0), Size = UDim2.fromOffset(124, 46), TextSize = 17 })
+		b.Activated:Connect(fn)
+	end
+	local function header(order, text)
+		UI.label(slist, text, { LayoutOrder = order, Size = UDim2.new(1, -16, 0, 30), TextSize = 18, Font = UI.Font.Title, TextColor3 = P.Blush })
+	end
+	local function ownerWarn(what)
+		controllers.Notify.Show("Owner: set " .. what .. " in Config to your product/pass id.", "warn")
+	end
+	header(1, "✨ SPARKLES — use for auction bids & stall rent")
+	for i, b in Config.SparkleBundles do
+		storeRow(1 + i, "✨", b.Name, ("%d Sparkles"):format(b.Amount), "R$ " .. b.Robux, "gold", function()
+			if b.ProductId == 0 then
+				return ownerWarn("SparkleBundles[" .. i .. "].ProductId")
+			end
+			MarketplaceService:PromptProductPurchase(player, b.ProductId)
+		end)
+	end
+	header(50, "🎫 GAME PASSES")
+	for i, p in Config.StorePasses do
+		storeRow(50 + i, "🎫", p.Name, p.Desc, "Buy", "light", function()
+			local id = Config.GamePasses[p.Key] or 0
+			if id == 0 then
+				return ownerWarn("GamePasses." .. p.Key)
+			end
+			MarketplaceService:PromptGamePassPurchase(player, id)
+		end)
+	end
+	header(80, "🛍️ PRODUCTS")
+	storeRow(81, "🔄", "Change Theme", "Re-roll the runway theme (buy any time).", "Buy", "secondary", function()
+		if (Config.Products.ChangeTheme or 0) == 0 then
+			return ownerWarn("Products.ChangeTheme")
+		end
+		MarketplaceService:PromptProductPurchase(player, Config.Products.ChangeTheme)
+	end)
+	UI.label(slist, "🤝 Won a limited at the auction? The seller sends it to you with Roblox Trade (Profile ▸ ••• ▸ Trade Items).", { LayoutOrder = 99, Size = UDim2.new(1, -16, 0, 44), TextSize = 13, TextWrapped = true, TextColor3 = P.Lilac, Font = UI.Font.Medium })
+	UI.registerModal("Store", sholder)
 
 	-- ============ Wake button ============
 	local wakeHolder = UI.new("Frame", {

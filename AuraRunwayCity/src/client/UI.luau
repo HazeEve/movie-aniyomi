@@ -443,7 +443,8 @@ function UI.window(gui: ScreenGui, name: string, title: string, size: Vector2)
 		Position = UDim2.fromOffset(24, 14),
 		Size = UDim2.new(1, -110, 0, 38),
 	})
-	local close = UI.button(win, "❌", "dark", {
+	local close = UI.button(win, "X", "light", {
+		Font = UI.Font.Title,
 		Name = "Close",
 		Size = UDim2.fromOffset(44, 44),
 		AnchorPoint = Vector2.new(1, 0),
