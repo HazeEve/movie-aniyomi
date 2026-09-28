@@ -109,6 +109,7 @@ function Look.Init(controllers)
 	list = UI.scroll(body, { Position = UDim2.fromOffset(0, 90), Size = UDim2.new(1, 0, 1, -90) })
 	UI.list(list, Enum.FillDirection.Vertical, 8)
 	UI.registerModal("Look", holder, function(userId)
+		currentId = userId
 		populate(userId)
 	end)
 

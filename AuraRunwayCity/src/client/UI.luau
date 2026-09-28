@@ -393,12 +393,15 @@ function UI.open(name: string, ...)
 	end
 	local args = table.pack(...)
 	m.Frame.Visible = true
-	local sc = m.Frame:FindFirstChild("PopScale")
-	if not sc then
-		sc = UI.new("UIScale", { Name = "PopScale", Parent = m.Frame })
-	end
-	if sc:IsA("UIScale") then
-		sc.Scale = 0.92
+	-- pop the inner window (the holder already owns the fit-to-screen UIScale;
+	-- a GuiObject may only have one UIScale)
+	local inner = m.Frame:FindFirstChild("Window") or m.Frame:FindFirstChildWhichIsA("GuiObject")
+	if inner then
+		local sc = inner:FindFirstChild("PopScale")
+		if not sc then
+			sc = UI.new("UIScale", { Name = "PopScale", Parent = inner })
+		end
+		sc.Scale = 0.94
 		UI.tween(sc, 0.25, { Scale = 1 }, Enum.EasingStyle.Back)
 	end
 	if m.OnOpen then
@@ -430,7 +433,7 @@ function UI.window(gui: ScreenGui, name: string, title: string, size: Vector2)
 		Parent = gui,
 	})
 	UI.autoScale(holder, size)
-	local win = UI.panel(holder, { Name = "Window", Size = UDim2.fromScale(1, 1) })
+	local win = UI.panel(holder, { Name = "Window", Size = UDim2.fromScale(1, 1), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5) })
 	local titleLabel = UI.label(win, title, {
 		Name = "Title",
 		Font = UI.Font.Luxe,

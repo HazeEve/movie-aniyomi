@@ -120,7 +120,20 @@ function Show.Init(controllers)
 		state:GetAttributeChangedSignal(a):Connect(refresh)
 	end
 	refresh()
+	-- if the instrument panel is open, lift the voting panels to the top
+	local function placePanels()
+		local top = controllers.Music and controllers.Music.IsPlaying and controllers.Music.IsPlaying()
+		local anchor = top and Vector2.new(0.5, 0) or Vector2.new(0.5, 1)
+		local pos = top and UDim2.new(0.5, 0, 0, 74) or UDim2.new(0.5, 0, 1, -16)
+		for _, f in { vote, modelPanel } do
+			if f.AnchorPoint ~= anchor then
+				f.AnchorPoint = anchor
+				f.Position = pos
+			end
+		end
+	end
 	RunService.Heartbeat:Connect(function()
+		placePanels()
 		if vote.Visible then
 			local left = (state:GetAttribute("EndsAt") or 0) - workspace:GetServerTimeNow()
 			timerBar.Size = UDim2.new(math.clamp(left / Config.Show.RunwayTimePerModel, 0, 1), -32, 0, 3)
@@ -191,9 +204,8 @@ function Show.Init(controllers)
 		end
 		others.Text = table.concat(rest, "   ")
 		results.Visible = true
-		local sc = results:FindFirstChild("Pop") or UI.new("UIScale", { Name = "Pop", Parent = results })
-		sc.Scale = 0.6
-		UI.tween(sc, 0.45, { Scale = 1 }, Enum.EasingStyle.Back)
+		results.BackgroundTransparency = 1
+		UI.tween(results, 0.4, { BackgroundTransparency = 0.04 })
 		task.delay(Config.Show.ResultsTime, function()
 			results.Visible = false
 		end)

@@ -588,7 +588,7 @@ function Catalog.Init(controllers)
 		Parent = gui,
 	})
 	UI.autoScale(holder, Vector2.new(1240, 660))
-	local win = UI.panel(holder, { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 0.02 })
+	local win = UI.panel(holder, { Name = "Window", Size = UDim2.fromScale(1, 1), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), BackgroundTransparency = 0.02 })
 
 	-- ---------- left: preview ----------
 	local prevCard = UI.new("Frame", { BackgroundColor3 = Color3.new(1, 1, 1), Position = UDim2.fromOffset(16, 16), Size = UDim2.fromOffset(380, 516), Parent = win })

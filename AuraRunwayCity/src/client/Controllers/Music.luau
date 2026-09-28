@@ -1011,6 +1011,10 @@ function Music.Select(kind: string)
 	UI.open("ChordPicker")
 end
 
+function Music.IsPlaying(): boolean
+	return playRoot ~= nil and playRoot.Parent ~= nil
+end
+
 function Music.Stop()
 	clearPlay()
 	current = nil

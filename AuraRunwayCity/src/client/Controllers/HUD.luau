@@ -33,15 +33,16 @@ function HUD.Init(controllers)
 	-- ============ Dock (left) ============
 	-- phones/tablets: dock on the right (the thumbstick lives bottom-left)
 	local touch = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+	-- phones: a compact row under the coin counters (clear of thumbstick + jump)
 	local dockHolder = UI.new("Frame", {
 		BackgroundTransparency = 1,
-		AnchorPoint = touch and Vector2.new(1, 0.5) or Vector2.new(0, 0.5),
-		Position = touch and UDim2.new(1, -8, 0.42, 0) or UDim2.new(0, 10, 0.52, 0),
-		Size = UDim2.fromOffset(70, 440),
+		AnchorPoint = touch and Vector2.new(1, 0) or Vector2.new(0, 0.5),
+		Position = touch and UDim2.new(1, -8, 0, 58) or UDim2.new(0, 10, 0.52, 0),
+		Size = touch and UDim2.fromOffset(350, 80) or UDim2.fromOffset(70, 440),
 		Parent = gui,
 	})
-	UI.autoScale(dockHolder, Vector2.new(70, 440))
-	UI.list(dockHolder, Enum.FillDirection.Vertical, 4, Enum.HorizontalAlignment.Center, Enum.VerticalAlignment.Center)
+	UI.autoScale(dockHolder, touch and Vector2.new(350, 80) or Vector2.new(70, 440))
+	UI.list(dockHolder, touch and Enum.FillDirection.Horizontal or Enum.FillDirection.Vertical, 4, touch and Enum.HorizontalAlignment.Right or Enum.HorizontalAlignment.Center, Enum.VerticalAlignment.Center)
 	local buttons = {}
 	local function dock(emoji, caption, fn)
 		local b = UI.iconButton(dockHolder, emoji, caption)
@@ -209,19 +210,24 @@ function HUD.Init(controllers)
 	UI.registerModal("Travel", holder, rebuild)
 
 	-- ============ Wake button ============
-	local wake = UI.button(gui, "☀️  Wake Up", "gold", {
+	local wakeHolder = UI.new("Frame", {
+		BackgroundTransparency = 1,
 		AnchorPoint = Vector2.new(0.5, 1),
 		Position = UDim2.new(0.5, 0, 1, -110),
 		Size = UDim2.fromOffset(200, 54),
-		TextSize = 22,
 		Visible = false,
+		Parent = gui,
 	})
-	UI.autoScale(wake)
+	UI.autoScale(wakeHolder)
+	local wake = UI.button(wakeHolder, "☀️  Wake Up", "gold", {
+		Size = UDim2.fromScale(1, 1),
+		TextSize = 22,
+	})
 	wake.Activated:Connect(function()
 		Remotes.Event("RP"):FireServer("Wake")
 	end)
 	player:GetAttributeChangedSignal("Sleeping"):Connect(function()
-		wake.Visible = player:GetAttribute("Sleeping") == true
+		wakeHolder.Visible = player:GetAttribute("Sleeping") == true
 	end)
 
 	HUD.Buttons = buttons
