@@ -102,7 +102,7 @@ function Stall.Init(controllers)
 				MarketplaceService:PromptPurchase(player, item.Id)
 			end)
 			if manage then
-				local rm = UI.button(card, "✕", "danger", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -6, 0, 6), Size = UDim2.fromOffset(32, 32), TextSize = 14 })
+				local rm = UI.button(card, "❌", "danger", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -6, 0, 6), Size = UDim2.fromOffset(32, 32), TextSize = 14 })
 				rm.Activated:Connect(function()
 					call("RemoveItem", item.Id)
 				end)
@@ -139,7 +139,7 @@ function Stall.Init(controllers)
 	end)
 	RunService.Heartbeat:Connect(function()
 		if holder.Visible and data and not data.Vacant and not data.IsCreator then
-			timeL.Text = "⏱ " .. UI.fmtTime((data.ExpiresAt or 0) - workspace:GetServerTimeNow()) .. " left"
+			timeL.Text = "⏰ " .. UI.fmtTime((data.ExpiresAt or 0) - workspace:GetServerTimeNow()) .. " left"
 		elseif holder.Visible then
 			timeL.Text = ""
 		end

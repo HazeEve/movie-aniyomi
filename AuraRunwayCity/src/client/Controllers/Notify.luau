@@ -8,10 +8,10 @@ local Notify = {}
 local gui, stack
 
 local KIND = {
-	info = { P.Lavender, "✦" },
-	success = { P.Success, "✓" },
+	info = { P.Lavender, "⭐" },
+	success = { P.Success, "✅" },
 	warn = { P.RoseGold, "!" },
-	error = { P.Danger, "✕" },
+	error = { P.Danger, "❌" },
 }
 
 function Notify.Show(text: string, kind: string?)

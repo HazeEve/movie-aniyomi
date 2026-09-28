@@ -287,9 +287,10 @@ end
 function UI.scroll(parent, props)
 	local s = UI.new("ScrollingFrame", {
 		BackgroundTransparency = 1,
-		ScrollBarThickness = 6,
-		ScrollBarImageColor3 = P.Lavender,
-		ScrollBarImageTransparency = 0.2,
+		ScrollBarThickness = 12,
+		ScrollBarImageColor3 = P.Blush,
+		ScrollBarImageTransparency = 0,
+		VerticalScrollBarInset = Enum.ScrollBarInset.ScrollBar,
 		AutomaticCanvasSize = Enum.AutomaticSize.Y,
 		CanvasSize = UDim2.new(),
 		ScrollingDirection = Enum.ScrollingDirection.Y,
@@ -442,7 +443,7 @@ function UI.window(gui: ScreenGui, name: string, title: string, size: Vector2)
 		Position = UDim2.fromOffset(24, 14),
 		Size = UDim2.new(1, -110, 0, 38),
 	})
-	local close = UI.button(win, "✕", "dark", {
+	local close = UI.button(win, "❌", "dark", {
 		Name = "Close",
 		Size = UDim2.fromOffset(44, 44),
 		AnchorPoint = Vector2.new(1, 0),

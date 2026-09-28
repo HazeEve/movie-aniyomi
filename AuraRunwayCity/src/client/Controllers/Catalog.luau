@@ -238,7 +238,7 @@ local function makeCard(entry, order: number)
 	local check = UI.new("TextLabel", {
 		Name = "Check",
 		BackgroundColor3 = P.Success,
-		Text = "✓",
+		Text = "✅",
 		TextColor3 = P.Plum,
 		Font = UI.Font.Title,
 		TextSize = 18,
@@ -264,12 +264,12 @@ local function makeCard(entry, order: number)
 	UI.corner(overlay, 14)
 	local wear = UI.button(overlay, "", "secondary", { Position = UDim2.fromOffset(18, 44), Size = UDim2.new(1, -36, 0, 44), ZIndex = 6 })
 	local buy = UI.button(overlay, "Buy", "gold", { Position = UDim2.fromOffset(18, 98), Size = UDim2.new(1, -36, 0, 48), TextSize = 22, ZIndex = 6 })
-	local fav = UI.button(overlay, "♡", "dark", { Position = UDim2.fromOffset(18, 156), Size = UDim2.fromOffset(44, 40), TextSize = 22, ZIndex = 6 })
+	local fav = UI.button(overlay, "🤍", "dark", { Position = UDim2.fromOffset(18, 156), Size = UDim2.fromOffset(44, 40), TextSize = 22, ZIndex = 6 })
 	local copyId = UI.button(overlay, "#ID", "dark", { Position = UDim2.new(1, -106, 0, 156), Size = UDim2.fromOffset(88, 40), TextSize = 14, ZIndex = 6 })
 	local function refreshOverlay()
 		wear.Text = entry.IsEmote and "▶ Play" or (isWornEntry(entry) and "Take Off" or "Try On")
 		UI.style(wear, (not entry.IsEmote and isWornEntry(entry)) and "light" or "secondary")
-		fav.Text = State.IsFavorite(favKey(entry)) and "♥" or "♡"
+		fav.Text = State.IsFavorite(favKey(entry)) and "💗" or "🤍"
 		check.Visible = isWornEntry(entry)
 	end
 	refreshOverlay()
@@ -508,7 +508,7 @@ local function refreshWearing()
 		UI.new("ImageLabel", { BackgroundTransparency = 1, Image = UI.assetThumb(w.Id), Size = UDim2.new(1, -8, 1, -8), Position = UDim2.fromOffset(4, 4), Parent = cell })
 		local ck = UI.new("TextLabel", {
 			BackgroundColor3 = P.Success,
-			Text = "✓",
+			Text = "✅",
 			Font = UI.Font.Title,
 			TextSize = 14,
 			TextColor3 = P.Plum,
@@ -600,7 +600,7 @@ local function buildBodyPanel(parent)
 			end
 		end)
 	end
-	local reset = UI.button(panel, "↺  Reset to my avatar", "light", { LayoutOrder = 20, Size = UDim2.new(1, 0, 0, 40), TextSize = 16, ZIndex = 22 })
+	local reset = UI.button(panel, "🔄  Reset to my avatar", "light", { LayoutOrder = 20, Size = UDim2.new(1, 0, 0, 40), TextSize = 16, ZIndex = 22 })
 	reset.Activated:Connect(function()
 		avatarCall("Reset")
 	end)
@@ -688,9 +688,9 @@ function Catalog.Init(controllers)
 		end
 	end)
 	-- preview toolbar
-	local bodyBtn = UI.button(prevCard, "🎨", "dark", { Position = UDim2.fromOffset(12, 12), Size = UDim2.fromOffset(46, 46), TextSize = 22 })
-	local undoBtn = UI.button(prevCard, "↶", "dark", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -64, 0, 12), Size = UDim2.fromOffset(46, 46), TextSize = 24 })
-	local redoBtn = UI.button(prevCard, "↷", "dark", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -12, 0, 12), Size = UDim2.fromOffset(46, 46), TextSize = 24 })
+	local bodyBtn = UI.button(prevCard, "🎨 Body", "dark", { Position = UDim2.fromOffset(12, 12), Size = UDim2.fromOffset(92, 42), TextSize = 15 })
+	local undoBtn = UI.button(prevCard, "↩️ Undo", "dark", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -108, 0, 12), Size = UDim2.fromOffset(92, 42), TextSize = 15 })
+	local redoBtn = UI.button(prevCard, "Redo ↪️", "dark", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -12, 0, 12), Size = UDim2.fromOffset(92, 42), TextSize = 15 })
 	bodyPanel = buildBodyPanel(prevCard)
 	bodyBtn.Activated:Connect(function()
 		bodyPanel.Visible = not bodyPanel.Visible
@@ -713,7 +713,7 @@ function Catalog.Init(controllers)
 			avatarCall("Snapshot", snap, nil, false)
 		end
 	end)
-	UI.label(prevCard, "drag to spin ↔", { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -8), Size = UDim2.fromOffset(200, 20), TextXAlignment = Enum.TextXAlignment.Center, TextSize = 13, TextColor3 = P.TextSoft })
+	UI.label(prevCard, "👆 drag to spin", { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -8), Size = UDim2.fromOffset(200, 20), TextXAlignment = Enum.TextXAlignment.Center, TextSize = 13, TextColor3 = P.TextSoft })
 
 	-- wearing strip
 	local stripCard = UI.new("Frame", { BackgroundColor3 = P.PlumDeep, BackgroundTransparency = 0.3, Position = UDim2.fromOffset(16, 542), Size = UDim2.fromOffset(380, 102), Parent = win })
@@ -723,14 +723,14 @@ function Catalog.Init(controllers)
 		Size = UDim2.new(1, -16, 1, -12),
 		AutomaticCanvasSize = Enum.AutomaticSize.X,
 		ScrollingDirection = Enum.ScrollingDirection.X,
-		ScrollBarThickness = 4,
+		ScrollBarThickness = 8,
 	})
 	UI.list(wearingStrip, Enum.FillDirection.Horizontal, 8)
 
 	-- ---------- right: search + tabs ----------
 	local right = UI.new("Frame", { BackgroundTransparency = 1, Position = UDim2.fromOffset(412, 16), Size = UDim2.new(1, -428, 1, -32), Parent = win })
 	local search = UI.textbox(right, "🔍  Search the catalog…", { Size = UDim2.fromOffset(270, 50), TextSize = 19 })
-	local clear = UI.button(search, "✕", "ghost", { AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 8, 0.5, 0), Size = UDim2.fromOffset(34, 34), TextColor3 = P.TextSoft })
+	local clear = UI.button(search, "❌", "ghost", { AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 8, 0.5, 0), Size = UDim2.fromOffset(34, 34), TextColor3 = P.TextSoft })
 	clear.TextColor3 = P.TextSoft
 	local tabsBar = UI.panel(right, { Position = UDim2.fromOffset(282, 0), Size = UDim2.new(1, -346, 0, 50), BackgroundTransparency = 0.2 })
 	local tabs = UI.scroll(tabsBar, {
@@ -738,10 +738,10 @@ function Catalog.Init(controllers)
 		Size = UDim2.new(1, -16, 1, 0),
 		AutomaticCanvasSize = Enum.AutomaticSize.X,
 		ScrollingDirection = Enum.ScrollingDirection.X,
-		ScrollBarThickness = 0,
+		ScrollBarThickness = 6,
 	})
 	UI.list(tabs, Enum.FillDirection.Horizontal, 4, nil, Enum.VerticalAlignment.Center)
-	local close = UI.button(right, "✕", "dark", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 0, 0), Size = UDim2.fromOffset(52, 50), TextSize = 24 })
+	local close = UI.button(right, "❌", "dark", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 0, 0), Size = UDim2.fromOffset(52, 50), TextSize = 24 })
 	UI.stroke(close, P.Champagne, 1.5, 0.4)
 	close.Activated:Connect(function()
 		UI.close("Catalog")
@@ -899,8 +899,30 @@ function Catalog.Init(controllers)
 
 	-- ---------- compact (portrait) mode: a side panel so you can watch your character ----------
 	local compact = true
-	local modeBtn = UI.button(right, "⇔", "secondary", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -58, 0, 0), Size = UDim2.fromOffset(52, 50), TextSize = 22 })
+	local modeBtn = UI.button(right, "↔️", "secondary", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -58, 0, 0), Size = UDim2.fromOffset(52, 50), TextSize = 22 })
+	local undo2 = UI.button(right, "↩️", "dark", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -164, 0, 0), Size = UDim2.fromOffset(48, 50), TextSize = 22 })
+	local redo2 = UI.button(right, "↪️", "dark", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -112, 0, 0), Size = UDim2.fromOffset(48, 50), TextSize = 22 })
+	undo2.Activated:Connect(function()
+		local snap = table.remove(undoStack)
+		if snap then
+			if State.Snap then
+				table.insert(redoStack, State.Snap)
+			end
+			avatarCall("Snapshot", snap, nil, false)
+		end
+	end)
+	redo2.Activated:Connect(function()
+		local snap = table.remove(redoStack)
+		if snap then
+			if State.Snap then
+				table.insert(undoStack, State.Snap)
+			end
+			avatarCall("Snapshot", snap, nil, false)
+		end
+	end)
 	local function applyMode()
+		undo2.Visible = compact
+		redo2.Visible = compact
 		prevCard.Visible = not compact
 		stripCard.Visible = not compact
 		sortBtn.Visible = not compact
@@ -911,7 +933,7 @@ function Catalog.Init(controllers)
 			holder.Position = UDim2.new(1, -10, 0.54, 0)
 			right.Position = UDim2.fromOffset(12, 14)
 			right.Size = UDim2.new(1, -24, 1, -28)
-			search.Size = UDim2.new(1, -116, 0, 50)
+			search.Size = UDim2.new(1, -222, 0, 50)
 			tabsBar.Position = UDim2.fromOffset(0, 56)
 			tabsBar.Size = UDim2.new(1, 0, 0, 46)
 			subBar.Position = UDim2.fromOffset(0, 108)
@@ -926,7 +948,7 @@ function Catalog.Init(controllers)
 			tryLink.Size = UDim2.fromOffset(80, 44)
 			saveBtn.Size = UDim2.fromOffset(136, 44)
 			saveBtn.Text = "💾 Save"
-			modeBtn.Text = "⇔"
+			modeBtn.Text = "↔️"
 		else
 			holder.Size = UDim2.fromOffset(1240, 660)
 			holder.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -948,7 +970,7 @@ function Catalog.Init(controllers)
 			tryLink.Size = UDim2.fromOffset(110, 44)
 			saveBtn.Size = UDim2.fromOffset(158, 44)
 			saveBtn.Text = "💾 Save Outfit"
-			modeBtn.Text = "⇔"
+			modeBtn.Text = "↔️"
 		end
 	end
 	modeBtn.Activated:Connect(function()

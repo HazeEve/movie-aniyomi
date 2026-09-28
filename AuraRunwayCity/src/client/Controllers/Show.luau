@@ -38,12 +38,12 @@ function Show.Init(controllers)
 	local function paint()
 		for i, h in hearts do
 			local on = i <= myVote
-			h.Text = on and "♥" or "♡"
+			h.Text = on and "💗" or "🤍"
 			h.TextColor3 = on and P.Heart or P.Ivory
 		end
 	end
 	for i = 1, 5 do
-		local h = UI.button(heartsRow, "♡", "ghost", { Size = UDim2.fromOffset(62, 48), TextSize = 40, LayoutOrder = i, Font = UI.Font.Title })
+		local h = UI.button(heartsRow, "🤍", "ghost", { Size = UDim2.fromOffset(62, 48), TextSize = 40, LayoutOrder = i, Font = UI.Font.Title })
 		h.Activated:Connect(function()
 			myVote = i
 			paint()
@@ -169,14 +169,14 @@ function Show.Init(controllers)
 	local resTheme = UI.label(results, "", { Position = UDim2.fromOffset(0, 60), Size = UDim2.new(1, 0, 0, 22), TextXAlignment = Enum.TextXAlignment.Center, TextSize = 16, TextColor3 = P.Lilac })
 	local podium = UI.new("Frame", { BackgroundTransparency = 1, Position = UDim2.fromOffset(20, 96), Size = UDim2.new(1, -40, 0, 250), Parent = results })
 	local others = UI.label(results, "", { Position = UDim2.fromOffset(24, 352), Size = UDim2.new(1, -48, 0, 60), TextSize = 15, TextColor3 = P.Lilac, TextXAlignment = Enum.TextXAlignment.Center })
-	local closeRes = UI.button(results, "✕", "dark", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -12, 0, 12), Size = UDim2.fromOffset(40, 40) })
+	local closeRes = UI.button(results, "❌", "dark", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -12, 0, 12), Size = UDim2.fromOffset(40, 40) })
 	closeRes.Activated:Connect(function()
 		results.Visible = false
 	end)
 
 	local function heartString(score: number): string
 		local full = math.floor(score + 0.5)
-		return string.rep("♥", full) .. string.rep("♡", 5 - full)
+		return string.rep("💗", full) .. string.rep("🤍", 5 - full)
 	end
 
 	local function showResults(list, theme)

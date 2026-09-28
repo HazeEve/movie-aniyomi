@@ -303,7 +303,7 @@ function refreshChordPicker()
 	end
 	for i, key in selection do
 		local info = Chords.Get(key)
-		local chip = UI.button(trayList, info.Short .. "  ✕", "secondary", { LayoutOrder = i, Size = UDim2.fromOffset(0, 38), AutomaticSize = Enum.AutomaticSize.X, TextSize = 16 })
+		local chip = UI.button(trayList, info.Short .. "  ❌", "secondary", { LayoutOrder = i, Size = UDim2.fromOffset(0, 38), AutomaticSize = Enum.AutomaticSize.X, TextSize = 16 })
 		UI.pad(chip, 0, 12)
 		chip.Activated:Connect(function()
 			toggleChord(key)
@@ -312,7 +312,7 @@ function refreshChordPicker()
 	countL.Text = ("%d / %d chords  (pick at least %d)"):format(#selection, Config.Music.MaxChords, Config.Music.MinChords)
 	local ok = #selection >= Config.Music.MinChords
 	UI.style(playBtn, ok and "gold" or "dark")
-	playBtn.Text = ok and "Play  ▶" or "Pick more"
+	playBtn.Text = ok and "Play ▶️" or "Pick more"
 end
 
 local function buildChordPicker(gui)
@@ -343,12 +343,12 @@ local function buildChordPicker(gui)
 	UI.pad(chordGrid, 4)
 	local trayBg = UI.new("Frame", { BackgroundColor3 = P.PlumDeep, BackgroundTransparency = 0.3, AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, -48), Size = UDim2.new(1, 0, 0, 56), Parent = body })
 	UI.corner(trayBg, 14)
-	trayList = UI.scroll(trayBg, { Position = UDim2.fromOffset(8, 0), Size = UDim2.new(1, -16, 1, 0), AutomaticCanvasSize = Enum.AutomaticSize.X, ScrollingDirection = Enum.ScrollingDirection.X, ScrollBarThickness = 3 })
+	trayList = UI.scroll(trayBg, { Position = UDim2.fromOffset(8, 0), Size = UDim2.new(1, -16, 1, 0), AutomaticCanvasSize = Enum.AutomaticSize.X, ScrollingDirection = Enum.ScrollingDirection.X, ScrollBarThickness = 8 })
 	UI.list(trayList, Enum.FillDirection.Horizontal, 6, nil, Enum.VerticalAlignment.Center)
 	countL = UI.label(body, "", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, 0), Size = UDim2.fromOffset(420, 40), TextSize = 16, TextColor3 = P.Champagne })
 	local clear = UI.button(body, "Clear", "dark", { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -340, 1, 0), Size = UDim2.fromOffset(100, 42) })
 	local defaults = UI.button(body, "Defaults", "secondary", { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -226, 1, 0), Size = UDim2.fromOffset(106, 42) })
-	playBtn = UI.button(body, "Play  ▶", "gold", { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, 0, 1, 0), Size = UDim2.fromOffset(214, 42), TextSize = 20 })
+	playBtn = UI.button(body, "Play ▶️", "gold", { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, 0, 1, 0), Size = UDim2.fromOffset(214, 42), TextSize = 20 })
 	clear.Activated:Connect(function()
 		selection = {}
 		refreshChordPicker()
@@ -465,7 +465,7 @@ local function strumStrip(parent, dir: string, pos: UDim2, size: Vector2)
 	UI.corner(strip, 22)
 	UI.gradient(strip, dir == "up" and { P.Lavender, P.Plum } or { P.Plum, P.Rose }, 90)
 	local st = UI.stroke(strip, P.Champagne, 2, 0.3)
-	UI.label(strip, dir == "up" and "⬆" or "⬇", { Size = UDim2.new(1, 0, 0, 50), Position = UDim2.fromScale(0, dir == "up" and 0.08 or 0.62), TextXAlignment = Enum.TextXAlignment.Center, TextSize = 40 })
+	UI.label(strip, dir == "up" and "⬆️" or "⬇️", { Size = UDim2.new(1, 0, 0, 50), Position = UDim2.fromScale(0, dir == "up" and 0.08 or 0.62), TextXAlignment = Enum.TextXAlignment.Center, TextSize = 40 })
 	UI.label(strip, dir == "up" and "UP" or "DOWN", { Size = UDim2.new(1, 0, 0, 20), Position = UDim2.fromScale(0, 0.45), TextXAlignment = Enum.TextXAlignment.Center, TextSize = 14, TextColor3 = P.Champagne })
 	local tracking = {}
 	local function strum()
@@ -536,7 +536,7 @@ local function bowPad(parent, pos: UDim2, size: Vector2)
 	UI.corner(padF, 22)
 	UI.gradient(padF, { P.Plum, P.Violet, P.Plum }, 0)
 	UI.stroke(padF, P.Champagne, 2, 0.3)
-	UI.label(padF, "⟵  BOW  ⟶", { Size = UDim2.fromScale(1, 1), TextXAlignment = Enum.TextXAlignment.Center, TextSize = 24, Font = UI.Font.Title, TextColor3 = P.Champagne })
+	UI.label(padF, "⬅️  BOW  ➡️", { Size = UDim2.fromScale(1, 1), TextXAlignment = Enum.TextXAlignment.Center, TextSize = 24, Font = UI.Font.Title, TextColor3 = P.Champagne })
 	local bowKey, lastX, lastMove, dragging
 	padF.InputBegan:Connect(function(input)
 		if isPress(input) then
@@ -857,7 +857,7 @@ function Music.ShowPlay()
 		toggleButton(bar, "⚡ Power", "Power", 2)
 		toggleButton(bar, "🤚 Mute", "Mute", 3)
 	elseif current == "Piano" then
-		toggleButton(bar, "〰 Arp", "Arp", 1)
+		toggleButton(bar, "🎶 Arp", "Arp", 1)
 		toggleButton(bar, "🎹 Keys", "Keys", 2)
 		local invBtn = UI.button(bar, INV_NAMES[inversion], "dark", { LayoutOrder = 3, Size = UDim2.fromOffset(96, 38), TextSize = 14 })
 		invBtn.Activated:Connect(function()
@@ -882,20 +882,20 @@ function Music.ShowPlay()
 			end
 		end)
 	elseif current == "Violin" then
-		toggleButton(bar, "✌ Pizz", "Pizz", 1)
+		toggleButton(bar, "✌️ Pizz", "Pizz", 1)
 	end
 	UI.new("Frame", { BackgroundTransparency = 1, LayoutOrder = 50, Size = UDim2.fromOffset(current == "Piano" and 10 or 220, 10), Parent = bar })
 	if current ~= "Drums" then
-		local edit = UI.button(bar, "✎ Chords", "secondary", { LayoutOrder = 60, Size = UDim2.fromOffset(106, 38), TextSize = 15 })
+		local edit = UI.button(bar, "✏️ Chords", "secondary", { LayoutOrder = 60, Size = UDim2.fromOffset(106, 38), TextSize = 15 })
 		edit.Activated:Connect(function()
 			UI.open("ChordPicker")
 		end)
 	end
-	local swap = UI.button(bar, "⇄ Instrument", "light", { LayoutOrder = 61, Size = UDim2.fromOffset(126, 38), TextSize = 15 })
+	local swap = UI.button(bar, "🔄 Instrument", "light", { LayoutOrder = 61, Size = UDim2.fromOffset(126, 38), TextSize = 15 })
 	swap.Activated:Connect(function()
 		UI.open("MusicPicker")
 	end)
-	local stop = UI.button(bar, "✕ Stop", "danger", { LayoutOrder = 62, Size = UDim2.fromOffset(90, 38), TextSize = 15 })
+	local stop = UI.button(bar, "⏹️ Stop", "danger", { LayoutOrder = 62, Size = UDim2.fromOffset(90, 38), TextSize = 15 })
 	stop.Activated:Connect(function()
 		Music.Stop()
 	end)
@@ -903,7 +903,7 @@ function Music.ShowPlay()
 	-- row 2: auto-play (progression / beat) + now-playing chord
 	local row2 = UI.new("Frame", { BackgroundTransparency = 1, Position = UDim2.fromOffset(16, 56), Size = UDim2.new(1, -32, 0, 38), Parent = bg })
 	UI.list(row2, Enum.FillDirection.Horizontal, 8, nil, Enum.VerticalAlignment.Center)
-	local autoBtn = UI.button(row2, auto.On and "⏸ Auto" or "▶ Auto", auto.On and "gold" or "secondary", { LayoutOrder = 1, Size = UDim2.fromOffset(96, 36), TextSize = 15 })
+	local autoBtn = UI.button(row2, auto.On and "⏸️ Auto" or "▶️ Auto", auto.On and "gold" or "secondary", { LayoutOrder = 1, Size = UDim2.fromOffset(96, 36), TextSize = 15 })
 	local slower = UI.button(row2, "−", "dark", { LayoutOrder = 2, Size = UDim2.fromOffset(36, 36), TextSize = 18 })
 	local bpmL = UI.label(row2, auto.Bpm .. " BPM", { LayoutOrder = 3, Size = UDim2.fromOffset(84, 36), TextXAlignment = Enum.TextXAlignment.Center, TextSize = 15 })
 	local faster = UI.button(row2, "+", "dark", { LayoutOrder = 4, Size = UDim2.fromOffset(36, 36), TextSize = 18 })
@@ -920,7 +920,7 @@ function Music.ShowPlay()
 	})
 	autoBtn.Activated:Connect(function()
 		auto.On = not auto.On
-		autoBtn.Text = auto.On and "⏸ Auto" or "▶ Auto"
+		autoBtn.Text = auto.On and "⏸️ Auto" or "▶️ Auto"
 		UI.style(autoBtn, auto.On and "gold" or "secondary")
 		if auto.On then
 			runAuto()

@@ -76,7 +76,7 @@ function Auction.Init(controllers)
 	refresh()
 	RunService.Heartbeat:Connect(function()
 		if holder.Visible and state:GetAttribute("Active") then
-			timeL.Text = "⏱ " .. UI.fmtTime((state:GetAttribute("EndsAt") or 0) - workspace:GetServerTimeNow()) .. " left"
+			timeL.Text = "⏰ " .. UI.fmtTime((state:GetAttribute("EndsAt") or 0) - workspace:GetServerTimeNow()) .. " left"
 		end
 	end)
 
