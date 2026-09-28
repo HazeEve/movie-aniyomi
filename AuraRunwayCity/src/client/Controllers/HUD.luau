@@ -109,7 +109,7 @@ function HUD.Init(controllers)
 	end
 	-- 🎵 background music on/off
 	local bgmBtn = UI.button(cur, "🎵", "light", { LayoutOrder = -1, Size = UDim2.fromOffset(46, 42), TextSize = 20 })
-	bgmBtn.Visible = (Config.BGMId or "") ~= "" and Config.BGMId ~= 0
+	bgmBtn.Visible = true
 	bgmBtn.Activated:Connect(function()
 		if controllers.BGM then
 			controllers.BGM.Toggle()

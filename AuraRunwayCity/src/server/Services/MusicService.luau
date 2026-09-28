@@ -223,6 +223,8 @@ local function equip(player: Player, kind: string)
 	end
 end
 
+local resolveBGM
+
 -- ---------- sample fallback via public audio search ----------
 local function searchSample(query: string): string?
 	local ok, pages = pcall(function()
@@ -277,9 +279,67 @@ local function resolveSamples()
 	samplesFolder:SetAttribute("Resolved", true)
 end
 
+-- ---------- background music from Roblox's free licensed library ----------
+-- Only used when Config.BGMId is empty. Tracks from the Roblox audio library
+-- (licensed music) are free to use in any experience.
+local bgmFolder = Instance.new("Configuration")
+bgmFolder.Name = "BGMTracks"
+bgmFolder.Parent = ReplicatedStorage
+
+local function searchMusic(query: string, found: { string }, seen: { [string]: boolean })
+	local ok, pages = pcall(function()
+		local params = Instance.new("AudioSearchParams")
+		params.SearchKeyword = query
+		params.MinDuration = 60
+		params.MaxDuration = 400
+		params.AudioSubType = Enum.AudioSubType.Music
+		return AssetService:SearchAudioAsync(params)
+	end)
+	if not ok or not pages then
+		return
+	end
+	local ok2, page = pcall(function()
+		return pages:GetCurrentPage()
+	end)
+	if not ok2 or not page then
+		return
+	end
+	for _, item in page do
+		local id = item.Id or item.AssetId
+		if id and not seen[tostring(id)] and #found < 8 then
+			seen[tostring(id)] = true
+			table.insert(found, "rbxassetid://" .. tostring(id))
+		end
+	end
+end
+
+function resolveBGM()
+	if typeof(Config.BGMId) == "string" and Config.BGMId ~= "" then
+		return -- the uploaded original tracks are used instead
+	end
+	local lists = {
+		Cafe = { "lofi cafe", "relaxing jazz", "chill lofi", "coffee shop" },
+		Runway = { "fashion", "upbeat pop", "runway", "dance pop" },
+	}
+	for name, queries in lists do
+		local found, seen = {}, {}
+		for _, q in queries do
+			if #found >= 8 then
+				break
+			end
+			searchMusic(q, found, seen)
+		end
+		if #found > 0 then
+			bgmFolder:SetAttribute(name, table.concat(found, ","))
+		end
+	end
+	bgmFolder:SetAttribute("Resolved", true)
+end
+
 function MusicService.Init(deps)
 	DataService = deps.DataService
 	task.spawn(resolveSamples)
+	task.spawn(resolveBGM)
 
 	Remotes.Event("Music").OnServerEvent:Connect(function(player, action, a, b, c, d)
 		local now = os.clock()
