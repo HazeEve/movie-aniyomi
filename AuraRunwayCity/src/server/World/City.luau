@@ -91,7 +91,10 @@ local function classicBuilding(B, P, parent, cf: CFrame, w: number, d: number, f
 					local_ = CFrame.new(face.off, f * floorH + 5, t)
 				end
 				local wcf = cf * local_ * CFrame.Angles(0, face.rot, 0)
-				B.part(m, wcf, Vector3.new(3.4, 5.6, 0.5), glass, { Material = Enum.Material.Glass, Reflectance = 0.25, CastShadow = false })
+				local win = B.part(m, wcf, Vector3.new(3.4, 5.6, 0.5), glass, { Material = Enum.Material.Glass, Reflectance = 0.25, CastShadow = false, Name = "Window" })
+				if r.next() < 0.55 then
+					win:AddTag("CityWindow")
+				end
 			end
 		end
 		-- ground floor storefront on the long faces
