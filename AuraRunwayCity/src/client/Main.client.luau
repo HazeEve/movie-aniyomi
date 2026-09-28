@@ -9,12 +9,12 @@ player:WaitForChild("PlayerGui")
 local State = require(script.Parent.State)
 local C = script.Parent.Controllers
 local controllers = {}
-for _, name in { "Notify", "HUD", "Catalog", "Look", "Show", "Music", "Auction", "Stall", "RP", "StageFX", "NightLights" } do
+for _, name in { "Notify", "HUD", "Catalog", "Look", "Show", "Music", "Auction", "Stall", "RP", "StageFX", "NightLights", "BGM" } do
 	controllers[name] = require(C:WaitForChild(name))
 end
 
 State.Init()
-local order = { "Notify", "Catalog", "Look", "Show", "Music", "Auction", "Stall", "RP", "StageFX", "NightLights", "HUD" }
+local order = { "Notify", "Catalog", "Look", "Show", "Music", "Auction", "Stall", "RP", "StageFX", "NightLights", "BGM", "HUD" }
 for _, name in order do
 	local ok, err = pcall(controllers[name].Init, controllers)
 	if not ok then

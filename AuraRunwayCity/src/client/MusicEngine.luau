@@ -61,7 +61,12 @@ end
 
 local SoundPack = require(ReplicatedStorage.Shared.SoundPack)
 
+local packBroken = false -- set when the uploaded pack fails to load
+
 local function packId(): string?
+	if packBroken then
+		return nil
+	end
 	local id = Config.SoundPackId
 	if typeof(id) == "string" and id ~= "" then
 		if not id:find("rbxassetid://") and tonumber(id) then
@@ -151,9 +156,25 @@ task.spawn(function()
 	if id then
 		local s = Instance.new("Sound")
 		s.SoundId = id
+		s.Parent = SoundService
+		local failed = false
 		pcall(function()
-			game:GetService("ContentProvider"):PreloadAsync({ s })
+			game:GetService("ContentProvider"):PreloadAsync({ s }, function(_, status)
+				if status == Enum.AssetFetchStatus.Failure then
+					failed = true
+				end
+			end)
 		end)
+		local t0 = os.clock()
+		while not failed and not s.IsLoaded and os.clock() - t0 < 12 do
+			task.wait(0.25)
+		end
+		-- a real pack is ~141s long; anything else means the id is wrong/blocked
+		if failed or not s.IsLoaded or s.TimeLength < (SoundPack.Duration or 100) - 5 then
+			packBroken = true
+			warn(("[Music] Sound pack %s did not load (loaded=%s, length=%.1f). Using backup sounds. Check the audio is yours, public/approved, and the ID is the AUDIO id."):format(id, tostring(s.IsLoaded), s.TimeLength))
+		end
+		s:Destroy()
 	end
 end)
 

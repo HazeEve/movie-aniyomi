@@ -102,13 +102,39 @@ function Show.Init(controllers)
 		end
 	end)
 
+	-- X buttons: hide the show panels; a small pill brings them back
+	local hidden = false
+	local reopen = UI.new("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -16), Size = UDim2.fromOffset(170, 44), Visible = false, Parent = gui })
+	UI.autoScale(reopen)
+	local reopenBtn = UI.button(reopen, "💗 Show Panel", "gold", { Size = UDim2.fromScale(1, 1), TextSize = 16 })
+	local refresh
+	for _, f in { vote, modelPanel } do
+		local x = UI.button(f, "X", "light", { Font = UI.Font.Title, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 12, 0, -12), Size = UDim2.fromOffset(36, 36), TextSize = 16, ZIndex = 5 })
+		x.Activated:Connect(function()
+			hidden = true
+			refresh()
+		end)
+	end
+	shop.Position = UDim2.new(1, -30, 0, 18)
+	reopenBtn.Activated:Connect(function()
+		hidden = false
+		refresh()
+	end)
+
 	local lastModel = 0
-	local function refresh()
+	function refresh()
 		local phase = state:GetAttribute("Phase")
 		local modelId = state:GetAttribute("ModelId") or 0
 		local runway = phase == "Runway" and modelId ~= 0
-		vote.Visible = runway and modelId ~= player.UserId
-		modelPanel.Visible = runway and modelId == player.UserId
+		if modelId == player.UserId and modelId ~= lastModel then
+			hidden = false -- always show your own pose panel when it's your turn
+		end
+		vote.Visible = not hidden and runway and modelId ~= player.UserId
+		modelPanel.Visible = not hidden and runway and modelId == player.UserId
+		reopen.Visible = hidden and runway
+		if not runway then
+			hidden = false
+		end
 		if modelId ~= lastModel then
 			lastModel = modelId
 			myVote = 0
@@ -130,7 +156,7 @@ function Show.Init(controllers)
 		local top = controllers.Music and controllers.Music.IsPlaying and controllers.Music.IsPlaying()
 		local anchor = top and Vector2.new(0.5, 0) or Vector2.new(0.5, 1)
 		local pos = top and UDim2.new(0.5, 0, 0, 74) or UDim2.new(0.5, 0, 1, -16)
-		for _, f in { vote, modelPanel } do
+		for _, f in { vote, modelPanel, reopen } do
 			if f.AnchorPoint ~= anchor then
 				f.AnchorPoint = anchor
 				f.Position = pos

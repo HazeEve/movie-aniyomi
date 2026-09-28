@@ -23,8 +23,8 @@ Config.Show = {
 	MinModels = 1, -- set to 2+ for live servers
 	MaxModels = 12,
 	IntermissionTime = 30,
-	DressingTime = 8 * 60, -- 8 minutes to get ready
-	ExtraDressingTime = 10 * 60, -- with the Extra Time gamepass
+	DressingTime = 5 * 60, -- 5 minutes to get ready
+	ExtraDressingTime = 7 * 60, -- +2 min with the Extra Time product
 	RunwayTimePerModel = 20,
 	ResultsTime = 15,
 	ParticipationCoins = 15,
@@ -37,7 +37,7 @@ Config.Show = {
 Config.Products = {
 	-- Developer Product (can be bought again and again): re-rolls the runway theme
 	ChangeTheme = 3715271522,
-	-- Developer Product (repurchasable): 10 minutes dressing time for one round
+	-- Developer Product (repurchasable): +2 minutes dressing time for one round
 	ExtraTime = 3715271817,
 }
 Config.GamePasses = {}
@@ -84,6 +84,11 @@ Config.CreatorStallName = "Creator's Atelier"
 -- Upload build/AuraSoundPack.ogg to Roblox ONCE (Creator Hub > Audio) and paste
 -- its id here, e.g. "rbxassetid://1234567890". It contains every instrument.
 Config.SoundPackId = "rbxassetid://102166305460032"
+
+-- Background music (original, license-free): upload build/AuraMusic.ogg
+-- ONCE (Creator Hub > Audio) and paste its id here. "" = no background music.
+Config.BGMId = ""
+Config.BGMVolume = 0.32
 
 Config.Music = {
 	MinChords = 3,

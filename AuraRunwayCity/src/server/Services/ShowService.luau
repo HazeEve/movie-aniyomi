@@ -34,7 +34,7 @@ local function hasExtraTime(player: Player): boolean
 	return passCache[player.UserId] == true
 end
 
--- stretch the dressing timer to 10 min if any model owns the pass
+-- stretch the dressing timer by +2 min if any model owns the pass
 local function applyExtraTime()
 	if state:GetAttribute("Phase") ~= "Dressing" then
 		return
@@ -48,7 +48,7 @@ local function applyExtraTime()
 			if target > (state:GetAttribute("EndsAt") or 0) then
 				state:SetAttribute("EndsAt", target)
 				state:SetAttribute("ExtraTime", true)
-				Util.Notify(nil, ("⏰ %s has Extra Time: everyone gets 10 minutes to dress!"):format(p.DisplayName), "success")
+				Util.Notify(nil, ("⏰ %s has Extra Time: everyone gets +2 minutes to dress!"):format(p.DisplayName), "success")
 			end
 			return
 		end
@@ -338,7 +338,7 @@ function ShowService.Init(deps)
 		end
 		if info.ProductId == Config.Products.ExtraTime then
 			passCache[buyer.UserId] = true
-			Util.Notify(buyer, "⏰ Extra Time ready! Your next dressing round lasts 10 minutes.", "success")
+			Util.Notify(buyer, "⏰ Extra Time ready! Your next dressing round gets +2 minutes.", "success")
 			applyExtraTime()
 			return Enum.ProductPurchaseDecision.PurchaseGranted
 		end

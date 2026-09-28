@@ -107,6 +107,15 @@ function HUD.Init(controllers)
 		local l = UI.label(f, icon .. "  0", { Size = UDim2.new(0, 0, 1, 0), AutomaticSize = Enum.AutomaticSize.X, TextSize = 20, Font = UI.Font.Title })
 		return l
 	end
+	-- 🎵 background music on/off
+	local bgmBtn = UI.button(cur, "🎵", "light", { LayoutOrder = -1, Size = UDim2.fromOffset(46, 42), TextSize = 20 })
+	bgmBtn.Visible = (Config.BGMId or "") ~= "" and Config.BGMId ~= 0
+	bgmBtn.Activated:Connect(function()
+		if controllers.BGM then
+			controllers.BGM.Toggle()
+			bgmBtn.Text = controllers.BGM.IsMuted() and "🔇" or "🎵"
+		end
+	end)
 	local coinsL = pill("✨")
 	local heartsL = pill("💗")
 	-- tap the Sparkles counter to open the Store
@@ -241,15 +250,32 @@ function HUD.Init(controllers)
 		end
 		MarketplaceService:PromptProductPurchase(player, Config.Products.ExtraTime)
 	end)
-	local function refreshCard()
+	-- X hides the card; tapping the top banner brings it back
+	local cardHidden, lastPhase = false, nil
+	local refreshCard
+	local cardX = UI.button(card, "X", "light", { Font = UI.Font.Title, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -8, 0, 8), Size = UDim2.fromOffset(34, 34), TextSize = 16, ZIndex = 5 })
+	cardX.Activated:Connect(function()
+		cardHidden = true
+		refreshCard()
+	end)
+	local bannerHit = UI.new("TextButton", { Text = "", BackgroundTransparency = 1, Size = UDim2.fromScale(1, 1), ZIndex = 5, Parent = banner })
+	bannerHit.Activated:Connect(function()
+		cardHidden = not cardHidden
+		refreshCard()
+	end)
+	function refreshCard()
 		local phase = show:GetAttribute("Phase")
 		local theme = show:GetAttribute("Theme") or ""
 		local inShow = player:GetAttribute("InShow") == true
-		card.Visible = phase == "Dressing" or phase == "Intermission"
+		if phase ~= lastPhase then
+			lastPhase = phase
+			cardHidden = false -- show it again once per new phase
+		end
+		card.Visible = not cardHidden and (phase == "Dressing" or phase == "Intermission")
 		joinBig.Visible = not inShow
 		if phase == "Dressing" and theme ~= "" then
 			bigTheme.Text = theme
-			hint.Text = show:GetAttribute("ExtraTime") and "⏰ Extra Time is on: 10 minutes to get ready!" or "Style your whole look to match the theme, then walk the runway!"
+			hint.Text = show:GetAttribute("ExtraTime") and "⏰ Extra Time is on: +2 minutes to get ready!" or "Style your whole look to match the theme, then walk the runway!"
 		else
 			bigTheme.Text = "Next show starting soon"
 			hint.Text = inShow and "You're in! The theme is revealed when dressing starts." or "Tap JOIN RUNWAY to compete for hearts 💗"
@@ -317,7 +343,7 @@ function HUD.Init(controllers)
 		end)
 	end
 	header(80, "🛍️ BOOSTS (buy any time)")
-	storeRow(82, "⏰", "2 Min Additional Dress Time", "+2 minutes: next dressing round lasts 10 minutes.", "Buy", "light", function()
+	storeRow(82, "⏰", "2 Min Additional Dress Time", "+2 minutes on your next dressing round (7 min total).", "Buy", "light", function()
 		if (Config.Products.ExtraTime or 0) == 0 then
 			return ownerWarn("Products.ExtraTime")
 		end
