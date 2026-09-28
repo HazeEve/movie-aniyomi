@@ -40,7 +40,7 @@ function HUD.Init(controllers)
 		Size = UDim2.fromOffset(70, 440),
 		Parent = gui,
 	})
-	UI.autoScale(dockHolder)
+	UI.autoScale(dockHolder, Vector2.new(70, 440))
 	UI.list(dockHolder, Enum.FillDirection.Vertical, 4, Enum.HorizontalAlignment.Center, Enum.VerticalAlignment.Center)
 	local buttons = {}
 	local function dock(emoji, caption, fn)

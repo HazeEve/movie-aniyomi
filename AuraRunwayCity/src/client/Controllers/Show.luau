@@ -63,13 +63,29 @@ function Show.Init(controllers)
 	local modelPanel = UI.panel(gui, {
 		AnchorPoint = Vector2.new(0.5, 1),
 		Position = UDim2.new(0.5, 0, 1, -16),
-		Size = UDim2.fromOffset(560, 104),
+		Size = UDim2.fromOffset(620, 160),
 		Visible = false,
 	})
 	UI.autoScale(modelPanel)
 	UI.label(modelPanel, "✨ YOU'RE ON THE RUNWAY ✨", { Position = UDim2.fromOffset(18, 12), Size = UDim2.new(1, -36, 0, 30), TextSize = 22, Font = UI.Font.Title, TextColor3 = P.Champagne, TextXAlignment = Enum.TextXAlignment.Center })
-	UI.label(modelPanel, "Walk to the glowing circle, pose, then walk back!", { Position = UDim2.fromOffset(18, 42), Size = UDim2.new(1, -36, 0, 20), TextSize = 15, TextXAlignment = Enum.TextXAlignment.Center, TextColor3 = P.Lilac })
-	local auc = UI.button(modelPanel, "🔨 Auction a Limited", "secondary", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 66), Size = UDim2.fromOffset(200, 32), TextSize = 14 })
+	UI.label(modelPanel, "Walk to the glowing circle, strike a pose, then walk back!", { Position = UDim2.fromOffset(18, 42), Size = UDim2.new(1, -36, 0, 20), TextSize = 15, TextXAlignment = Enum.TextXAlignment.Center, TextColor3 = P.Lilac })
+	-- runway poses (Roblox's built-in emotes work in every game)
+	local poses = UI.new("Frame", { BackgroundTransparency = 1, Position = UDim2.fromOffset(14, 68), Size = UDim2.new(1, -28, 0, 40), Parent = modelPanel })
+	UI.list(poses, Enum.FillDirection.Horizontal, 6, Enum.HorizontalAlignment.Center, Enum.VerticalAlignment.Center)
+	local POSES = { { "👋", "wave" }, { "👉", "point" }, { "🙌", "cheer" }, { "😂", "laugh" }, { "💃 1", "dance" }, { "💃 2", "dance2" }, { "💃 3", "dance3" } }
+	for i, pz in POSES do
+		local b = UI.button(poses, pz[1], "light", { LayoutOrder = i, Size = UDim2.fromOffset(72, 38), TextSize = 18 })
+		b.Activated:Connect(function()
+			local char = player.Character
+			local hum = char and char:FindFirstChildOfClass("Humanoid")
+			if hum then
+				pcall(function()
+					hum:PlayEmote(pz[2])
+				end)
+			end
+		end)
+	end
+	local auc = UI.button(modelPanel, "🔨 Auction a Limited", "secondary", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 116), Size = UDim2.fromOffset(200, 32), TextSize = 14 })
 	auc.Activated:Connect(function()
 		UI.open("Auction")
 	end)
@@ -130,7 +146,7 @@ function Show.Init(controllers)
 
 	-- ============ results ============
 	local results = UI.panel(gui, { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(760, 430), Visible = false })
-	UI.autoScale(results)
+	UI.autoScale(results, Vector2.new(760, 430))
 	UI.label(results, "🏆  RESULTS", { Position = UDim2.fromOffset(0, 16), Size = UDim2.new(1, 0, 0, 44), TextXAlignment = Enum.TextXAlignment.Center, TextSize = 38, Font = UI.Font.Luxe, TextColor3 = P.Champagne })
 	local resTheme = UI.label(results, "", { Position = UDim2.fromOffset(0, 60), Size = UDim2.new(1, 0, 0, 22), TextXAlignment = Enum.TextXAlignment.Center, TextSize = 16, TextColor3 = P.Lilac })
 	local podium = UI.new("Frame", { BackgroundTransparency = 1, Position = UDim2.fromOffset(20, 96), Size = UDim2.new(1, -40, 0, 250), Parent = results })

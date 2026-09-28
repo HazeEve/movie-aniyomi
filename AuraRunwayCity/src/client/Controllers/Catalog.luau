@@ -392,6 +392,13 @@ local function runSearch()
 		params.BundleTypes = cat[3]
 	end
 	local ok, res = pcall(function()
+		-- SearchCatalogAsync is the current API; fall back for older clients
+		local okA, pagesA = pcall(function()
+			return (AvatarEditorService :: any):SearchCatalogAsync(params)
+		end)
+		if okA and pagesA then
+			return pagesA
+		end
 		return AvatarEditorService:SearchCatalog(params)
 	end)
 	loading = false
@@ -580,7 +587,7 @@ function Catalog.Init(controllers)
 		Size = UDim2.fromOffset(1240, 660),
 		Parent = gui,
 	})
-	UI.autoScale(holder)
+	UI.autoScale(holder, Vector2.new(1240, 660))
 	local win = UI.panel(holder, { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 0.02 })
 
 	-- ---------- left: preview ----------

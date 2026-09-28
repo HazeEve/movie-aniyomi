@@ -846,7 +846,7 @@ function Music.ShowPlay()
 		Size = UDim2.fromOffset(W, H),
 		Parent = playGui,
 	})
-	UI.autoScale(playRoot)
+	UI.autoScale(playRoot, Vector2.new(W, H + 90))
 	local bg = UI.panel(playRoot, { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 0.22 })
 	-- row 1: instrument + toggles + navigation
 	local bar = UI.new("Frame", { BackgroundTransparency = 1, Position = UDim2.fromOffset(16, 10), Size = UDim2.new(1, -32, 0, 40), Parent = bg })

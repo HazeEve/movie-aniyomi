@@ -62,6 +62,12 @@ local function canManage(player: Player, s): boolean
 		end
 		if game.CreatorType == Enum.CreatorType.Group then
 			local ok, rank = pcall(function()
+				local okA, r = pcall(function()
+					return (player :: any):GetRankInGroupAsync(game.CreatorId)
+				end)
+				if okA then
+					return r
+				end
 				return player:GetRankInGroup(game.CreatorId)
 			end)
 			return ok and rank >= 254
@@ -293,6 +299,12 @@ local function validateItem(player: Player, id: number)
 			end
 		else
 			local ok, inGroup = pcall(function()
+				local okA, r = pcall(function()
+					return (player :: any):IsInGroupAsync(cid)
+				end)
+				if okA then
+					return r
+				end
 				return player:IsInGroup(cid)
 			end)
 			if not ok or not inGroup then

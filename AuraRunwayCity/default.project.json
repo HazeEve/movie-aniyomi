@@ -123,6 +123,11 @@
       "$properties": {
         "CharacterAutoLoads": true
       }
+    },
+    "ReplicatedFirst": {
+      "Loading": {
+        "$path": "src/first/Loading.client.luau"
+      }
     }
   }
 }

@@ -328,9 +328,22 @@ local function viewportScale(): number
 	end
 	return math.clamp(s, 0.45, 1.35)
 end
-function UI.autoScale(inst)
-	local sc = UI.new("UIScale", { Scale = viewportScale(), Parent = inst })
+local fits = {}
+local function fitScale(fit: Vector2?): number
+	local s = viewportScale()
+	if fit then
+		local cam = workspace.CurrentCamera
+		local vs = cam and cam.ViewportSize or Vector2.new(1280, 720)
+		-- keep big windows fully on screen (leave room for the top bar)
+		s = math.min(s, (vs.X - 16) / fit.X, (vs.Y - 64) / fit.Y)
+	end
+	return math.max(s, 0.3)
+end
+-- fit: the design size of the frame, so it always fits the screen
+function UI.autoScale(inst, fit: Vector2?)
+	local sc = UI.new("UIScale", { Scale = fitScale(fit), Parent = inst })
 	table.insert(scaled, sc)
+	fits[sc] = fit or false
 	return sc
 end
 UI.viewportScale = viewportScale
@@ -338,9 +351,8 @@ local function hookCamera()
 	local cam = workspace.CurrentCamera
 	if cam then
 		cam:GetPropertyChangedSignal("ViewportSize"):Connect(function()
-			local s = viewportScale()
 			for _, sc in scaled do
-				sc.Scale = s
+				sc.Scale = fitScale(fits[sc] or nil)
 			end
 		end)
 	end
@@ -417,7 +429,7 @@ function UI.window(gui: ScreenGui, name: string, title: string, size: Vector2)
 		Size = UDim2.fromOffset(size.X, size.Y),
 		Parent = gui,
 	})
-	UI.autoScale(holder)
+	UI.autoScale(holder, size)
 	local win = UI.panel(holder, { Name = "Window", Size = UDim2.fromScale(1, 1) })
 	local titleLabel = UI.label(win, title, {
 		Name = "Title",
