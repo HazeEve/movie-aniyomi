@@ -34,47 +34,56 @@ function HUD.Init(controllers)
 	-- phones/tablets: dock on the right (the thumbstick lives bottom-left)
 	local touch = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 	-- phones: a compact row under the coin counters (clear of thumbstick + jump)
+	-- big, readable labelled buttons on the left (icon + word, light on dark)
+	local W, H = touch and 150 or 176, touch and 42 or 48
 	local dockHolder = UI.new("Frame", {
 		BackgroundTransparency = 1,
-		AnchorPoint = touch and Vector2.new(1, 0) or Vector2.new(0, 0.5),
-		Position = touch and UDim2.new(1, -8, 0, 58) or UDim2.new(0, 10, 0.52, 0),
-		Size = touch and UDim2.fromOffset(350, 80) or UDim2.fromOffset(70, 440),
+		AnchorPoint = Vector2.new(0, 0),
+		Position = touch and UDim2.new(0, 10, 0, 96) or UDim2.new(0, 12, 0.2, 0),
+		Size = UDim2.fromOffset(W, (H + 8) * 6),
 		Parent = gui,
 	})
-	UI.autoScale(dockHolder, touch and Vector2.new(350, 80) or Vector2.new(70, 440))
-	UI.list(dockHolder, touch and Enum.FillDirection.Horizontal or Enum.FillDirection.Vertical, 4, touch and Enum.HorizontalAlignment.Right or Enum.HorizontalAlignment.Center, Enum.VerticalAlignment.Center)
+	UI.autoScale(dockHolder, Vector2.new(W, (H + 8) * 6 + 120))
+	UI.list(dockHolder, Enum.FillDirection.Vertical, 8)
 	local buttons = {}
-	local function dock(emoji, caption, fn)
-		local b = UI.iconButton(dockHolder, emoji, caption)
+	local function dock(label, style, fn)
+		local b = UI.button(dockHolder, label, style, {
+			Size = UDim2.fromOffset(W, H),
+			TextSize = touch and 16 or 18,
+			TextXAlignment = Enum.TextXAlignment.Left,
+		})
+		UI.pad(b, 0, 14)
+		UI.stroke(b, P.Plum, 2, 0.1)
 		b.Activated:Connect(fn)
-		buttons[caption] = b
+		buttons[label] = b
 		return b
 	end
-	dock("👗", "Catalog", function()
+	dock("👗  Catalog", "light", function()
 		UI.toggle("Catalog")
 	end)
-	local showBtn = dock("✨", "Join Show", function()
+	dock("💃  Emotes", "light", function()
+		controllers.Catalog.OpenEmotes()
+	end)
+	local showBtn = dock("✨  Join Runway", "gold", function()
 		if player:GetAttribute("InShow") then
 			Remotes.Event("Show"):FireServer("Leave")
 		else
 			Remotes.Event("Show"):FireServer("Join")
 		end
 	end)
-	dock("🎸", "Music", function()
+	dock("🎸  Music", "light", function()
 		controllers.Music.Toggle()
 	end)
-	dock("🔨", "Auction", function()
+	dock("🔨  Auction", "light", function()
 		UI.toggle("Auction")
 	end)
-	dock("🗺️", "Travel", function()
+	dock("🗺️  Teleport", "secondary", function()
 		UI.toggle("Travel")
 	end)
 	local function refreshShowBtn()
-		local cap = showBtn.Parent:FindFirstChildOfClass("TextLabel")
-		if cap then
-			cap.Text = player:GetAttribute("InShow") and "Leave Show" or "Join Show"
-		end
-		showBtn.Text = player:GetAttribute("InShow") and "💃" or "✨"
+		local inShow = player:GetAttribute("InShow")
+		showBtn.Text = inShow and "🚪  Leave Runway" or "✨  Join Runway"
+		UI.style(showBtn, inShow and "danger" or "gold")
 	end
 	player:GetAttributeChangedSignal("InShow"):Connect(refreshShowBtn)
 	refreshShowBtn()
@@ -156,7 +165,7 @@ function HUD.Init(controllers)
 	})
 	local show = ReplicatedStorage:WaitForChild("ShowState")
 	local PHASE_TEXT = {
-		Intermission = "✨ NEXT SHOW SOON — tap Join Show!",
+		Intermission = "✨ NEXT SHOW SOON — tap JOIN RUNWAY!",
 		Dressing = "👗 DRESS UP FOR THE THEME",
 		Runway = "💃 RUNWAY — vote with hearts!",
 		Results = "🏆 RESULTS",
@@ -182,9 +191,71 @@ function HUD.Init(controllers)
 		timerL.Text = UI.fmtTime(left)
 	end)
 
+	-- ============ Theme card (big, under the banner) ============
+	local MarketplaceService = game:GetService("MarketplaceService")
+	local card = UI.panel(gui, {
+		AnchorPoint = Vector2.new(0.5, 0),
+		Position = UDim2.new(0.5, 0, 0, 72),
+		Size = UDim2.fromOffset(460, 150),
+		Visible = false,
+	})
+	UI.autoScale(card)
+	UI.label(card, "THIS ROUND'S THEME", { Position = UDim2.fromOffset(0, 8), Size = UDim2.new(1, 0, 0, 18), TextSize = 13, TextColor3 = P.Blush, TextXAlignment = Enum.TextXAlignment.Center })
+	local bigTheme = UI.label(card, "", {
+		Position = UDim2.fromOffset(12, 26),
+		Size = UDim2.new(1, -24, 0, 44),
+		TextSize = 32,
+		Font = UI.Font.Luxe,
+		TextColor3 = P.Champagne,
+		TextXAlignment = Enum.TextXAlignment.Center,
+		TextScaled = true,
+	})
+	local hint = UI.label(card, "Style your whole look to match the theme — then walk the runway!", { Position = UDim2.fromOffset(12, 70), Size = UDim2.new(1, -24, 0, 18), TextSize = 13, TextColor3 = P.Lilac, Font = UI.Font.Medium, TextXAlignment = Enum.TextXAlignment.Center })
+	local row = UI.new("Frame", { BackgroundTransparency = 1, Position = UDim2.fromOffset(10, 96), Size = UDim2.new(1, -20, 0, 44), Parent = card })
+	UI.list(row, Enum.FillDirection.Horizontal, 8, Enum.HorizontalAlignment.Center, Enum.VerticalAlignment.Center)
+	local joinBig = UI.button(row, "✨ JOIN RUNWAY", "gold", { LayoutOrder = 1, Size = UDim2.fromOffset(150, 42), TextSize = 16 })
+	local changeBtn = UI.button(row, "🔄 Change Theme", "secondary", { LayoutOrder = 2, Size = UDim2.fromOffset(136, 42), TextSize = 14 })
+	local timeBtn = UI.button(row, "⏰ 10 Min Pass", "light", { LayoutOrder = 3, Size = UDim2.fromOffset(136, 42), TextSize = 14 })
+	joinBig.Activated:Connect(function()
+		Remotes.Event("Show"):FireServer("Join")
+	end)
+	changeBtn.Activated:Connect(function()
+		if (Config.Products.ChangeTheme or 0) == 0 then
+			controllers.Notify.Show("Owner: set Config.Products.ChangeTheme to your developer product id.", "warn")
+			return
+		end
+		MarketplaceService:PromptProductPurchase(player, Config.Products.ChangeTheme)
+	end)
+	timeBtn.Activated:Connect(function()
+		if (Config.GamePasses.ExtraTime or 0) == 0 then
+			controllers.Notify.Show("Owner: set Config.GamePasses.ExtraTime to your game pass id.", "warn")
+			return
+		end
+		MarketplaceService:PromptGamePassPurchase(player, Config.GamePasses.ExtraTime)
+	end)
+	local function refreshCard()
+		local phase = show:GetAttribute("Phase")
+		local theme = show:GetAttribute("Theme") or ""
+		local inShow = player:GetAttribute("InShow") == true
+		card.Visible = phase == "Dressing" or phase == "Intermission"
+		joinBig.Visible = not inShow
+		if phase == "Dressing" and theme ~= "" then
+			bigTheme.Text = theme
+			hint.Text = show:GetAttribute("ExtraTime") and "⏰ Extra Time is on: 10 minutes to get ready!" or "Style your whole look to match the theme, then walk the runway!"
+		else
+			bigTheme.Text = "Next show starting soon"
+			hint.Text = inShow and "You're in! The theme is revealed when dressing starts." or "Tap JOIN RUNWAY to compete for hearts 💗"
+		end
+	end
+	for _, a in { "Phase", "Theme", "ExtraTime" } do
+		show:GetAttributeChangedSignal(a):Connect(refreshCard)
+	end
+	player:GetAttributeChangedSignal("InShow"):Connect(refreshCard)
+	refreshCard()
+
 	-- ============ Travel menu ============
 	local tgui = UI.screen("AuraTravel", 20)
-	local holder, body = UI.window(tgui, "Travel", "Travel", Vector2.new(520, 470))
+	local holder, body = UI.window(tgui, "Travel", "🗺️ Teleport", Vector2.new(520, 470))
 	local list = UI.scroll(body, { Size = UDim2.fromScale(1, 1) })
 	UI.grid(list, UDim2.fromOffset(228, 60), UDim2.fromOffset(12, 12))
 	local function rebuild()

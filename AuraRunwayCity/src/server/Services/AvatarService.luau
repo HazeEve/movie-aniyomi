@@ -418,6 +418,52 @@ function AvatarService.Handle(player: Player, action: string, a, b)
 
 	if action == "Get" then
 		return reply(player, true)
+	elseif action == "Emote" then
+		-- equip a catalog emote so the client can play it with Humanoid:PlayEmote
+		local id = tonumber(a)
+		local info = id and AvatarService.GetInfo(math.floor(id))
+		if not info or info.AssetTypeId ~= 61 then
+			return reply(player, false, "That isn't an emote.")
+		end
+		local desc = currentDesc(player)
+		if not desc then
+			return reply(player, false, "Character not ready.")
+		end
+		local name = "E" .. math.floor(id)
+		local emotes = desc:GetEmotes() or {}
+		emotes[name] = { math.floor(id) }
+		local count = 0
+		for _ in emotes do
+			count += 1
+		end
+		if count > 30 then
+			for k in emotes do
+				if k ~= name then
+					emotes[k] = nil
+					break
+				end
+			end
+		end
+		desc:SetEmotes(emotes)
+		local equipped = desc:GetEquippedEmotes() or {}
+		local slot = (#equipped % 8) + 1
+		for _, e in equipped do
+			if e.Name == name then
+				slot = e.Slot
+			end
+		end
+		local newEquipped = {}
+		for _, e in equipped do
+			if e.Slot ~= slot and e.Name ~= name then
+				table.insert(newEquipped, e)
+			end
+		end
+		table.insert(newEquipped, { Slot = slot, Name = name })
+		desc:SetEquippedEmotes(newEquipped)
+		local ok = apply(player, desc)
+		local r = reply(player, ok)
+		r.emote = name
+		return r
 	elseif action == "Toggle" then
 		local id = tonumber(a)
 		if not id then

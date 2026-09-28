@@ -26,6 +26,59 @@ ShowService.State = state
 local joinOrder = {} :: { Player }
 local votes = {} :: { [number]: { [number]: number } }
 local lastThemes = {}
+local passCache = {} :: { [number]: boolean }
+local MarketplaceService = game:GetService("MarketplaceService")
+
+-- ---------- Extra Time game pass ----------
+local function hasExtraTime(player: Player): boolean
+	local id = Config.GamePasses.ExtraTime
+	if not id or id == 0 then
+		return false
+	end
+	if passCache[player.UserId] ~= nil then
+		return passCache[player.UserId]
+	end
+	local ok, owns = pcall(function()
+		return MarketplaceService:UserOwnsGamePassAsync(player.UserId, id)
+	end)
+	passCache[player.UserId] = ok and owns or false
+	return passCache[player.UserId]
+end
+
+-- stretch the dressing timer to 10 min if any model owns the pass
+local function applyExtraTime()
+	if state:GetAttribute("Phase") ~= "Dressing" then
+		return
+	end
+	for _, p in joinOrder do
+		if p.Parent and p:GetAttribute("InShow") and hasExtraTime(p) then
+			local target = (state:GetAttribute("DressStart") or Util.Now()) + Config.Show.ExtraDressingTime
+			if target > (state:GetAttribute("EndsAt") or 0) then
+				state:SetAttribute("EndsAt", target)
+				state:SetAttribute("ExtraTime", true)
+				Util.Notify(nil, ("⏰ %s has Extra Time: everyone gets 10 minutes to dress!"):format(p.DisplayName), "success")
+			end
+			return
+		end
+	end
+end
+
+-- ---------- theme on the stage LED screens ----------
+local function showThemeOnStage(theme: string?)
+	local stage = Util.World and Util.World:FindFirstChild("Stage")
+	local led = stage and stage:FindFirstChild("LED")
+	if not led then
+		return
+	end
+	for _, d in led:GetDescendants() do
+		if d:IsA("TextLabel") and d.Name == "Subtitle" then
+			if d:GetAttribute("Default") == nil then
+				d:SetAttribute("Default", d.Text)
+			end
+			d.Text = (theme and theme ~= "") and ("THEME: " .. string.upper(theme)) or d:GetAttribute("Default")
+		end
+	end
+end
 
 local function setPhase(phase: string, duration: number)
 	state:SetAttribute("Phase", phase)
@@ -66,6 +119,7 @@ local function join(player: Player)
 	player:SetAttribute("InShow", true)
 	table.insert(joinOrder, player)
 	Util.Notify(player, "You're in the show! Dress up for the theme ✨", "success")
+	applyExtraTime()
 end
 
 local function leave(player: Player)
@@ -120,11 +174,19 @@ local function runRound()
 		return
 	end
 	-- ============ Dressing ============
-	local theme = pickTheme()
+	local theme = state:GetAttribute("NextTheme")
+	if not theme or theme == "" then
+		theme = pickTheme()
+	end
+	state:SetAttribute("NextTheme", "")
 	state:SetAttribute("Theme", theme)
+	state:SetAttribute("ExtraTime", false)
 	state:SetAttribute("Round", (state:GetAttribute("Round") or 0) + 1)
+	state:SetAttribute("DressStart", Util.Now())
 	setPhase("Dressing", Config.Show.DressingTime)
 	Remotes.Event("Show"):FireAllClients("Theme", theme)
+	showThemeOnStage(theme)
+	applyExtraTime()
 	waitUntilEnd()
 	local models = contestants()
 	if #models < Config.Show.MinModels then
@@ -226,6 +288,21 @@ local function runRound()
 		end
 	end
 	state:SetAttribute("Theme", "")
+	showThemeOnStage(nil)
+end
+
+-- Change Theme developer product (can be bought again and again)
+function ShowService.ChangeTheme(buyer: Player)
+	local newTheme = pickTheme()
+	if state:GetAttribute("Phase") == "Dressing" then
+		state:SetAttribute("Theme", newTheme)
+		Remotes.Event("Show"):FireAllClients("Theme", newTheme)
+		showThemeOnStage(newTheme)
+		Util.Notify(nil, ('🔄 %s changed the theme to "%s"!'):format(buyer.DisplayName, newTheme), "success")
+	else
+		state:SetAttribute("NextTheme", newTheme)
+		Util.Notify(nil, ('🔄 %s picked the next theme: "%s"'):format(buyer.DisplayName, newTheme), "success")
+	end
 end
 
 function ShowService.Init(deps)
@@ -258,7 +335,27 @@ function ShowService.Init(deps)
 			end
 		end
 	end)
-	Players.PlayerRemoving:Connect(leave)
+	Players.PlayerRemoving:Connect(function(p)
+		leave(p)
+		passCache[p.UserId] = nil
+	end)
+	MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player, passId, bought)
+		if bought and passId == Config.GamePasses.ExtraTime then
+			passCache[player.UserId] = true
+			applyExtraTime()
+		end
+	end)
+	MarketplaceService.ProcessReceipt = function(info)
+		local buyer = Players:GetPlayerByUserId(info.PlayerId)
+		if not buyer then
+			return Enum.ProductPurchaseDecision.NotProcessedYet
+		end
+		if info.ProductId == Config.Products.ChangeTheme then
+			local ok = pcall(ShowService.ChangeTheme, buyer)
+			return ok and Enum.ProductPurchaseDecision.PurchaseGranted or Enum.ProductPurchaseDecision.NotProcessedYet
+		end
+		return Enum.ProductPurchaseDecision.NotProcessedYet
+	end
 	task.spawn(function()
 		while true do
 			local ok, err = pcall(runRound)

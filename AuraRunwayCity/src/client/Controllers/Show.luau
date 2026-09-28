@@ -85,9 +85,14 @@ function Show.Init(controllers)
 			end
 		end)
 	end
-	local auc = UI.button(modelPanel, "🔨 Auction a Limited", "secondary", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 116), Size = UDim2.fromOffset(200, 32), TextSize = 14 })
+	local auc = UI.button(modelPanel, "🔨 Auction a Limited", "secondary", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(0.5, -6, 0, 116), Size = UDim2.fromOffset(200, 32), TextSize = 14 })
 	auc.Activated:Connect(function()
 		UI.open("Auction")
+	end)
+	-- shortcut: every catalog emote as a runway pose
+	local emo = UI.button(modelPanel, "✨ Catalog Emotes", "gold", { AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0.5, 6, 0, 116), Size = UDim2.fromOffset(200, 32), TextSize = 14 })
+	emo.Activated:Connect(function()
+		controllers.Catalog.OpenEmotes()
 	end)
 
 	shop.Activated:Connect(function()

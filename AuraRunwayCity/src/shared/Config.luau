@@ -22,20 +22,25 @@ Config.PlaytimeRewardEvery = 120 -- seconds
 Config.Show = {
 	MinModels = 1, -- set to 2+ for live servers
 	MaxModels = 12,
-	IntermissionTime = 25,
-	DressingTime = 150,
-	RunwayTimePerModel = 16,
-	ResultsTime = 14,
+	IntermissionTime = 30,
+	DressingTime = 8 * 60, -- 8 minutes to get ready
+	ExtraDressingTime = 10 * 60, -- with the Extra Time gamepass
+	RunwayTimePerModel = 20,
+	ResultsTime = 15,
 	ParticipationCoins = 15,
 	PlaceCoins = { 120, 70, 40 },
-	Themes = {
-		"Old Money Elegance", "Y2K Pop Princess", "Red Carpet Gala", "Dark Academia",
-		"Cottagecore Picnic", "Galaxy Diva", "Streetwear Icon", "Witchy Glam",
-		"Beach Resort Luxe", "Pastel Dream", "Rockstar", "Royal Ball",
-		"Office Siren", "Kawaii Café", "Winter Wonderland", "Met Gala: Flowers",
-		"Monochrome Black", "All White Party", "Fairy Core", "Vintage Hollywood",
-		"Sporty Chic", "Masquerade", "Futuristic Cyber", "Candy Land",
-	},
+	Themes = require(script.Parent.Themes), -- 1000 themes
+}
+
+-- ============ MONETIZATION ============
+-- Create these on create.roblox.com (your experience > Monetization) and paste the ids.
+Config.Products = {
+	-- Developer Product (can be bought again and again): re-rolls the runway theme
+	ChangeTheme = 0,
+}
+Config.GamePasses = {
+	-- Game Pass: dressing time becomes 10 minutes in rounds you join
+	ExtraTime = 0,
 }
 
 -- ============ AUCTION (limiteds shown on stage) ============

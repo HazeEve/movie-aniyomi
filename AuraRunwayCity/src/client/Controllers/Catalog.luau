@@ -21,16 +21,23 @@ local A = Enum.AvatarAssetType
 local CATEGORIES = {
 	{ "For You/All" },
 	{ "Accessories", { A.Hat, A.HairAccessory, A.FaceAccessory, A.NeckAccessory, A.ShoulderAccessory, A.FrontAccessory, A.BackAccessory, A.WaistAccessory } },
-	{ "Hair", { A.HairAccessory } },
 	{ "Hats", { A.Hat } },
+	{ "Hair", { A.HairAccessory } },
+	{ "Face", { A.Face, A.FaceAccessory, A.EyebrowAccessory, A.EyelashAccessory } },
+	{ "Tops", { A.ShirtAccessory, A.TShirtAccessory, A.SweaterAccessory, A.JacketAccessory, A.Shirt, A.TShirt } },
+	{ "Bottoms", { A.PantsAccessory, A.ShortsAccessory, A.DressSkirtAccessory, A.Pants } },
+	{ "Dresses", { A.DressSkirtAccessory } },
+	{ "Jackets", { A.JacketAccessory, A.SweaterAccessory } },
+	{ "Shoes", { A.LeftShoeAccessory, A.RightShoeAccessory } },
+	{ "Shoe Sets", nil, { Enum.BundleType.Shoes } },
+	{ "Extras", { A.NeckAccessory, A.ShoulderAccessory, A.FrontAccessory, A.BackAccessory, A.WaistAccessory } },
 	{ "Classics", { A.Shirt, A.Pants, A.TShirt } },
-	{ "Layered", { A.JacketAccessory, A.SweaterAccessory, A.ShirtAccessory, A.TShirtAccessory, A.PantsAccessory, A.ShortsAccessory, A.DressSkirtAccessory } },
-	{ "Shoes", nil, { Enum.BundleType.Shoes } },
-	{ "Faces", { A.Face, A.FaceAccessory, A.EyebrowAccessory, A.EyelashAccessory } },
+	{ "Emotes", { A.EmoteAnimation } },
 	{ "Heads", nil, { Enum.BundleType.DynamicHead } },
 	{ "Bodies", nil, { Enum.BundleType.BodyParts } },
 	{ "Animations", nil, { Enum.BundleType.Animations } },
 }
+local EMOTE_TAB = 14
 local SORTS = {
 	{ "Relevance", Enum.CatalogSortType.Relevance },
 	{ "Best Selling", Enum.CatalogSortType.Bestselling },
@@ -260,8 +267,8 @@ local function makeCard(entry, order: number)
 	local fav = UI.button(overlay, "♡", "dark", { Position = UDim2.fromOffset(18, 156), Size = UDim2.fromOffset(44, 40), TextSize = 22, ZIndex = 6 })
 	local copyId = UI.button(overlay, "#ID", "dark", { Position = UDim2.new(1, -106, 0, 156), Size = UDim2.fromOffset(88, 40), TextSize = 14, ZIndex = 6 })
 	local function refreshOverlay()
-		wear.Text = isWornEntry(entry) and "Take Off" or "Try On"
-		UI.style(wear, isWornEntry(entry) and "light" or "secondary")
+		wear.Text = entry.IsEmote and "▶ Play" or (isWornEntry(entry) and "Take Off" or "Try On")
+		UI.style(wear, (not entry.IsEmote and isWornEntry(entry)) and "light" or "secondary")
 		fav.Text = State.IsFavorite(favKey(entry)) and "♥" or "♡"
 		check.Visible = isWornEntry(entry)
 	end
@@ -281,7 +288,9 @@ local function makeCard(entry, order: number)
 	end)
 	wear.Activated:Connect(function()
 		addRecent(entry)
-		if entry.ItemType == "Bundle" then
+		if entry.IsEmote then
+			Catalog.PlayEmote(entry.Id)
+		elseif entry.ItemType == "Bundle" then
 			avatarCall("ToggleBundle", entry.Id)
 		else
 			avatarCall("Toggle", entry.Id)
@@ -334,7 +343,52 @@ local function toEntry(item)
 		Price = item.Price or item.LowestPrice,
 		ForSale = item.PriceStatus ~= "Off Sale",
 		ItemType = item.ItemType == "Bundle" and "Bundle" or "Asset",
+		IsEmote = item.AssetType == "EmoteAnimation" or catIndex == EMOTE_TAB,
 	}
+end
+
+-- equip a catalog emote on the server, then play it (works for any catalog emote)
+local emoteNames = {}
+function Catalog.PlayEmote(id: number)
+	local char = player.Character
+	local hum = char and char:FindFirstChildOfClass("Humanoid")
+	if not hum then
+		return
+	end
+	local name = emoteNames[id]
+	if not name then
+		local res = Remotes.Func("Avatar"):InvokeServer("Emote", id)
+		if not res or not res.ok or not res.emote then
+			if Notify then
+				Notify.Show(res and res.msg or "Couldn't load that emote.", "warn")
+			end
+			return
+		end
+		name = res.emote
+		emoteNames[id] = name
+		task.wait(0.4)
+	end
+	local ok, played = pcall(function()
+		return hum:PlayEmote(name)
+	end)
+	if (not ok or not played) and emoteNames[id] then
+		-- respawned or desc reset: equip again once
+		emoteNames[id] = nil
+		local res = Remotes.Func("Avatar"):InvokeServer("Emote", id)
+		if res and res.ok and res.emote then
+			emoteNames[id] = res.emote
+			task.wait(0.4)
+			pcall(function()
+				hum:PlayEmote(res.emote)
+			end)
+		end
+	end
+end
+
+-- open the catalog straight on the Emotes tab (runway shortcut)
+function Catalog.OpenEmotes()
+	Catalog.PendingTab = EMOTE_TAB
+	UI.open("Catalog")
 end
 
 local function appendPage()
@@ -384,7 +438,8 @@ local function runSearch()
 	local params = CatalogSearchParams.new()
 	params.SearchKeyword = keyword
 	params.SortType = SORTS[sortIndex][2]
-	params.Limit = 30
+	params.Limit = 60
+	params.IncludeOffSale = true -- off-sale items can still be tried on
 	if cat[2] then
 		params.AssetTypes = cat[2]
 	end
@@ -842,12 +897,81 @@ function Catalog.Init(controllers)
 	end)
 	player:GetAttributeChangedSignal("OutfitVersion"):Connect(refreshPreview)
 
+	-- ---------- compact (portrait) mode: a side panel so you can watch your character ----------
+	local compact = true
+	local modeBtn = UI.button(right, "⇔", "secondary", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -58, 0, 0), Size = UDim2.fromOffset(52, 50), TextSize = 22 })
+	local function applyMode()
+		prevCard.Visible = not compact
+		stripCard.Visible = not compact
+		sortBtn.Visible = not compact
+		outfitName.Visible = not compact
+		if compact then
+			holder.Size = UDim2.fromOffset(460, 660)
+			holder.AnchorPoint = Vector2.new(1, 0.5)
+			holder.Position = UDim2.new(1, -10, 0.54, 0)
+			right.Position = UDim2.fromOffset(12, 14)
+			right.Size = UDim2.new(1, -24, 1, -28)
+			search.Size = UDim2.new(1, -116, 0, 50)
+			tabsBar.Position = UDim2.fromOffset(0, 56)
+			tabsBar.Size = UDim2.new(1, 0, 0, 46)
+			subBar.Position = UDim2.fromOffset(0, 108)
+			grid.Position = UDim2.fromOffset(0, 152)
+			grid.Size = UDim2.new(1, 0, 1, -214)
+			for _, b in subButtons do
+				b.Size = UDim2.fromOffset(80, 34)
+				b.TextSize = 12
+			end
+			link.Size = UDim2.new(1, -230, 0, 50)
+			tryLink.Position = UDim2.new(1, -224, 0, 3)
+			tryLink.Size = UDim2.fromOffset(80, 44)
+			saveBtn.Size = UDim2.fromOffset(136, 44)
+			saveBtn.Text = "💾 Save"
+			modeBtn.Text = "⇔"
+		else
+			holder.Size = UDim2.fromOffset(1240, 660)
+			holder.AnchorPoint = Vector2.new(0.5, 0.5)
+			holder.Position = UDim2.fromScale(0.5, 0.52)
+			right.Position = UDim2.fromOffset(412, 16)
+			right.Size = UDim2.new(1, -428, 1, -32)
+			search.Size = UDim2.fromOffset(270, 50)
+			tabsBar.Position = UDim2.fromOffset(282, 0)
+			tabsBar.Size = UDim2.new(1, -404, 0, 50)
+			subBar.Position = UDim2.fromOffset(0, 58)
+			grid.Position = UDim2.fromOffset(0, 106)
+			grid.Size = UDim2.new(1, 0, 1, -172)
+			for _, b in subButtons do
+				b.Size = UDim2.fromOffset(128, 36)
+				b.TextSize = 15
+			end
+			link.Size = UDim2.fromOffset(330, 50)
+			tryLink.Position = UDim2.fromOffset(340, 3)
+			tryLink.Size = UDim2.fromOffset(110, 44)
+			saveBtn.Size = UDim2.fromOffset(158, 44)
+			saveBtn.Text = "💾 Save Outfit"
+			modeBtn.Text = "⇔"
+		end
+	end
+	modeBtn.Activated:Connect(function()
+		compact = not compact
+		applyMode()
+		refreshPreview()
+	end)
+	applyMode()
+
 	local first = true
 	UI.registerModal("Catalog", holder, function()
 		local res = Remotes.Func("Avatar"):InvokeServer("Get")
 		State.SetAvatarReply(res)
 		refreshPreview()
-		if first then
+		if Catalog.PendingTab then
+			catIndex = Catalog.PendingTab
+			Catalog.PendingTab = nil
+			subTab = "Featured"
+			styleTabs()
+			Catalog.RefreshSubTabs()
+			first = false
+			runSearch()
+		elseif first then
 			first = false
 			runSearch()
 		end
