@@ -132,18 +132,37 @@ local start = os.clock()
 local function progress(a)
 	TweenService:Create(fill, TweenInfo.new(0.4), { Size = UDim2.fromScale(math.clamp(a, 0.05, 1), 1) }):Play()
 end
-if not game:IsLoaded() then
-	game.Loaded:Wait()
-end
-progress(0.5)
--- wait for our UI to be built (or a timeout)
+-- Skip button (shows after 2s) so nobody is stuck on the loading screen
+local skipped = false
+local skip = Instance.new("TextButton")
+skip.AnchorPoint = Vector2.new(0.5, 0)
+skip.Position = UDim2.fromScale(0.5, 0.76)
+skip.Size = UDim2.fromOffset(170, 46)
+skip.BackgroundColor3 = hex("FFE6F4")
+skip.TextColor3 = hex("3B1F5C")
+skip.Font = Enum.Font.GothamBold
+skip.TextSize = 20
+skip.Text = "Skip  ⏭"
+skip.Visible = false
+skip.Parent = bg
+Instance.new("UICorner", skip).CornerRadius = UDim.new(1, 0)
+skip.Activated:Connect(function()
+	skipped = true
+end)
+task.delay(2, function()
+	skip.Visible = true
+end)
+
+-- close as soon as our UI is ready (the city keeps streaming in behind),
+-- after at most 8 seconds, or when Skip is pressed
 local pg = player:WaitForChild("PlayerGui")
-while not pg:FindFirstChild("AuraHUD") and os.clock() - start < 15 do
-	task.wait(0.2)
-	progress(0.5 + math.min(0.4, (os.clock() - start) / 30))
+while not skipped and not pg:FindFirstChild("AuraHUD") and os.clock() - start < 8 do
+	task.wait(0.1)
+	progress(0.2 + math.min(0.7, (os.clock() - start) / 8))
 end
+skip.Visible = false
 progress(1)
-task.wait(0.6)
+task.wait(0.3)
 for _, d in bg:GetDescendants() do
 	if d:IsA("TextLabel") then
 		TweenService:Create(d, TweenInfo.new(0.6), { TextTransparency = 1 }):Play()
@@ -153,7 +172,7 @@ for _, d in bg:GetDescendants() do
 		TweenService:Create(d, TweenInfo.new(0.6), { BackgroundTransparency = 1 }):Play()
 	end
 end
-TweenService:Create(bg, TweenInfo.new(0.8), { BackgroundTransparency = 1 }):Play()
-task.wait(0.9)
+TweenService:Create(bg, TweenInfo.new(0.6), { BackgroundTransparency = 1 }):Play()
+task.wait(0.6)
 conn:Disconnect()
 gui:Destroy()
