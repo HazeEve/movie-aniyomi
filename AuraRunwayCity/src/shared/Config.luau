@@ -36,9 +36,9 @@ Config.Show = {
 -- Create these on create.roblox.com (your experience > Monetization) and paste the ids.
 Config.Products = {
 	-- Developer Product (can be bought again and again): re-rolls the runway theme
-	ChangeTheme = 0,
+	ChangeTheme = 3715271522,
 	-- Developer Product (repurchasable): 10 minutes dressing time for one round
-	ExtraTime = 0,
+	ExtraTime = 3715271817,
 }
 Config.GamePasses = {}
 -- ✨ SPARKLES = the game currency (bids, stall rent, rewards).
@@ -46,11 +46,11 @@ Config.GamePasses = {}
 Config.CurrencyName = "Sparkles"
 Config.CurrencyIcon = "✨"
 Config.SparkleBundles = {
-	{ Name = "Pinch of Sparkles", Amount = 500, Robux = 25, ProductId = 0 },
-	{ Name = "Sparkle Pouch", Amount = 1200, Robux = 50, ProductId = 0 },
-	{ Name = "Sparkle Jar", Amount = 3000, Robux = 110, ProductId = 0 },
-	{ Name = "Sparkle Chest", Amount = 8000, Robux = 250, ProductId = 0 },
-	{ Name = "Galaxy Vault", Amount = 25000, Robux = 700, ProductId = 0 },
+	{ Name = "Pinch of Sparkles", Amount = 500, Robux = 25, ProductId = 3715270390 },
+	{ Name = "Medium Bundle of Sparkles", Amount = 1200, Robux = 50, ProductId = 3715270563 },
+	{ Name = "Sparkle Jar", Amount = 3000, Robux = 110, ProductId = 3715270789 },
+	{ Name = "Sparkle Chest", Amount = 8000, Robux = 250, ProductId = 3715270944 },
+	{ Name = "Galaxy Vault", Amount = 25000, Robux = 700, ProductId = 3715271215 },
 }
 
 -- ============ AUCTION (limiteds shown on stage) ============

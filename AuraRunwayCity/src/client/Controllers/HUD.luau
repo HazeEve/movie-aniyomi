@@ -223,7 +223,7 @@ function HUD.Init(controllers)
 	UI.list(row, Enum.FillDirection.Horizontal, 8, Enum.HorizontalAlignment.Center, Enum.VerticalAlignment.Center)
 	local joinBig = UI.button(row, "✨ JOIN RUNWAY", "gold", { LayoutOrder = 1, Size = UDim2.fromOffset(150, 42), TextSize = 16 })
 	local changeBtn = UI.button(row, "🔄 Change Theme", "secondary", { LayoutOrder = 2, Size = UDim2.fromOffset(136, 42), TextSize = 14 })
-	local timeBtn = UI.button(row, "⏰ 10 Min Pass", "light", { LayoutOrder = 3, Size = UDim2.fromOffset(136, 42), TextSize = 14 })
+	local timeBtn = UI.button(row, "⏰ +2 Min", "light", { LayoutOrder = 3, Size = UDim2.fromOffset(136, 42), TextSize = 14 })
 	joinBig.Activated:Connect(function()
 		Remotes.Event("Show"):FireServer("Join")
 	end)
@@ -317,7 +317,7 @@ function HUD.Init(controllers)
 		end)
 	end
 	header(80, "🛍️ BOOSTS (buy any time)")
-	storeRow(82, "⏰", "10 Min Dress Time", "Next dressing round lasts 10 minutes instead of 8.", "Buy", "light", function()
+	storeRow(82, "⏰", "2 Min Additional Dress Time", "+2 minutes: next dressing round lasts 10 minutes.", "Buy", "light", function()
 		if (Config.Products.ExtraTime or 0) == 0 then
 			return ownerWarn("Products.ExtraTime")
 		end
