@@ -151,6 +151,15 @@ function Chords.Voicing(key: string, instrument: string, opts): { number }
 		while #notes > 7 do
 			table.remove(notes, 3)
 		end
+		-- inversions: lift the lowest right-hand tones an octave
+		local inv = math.clamp(opts.Inversion or 0, 0, 3)
+		for _ = 1, inv do
+			if #notes >= 4 then
+				local n = table.remove(notes, 3)
+				table.insert(notes, n + 12)
+				notes = uniqueSorted(notes)
+			end
+		end
 		for i, n in notes do
 			notes[i] = n + octave
 		end
@@ -172,6 +181,23 @@ function Chords.Voicing(key: string, instrument: string, opts): { number }
 end
 
 Chords.NoteNames = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" }
+
+-- "G · B · D" (the chord's note names)
+function Chords.Tones(key: string): string
+	local info = Chords.ByKey[key]
+	if not info then
+		return ""
+	end
+	local names, seen = {}, {}
+	for _, i in info.Intervals do
+		local pc = (info.RootIndex + i) % 12
+		if not seen[pc] then
+			seen[pc] = true
+			table.insert(names, Chords.NoteNames[pc + 1])
+		end
+	end
+	return table.concat(names, " · ")
+end
 function Chords.NoteName(midi: number): string
 	return Chords.NoteNames[(midi % 12) + 1] .. tostring(math.floor(midi / 12) - 1)
 end

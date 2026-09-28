@@ -27,8 +27,23 @@ local activeInputs = {} :: { [InputObject]: string }
 local lastChord = nil
 local toggles = { Drive = false, Power = false, Mute = false, Arp = false, Pizz = false, Keys = false }
 local octave = 0
+local inversion = 0
 local sustainHeld = false
 local sustained = {}
+local lit = {} -- midi -> { Frame, Black, Count }
+local pickerLit = {} -- same, for the chord-picker preview keyboard
+local keyboard -- defined below (used by the chord picker too)
+local handleNotes = {} -- handle key -> notes (for key lighting)
+local chordLabel -- big "now playing" chord name
+local auto = { On = false, Bpm = 96, Pattern = 1, Token = 0 }
+local PATTERNS = {
+	Piano = { "Block", "Arp Up", "Alberti", "Waltz", "Ballad" },
+	Guitar = { "Strum", "Down 4", "Fingerpick", "Island" },
+	Electric = { "Power 8ths", "Strum", "Fingerpick" },
+	Violin = { "Long Bow", "Pulse", "Arp" },
+	Drums = { "Pop", "Rock", "Hip-Hop", "Disco", "Waltz" },
+}
+local INV_NAMES = { [0] = "Root", "1st Inv", "2nd Inv", "3rd Inv" }
 
 local function isPress(input: InputObject): boolean
 	return input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch
@@ -52,9 +67,30 @@ local function startChord(chordOrNotes, style): string
 	if current == "Violin" and toggles.Pizz then
 		style.M = true
 	end
+	if current == "Piano" and inversion > 0 and typeof(chordOrNotes) == "string" then
+		style.I = inversion
+	end
 	Engine.Start(player, key, current, chordOrNotes, style, false)
 	Remotes.Event("Music"):FireServer("On", id, chordOrNotes, style)
+	-- light up the keys (like a chord-player keyboard)
+	local notes = Engine.Notes(current, chordOrNotes, style)
+	handleNotes[key] = notes
+	Music.Light(notes, true)
+	if chordLabel and typeof(chordOrNotes) == "string" then
+		local info = Chords.Get(chordOrNotes)
+		if info then
+			chordLabel.Text = info.Short .. "   " .. Chords.Tones(chordOrNotes)
+		end
+	end
 	return key
+end
+
+local function unlight(key: string)
+	local notes = handleNotes[key]
+	if notes then
+		handleNotes[key] = nil
+		Music.Light(notes, false)
+	end
 end
 
 local function stopChord(key: string?)
@@ -66,6 +102,7 @@ local function stopChord(key: string?)
 		return
 	end
 	Engine.Stop(key)
+	unlight(key)
 	local id = tonumber(key:match(":(%d+)$"))
 	if id then
 		Remotes.Event("Music"):FireServer("Off", id)
@@ -77,9 +114,26 @@ local function releaseSustain()
 	sustained = {}
 	for _, key in list do
 		Engine.Stop(key)
+		unlight(key)
 		local id = tonumber(key:match(":(%d+)$"))
 		if id then
 			Remotes.Event("Music"):FireServer("Off", id)
+		end
+	end
+end
+
+-- key lighting shared by the play keyboard and the chord-picker preview
+function Music.Light(notes, on: boolean, only)
+	for _, n in notes or {} do
+		for _, tbl in only and { only } or { lit, pickerLit } do
+			local e = tbl[n]
+			if e then
+			e.Count = math.max(0, e.Count + (on and 1 or -1))
+			local active = e.Count > 0
+			if e.Frame.Parent then
+				e.Frame.BackgroundColor3 = active and (e.Black and P.Violet or P.Rose) or (e.Black and P.PlumDeep or P.Ivory)
+			end
+			end
 		end
 	end
 end
@@ -215,9 +269,10 @@ function refreshChordPicker()
 			break
 		end
 		local on = inSelection(info.Key) ~= nil
-		local b = UI.button(chordGrid, "", on and "gold" or "light", { LayoutOrder = i, Size = UDim2.fromOffset(150, 64) })
+		local b = UI.button(chordGrid, "", on and "gold" or "light", { LayoutOrder = i, Size = UDim2.fromOffset(150, 78) })
 		UI.label(b, info.Short, { Position = UDim2.fromOffset(0, 6), Size = UDim2.new(1, 0, 0, 30), TextXAlignment = Enum.TextXAlignment.Center, TextColor3 = P.Plum, Font = UI.Font.Title, TextSize = 22 })
 		UI.label(b, info.Long, { Position = UDim2.fromOffset(4, 36), Size = UDim2.new(1, -8, 0, 20), TextXAlignment = Enum.TextXAlignment.Center, TextColor3 = P.TextSoft, Font = UI.Font.Medium, TextSize = 12, TextTruncate = Enum.TextTruncate.AtEnd })
+		UI.label(b, Chords.Tones(info.Key), { Position = UDim2.fromOffset(4, 54), Size = UDim2.new(1, -8, 0, 18), TextXAlignment = Enum.TextXAlignment.Center, TextColor3 = P.Violet, Font = UI.Font.Bold, TextSize = 12 })
 		if on then
 			UI.stroke(b, P.Plum, 2, 0.2)
 		end
@@ -226,9 +281,13 @@ function refreshChordPicker()
 			-- preview the chord locally
 			if current and current ~= "Drums" then
 				local id = select(2, newHandle())
-				Engine.Start(player, id, current, info.Key, { S = "down" }, false)
+				local style = { S = "down", I = current == "Piano" and inversion or nil }
+				Engine.Start(player, id, current, info.Key, style, false)
+				local notes = Engine.Notes(current, info.Key, style)
+				Music.Light(notes, true, pickerLit)
 				task.delay(0.9, function()
 					Engine.Stop(id)
+					Music.Light(notes, false, pickerLit)
 				end)
 			end
 		end)
@@ -276,8 +335,11 @@ local function buildChordPicker(gui)
 	end)
 	local help = UI.label(body, "Tap a root, then tap chords to add them. Tap again to remove. You can mix any chords!", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 0, 50), Size = UDim2.fromOffset(284, 44), TextSize = 13, TextColor3 = P.Lilac, Font = UI.Font.Medium })
 	help.TextWrapped = true
-	chordGrid = UI.scroll(body, { Position = UDim2.fromOffset(0, 104), Size = UDim2.new(1, 0, 1, -214) })
-	UI.grid(chordGrid, UDim2.fromOffset(150, 64), UDim2.fromOffset(8, 8))
+	chordGrid = UI.scroll(body, { Position = UDim2.fromOffset(0, 104), Size = UDim2.new(1, 0, 1, -284) })
+	UI.grid(chordGrid, UDim2.fromOffset(150, 78), UDim2.fromOffset(8, 8))
+	-- preview keyboard: tap a chord to see (and hear) its notes
+	local previewHolder = UI.new("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, -112), Size = UDim2.new(1, 0, 0, 64), Parent = body })
+	keyboard(previewHolder, Vector2.new(1140, 64), 36, 5, false, pickerLit)
 	UI.pad(chordGrid, 4)
 	local trayBg = UI.new("Frame", { BackgroundColor3 = P.PlumDeep, BackgroundTransparency = 0.3, AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, -48), Size = UDim2.new(1, 0, 0, 56), Parent = body })
 	UI.corner(trayBg, 14)
@@ -331,6 +393,10 @@ local function clearPlay()
 	end
 	sustainHeld = false
 	releaseSustain()
+	auto.Token += 1
+	lit = {}
+	handleNotes = {}
+	chordLabel = nil
 end
 
 local function toggleButton(parent, label: string, name: string, order: number)
@@ -514,49 +580,51 @@ local function bowPad(parent, pos: UDim2, size: Vector2)
 	end)
 end
 
-local function pianoKeys(parent, size: Vector2)
-	local area = UI.new("Frame", { BackgroundTransparency = 1, Size = UDim2.fromOffset(size.X, size.Y), Parent = parent })
+-- Piano keyboard strip. interactive = play single notes; otherwise it just
+-- lights up the notes of every chord you play (chord-player style).
+function keyboard(parent, size: Vector2, low: number, octaves: number, interactive: boolean, target)
+	target = target or lit
+	local area = UI.new("Frame", { BackgroundColor3 = P.PlumDeep, BackgroundTransparency = 0.2, Size = UDim2.fromOffset(size.X, size.Y), Parent = parent })
+	UI.corner(area, 10)
 	local whites = { 0, 2, 4, 5, 7, 9, 11 }
 	local blacks = { [0] = 1, [2] = 3, [5] = 6, [7] = 8, [9] = 10 }
-	local octaves = 2
-	local ww = size.X / (7 * octaves)
-	local function key(parentF, midi: number, x: number, w: number, h: number, black: boolean)
-		local b = UI.new("TextButton", {
-			AutoButtonColor = false,
-			Text = black and "" or Chords.NoteName(midi):gsub("%d", ""),
+	local ww = (size.X - 8) / (7 * octaves)
+	local h = size.Y - 8
+	local function key(midi: number, x: number, w: number, kh: number, black: boolean)
+		local showName = not black and (midi % 12 == 0 or interactive)
+		local b = UI.new(interactive and "TextButton" or "TextLabel", {
+			Text = showName and Chords.NoteName(midi) or "",
 			TextYAlignment = Enum.TextYAlignment.Bottom,
 			Font = UI.Font.Bold,
-			TextSize = 13,
+			TextSize = interactive and 13 or 10,
 			TextColor3 = P.TextSoft,
 			BackgroundColor3 = black and P.PlumDeep or P.Ivory,
-			Position = UDim2.fromOffset(x, 0),
-			Size = UDim2.fromOffset(w, h),
+			Position = UDim2.fromOffset(4 + x, 4),
+			Size = UDim2.fromOffset(w, kh),
 			ZIndex = black and 3 or 2,
-			Parent = parentF,
+			Parent = area,
 		})
-		UI.corner(b, 8)
-		UI.stroke(b, P.Plum, 1.5, 0.3)
-		b.InputBegan:Connect(function(input)
-			if isPress(input) then
-				b.BackgroundColor3 = black and P.Violet or P.Blush
-				activeInputs[input] = startChord({ midi + octave * 12 }, { S = "block" })
-				local conn
-				conn = UserInputService.InputEnded:Connect(function(e)
-					if e == input or (e.UserInputType == Enum.UserInputType.MouseButton1 and input.UserInputType == Enum.UserInputType.MouseButton1) then
-						b.BackgroundColor3 = black and P.PlumDeep or P.Ivory
-						conn:Disconnect()
-					end
-				end)
-			end
-		end)
+		if b:IsA("TextButton") then
+			b.AutoButtonColor = false
+		end
+		UI.corner(b, black and 4 or 6)
+		UI.stroke(b, P.Plum, 1, 0.35)
+		target[midi] = { Frame = b, Black = black, Count = 0 }
+		if interactive then
+			b.InputBegan:Connect(function(input)
+				if isPress(input) then
+					activeInputs[input] = startChord({ midi }, { S = "block", O = 0 })
+				end
+			end)
+		end
 	end
 	for o = 0, octaves - 1 do
 		for i, semis in whites do
 			local x = (o * 7 + i - 1) * ww
-			key(area, 60 + o * 12 + semis, x, ww - 3, size.Y, false)
+			key(low + o * 12 + semis, x, ww - 2, h, false)
 			local bk = blacks[semis]
 			if bk then
-				key(area, 60 + o * 12 + bk, x + ww * 0.62, ww * 0.7, size.Y * 0.6, true)
+				key(low + o * 12 + bk, x + ww * 0.64, ww * 0.66, h * 0.6, true)
 			end
 		end
 	end
@@ -604,13 +672,172 @@ local function drumPads(parent, size: Vector2)
 	return area
 end
 
+-- ============ auto-play (progressions, patterns, drum beats) ============
+local DRUM_BEATS = {
+	-- 16 steps per bar: { step, pad }
+	Pop = { { 0, "Kick" }, { 8, "Kick" }, { 4, "Snare" }, { 12, "Snare" }, { 0, "HiHat" }, { 2, "HiHat" }, { 4, "HiHat" }, { 6, "HiHat" }, { 8, "HiHat" }, { 10, "HiHat" }, { 12, "HiHat" }, { 14, "HiHat" }, { 0, "Crash" } },
+	Rock = { { 0, "Kick" }, { 6, "Kick" }, { 8, "Kick" }, { 4, "Snare" }, { 12, "Snare" }, { 0, "Ride" }, { 2, "Ride" }, { 4, "Ride" }, { 6, "Ride" }, { 8, "Ride" }, { 10, "Ride" }, { 12, "Ride" }, { 14, "Ride" }, { 14, "Tom1" }, { 15, "Floor" } },
+	["Hip-Hop"] = { { 0, "Kick" }, { 3, "Kick" }, { 10, "Kick" }, { 4, "Snare" }, { 12, "Snare" }, { 0, "HiHat" }, { 2, "HiHat" }, { 4, "HiHat" }, { 6, "OpenHat" }, { 8, "HiHat" }, { 10, "HiHat" }, { 12, "HiHat" }, { 14, "HiHat" } },
+	Disco = { { 0, "Kick" }, { 4, "Kick" }, { 8, "Kick" }, { 12, "Kick" }, { 4, "Snare" }, { 12, "Snare" }, { 2, "OpenHat" }, { 6, "OpenHat" }, { 10, "OpenHat" }, { 14, "OpenHat" } },
+	Waltz = { { 0, "Kick" }, { 4, "HiHat" }, { 8, "HiHat" }, { 4, "Snare" }, { 8, "Snare" } },
+}
+
+local function schedule(events, stepLen: number, steps: number, token: number)
+	-- events: { { step, fn } } ; blocks for the whole bar
+	table.sort(events, function(a, b)
+		return a[1] < b[1]
+	end)
+	local t = 0
+	for _, e in events do
+		local at = e[1] * stepLen
+		if at > t then
+			task.wait(at - t)
+			t = at
+		end
+		if auto.Token ~= token then
+			return
+		end
+		e[2]()
+	end
+	local total = steps * stepLen
+	if total > t then
+		task.wait(total - t)
+	end
+end
+
+local function noteEvent(events, step, notes, holdSteps, stepLen, style)
+	table.insert(events, { step, function()
+		local k = startChord(notes, style or { S = "block", O = 0 })
+		task.delay(holdSteps * stepLen, function()
+			stopChord(k)
+		end)
+	end })
+end
+
+local function playBar(chord: string, token: number)
+	local beat = 60 / auto.Bpm
+	local eighth = beat / 2
+	local pat = PATTERNS[current][auto.Pattern]
+	local events = {}
+	local notes = Engine.Notes(current, chord, { O = octave, I = inversion, P = toggles.Power or nil })
+	if current == "Piano" then
+		local bass, rh = notes[1], {}
+		for i = 2, #notes do
+			table.insert(rh, notes[i])
+		end
+		if pat == "Block" then
+			noteEvent(events, 0, chord, 7.5, eighth, { S = "block" })
+		elseif pat == "Arp Up" then
+			for i = 0, 7 do
+				noteEvent(events, i, { notes[(i % #notes) + 1] }, 1.8, eighth)
+			end
+		elseif pat == "Alberti" then
+			noteEvent(events, 0, { bass }, 7.5, eighth)
+			local seq = { 1, #rh, math.max(2, #rh - 1), #rh }
+			for i = 0, 7 do
+				noteEvent(events, i, { rh[seq[(i % 4) + 1]] or rh[1] }, 1.5, eighth)
+			end
+		elseif pat == "Waltz" then
+			noteEvent(events, 0, { bass }, 2, beat)
+			noteEvent(events, 1, rh, 0.9, beat)
+			noteEvent(events, 2, rh, 0.9, beat)
+			schedule(events, beat, 3, token)
+			return
+		else -- Ballad: bass + rolled chord + gentle top notes
+			noteEvent(events, 0, { bass, bass + 12 }, 7.5, eighth)
+			noteEvent(events, 1, rh, 5, eighth, { S = "arp", O = 0 })
+			noteEvent(events, 5, { rh[#rh] }, 2, eighth)
+			noteEvent(events, 6, { rh[math.max(1, #rh - 1)] }, 2, eighth)
+		end
+		schedule(events, eighth, 8, token)
+	elseif current == "Guitar" or current == "Electric" then
+		if pat == "Strum" then
+			for _, e in { { 0, "down" }, { 2, "down" }, { 3, "up" }, { 5, "up" }, { 6, "down" }, { 7, "up" } } do
+				noteEvent(events, e[1], chord, 1.9, eighth, { S = e[2] })
+			end
+		elseif pat == "Down 4" then
+			for i = 0, 3 do
+				noteEvent(events, i * 2, chord, 1.9, eighth, { S = "down" })
+			end
+		elseif pat == "Power 8ths" then
+			for i = 0, 7 do
+				noteEvent(events, i, chord, 0.8, eighth, { S = "down", P = true })
+			end
+		elseif pat == "Island" then
+			for _, e in { { 1, "up" }, { 3, "up" }, { 4, "down" }, { 5, "up" }, { 7, "up" } } do
+				noteEvent(events, e[1], chord, 0.9, eighth, { S = e[2] })
+			end
+		else -- Fingerpick: bass then treble strings
+			local order = { 1, 3, 2, 4, 1, 3, 2, 4 }
+			for i = 0, 7 do
+				local idx = i == 0 and 1 or math.min(#notes, order[(i % 8) + 1] + 1)
+				noteEvent(events, i, { notes[idx] }, 3, eighth)
+			end
+		end
+		schedule(events, eighth, 8, token)
+	elseif current == "Violin" then
+		if pat == "Long Bow" then
+			noteEvent(events, 0, chord, 3.8, beat, { S = "block" })
+		elseif pat == "Pulse" then
+			for i = 0, 3 do
+				noteEvent(events, i, chord, 0.85, beat, { S = "block" })
+			end
+		else
+			for i = 0, 7 do
+				noteEvent(events, i, { notes[(i % #notes) + 1] }, 0.95, eighth)
+			end
+		end
+		schedule(events, beat, 4, token)
+	end
+end
+
+local chordButtons = {}
+local function runAuto()
+	auto.Token += 1
+	local token = auto.Token
+	task.spawn(function()
+		local bar = 0
+		while auto.On and auto.Token == token and current do
+			local beatLen = 60 / auto.Bpm
+			if current == "Drums" then
+				local beat = DRUM_BEATS[PATTERNS.Drums[auto.Pattern]] or DRUM_BEATS.Pop
+				local events = {}
+				for _, e in beat do
+					if not (e[2] == "Crash" and bar % 4 ~= 0) then
+						table.insert(events, { e[1], function()
+							pad(e[2])
+						end })
+					end
+				end
+				schedule(events, beatLen / 4, 16, token)
+			elseif #selection > 0 then
+				local idx = (bar % #selection) + 1
+				local chord = selection[idx]
+				lastChord = chord
+				for i, b in chordButtons do
+					local st = b:FindFirstChildOfClass("UIStroke")
+					if st then
+						st.Color = i == idx and P.NeonPink or P.Plum
+						st.Thickness = i == idx and 5 or 3
+					end
+				end
+				playBar(chord, token)
+			else
+				task.wait(0.5)
+			end
+			bar += 1
+		end
+	end)
+end
+
 function Music.ShowPlay()
 	clearPlay()
+	chordButtons = {}
 	if not current then
 		return
 	end
 	local info = Instruments.Info[current]
-	local W, H = 1200, 300
+	local W, H = 1200, 350
 	playRoot = UI.new("Frame", {
 		Name = "PlayRoot",
 		BackgroundTransparency = 1,
@@ -620,11 +847,11 @@ function Music.ShowPlay()
 		Parent = playGui,
 	})
 	UI.autoScale(playRoot)
-	local bg = UI.panel(playRoot, { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 0.25 })
-	-- top bar
+	local bg = UI.panel(playRoot, { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 0.22 })
+	-- row 1: instrument + toggles + navigation
 	local bar = UI.new("Frame", { BackgroundTransparency = 1, Position = UDim2.fromOffset(16, 10), Size = UDim2.new(1, -32, 0, 40), Parent = bg })
 	UI.list(bar, Enum.FillDirection.Horizontal, 8, nil, Enum.VerticalAlignment.Center)
-	UI.label(bar, info.Icon .. "  " .. info.Name, { LayoutOrder = 0, Size = UDim2.fromOffset(250, 38), TextSize = 22, Font = UI.Font.Luxe, TextColor3 = P.Champagne })
+	UI.label(bar, info.Icon .. "  " .. info.Name, { LayoutOrder = 0, Size = UDim2.fromOffset(240, 38), TextSize = 22, Font = UI.Font.Luxe, TextColor3 = P.Champagne })
 	if current == "Electric" then
 		toggleButton(bar, "🔥 Drive", "Drive", 1)
 		toggleButton(bar, "⚡ Power", "Power", 2)
@@ -632,48 +859,109 @@ function Music.ShowPlay()
 	elseif current == "Piano" then
 		toggleButton(bar, "〰 Arp", "Arp", 1)
 		toggleButton(bar, "🎹 Keys", "Keys", 2)
-		local down = UI.button(bar, "Oct −", "dark", { LayoutOrder = 3, Size = UDim2.fromOffset(74, 38), TextSize = 14 })
-		local octL = UI.label(bar, "Oct " .. octave, { LayoutOrder = 4, Size = UDim2.fromOffset(60, 38), TextXAlignment = Enum.TextXAlignment.Center, TextSize = 14 })
-		local up = UI.button(bar, "Oct +", "dark", { LayoutOrder = 5, Size = UDim2.fromOffset(74, 38), TextSize = 14 })
+		local invBtn = UI.button(bar, INV_NAMES[inversion], "dark", { LayoutOrder = 3, Size = UDim2.fromOffset(96, 38), TextSize = 14 })
+		invBtn.Activated:Connect(function()
+			inversion = (inversion + 1) % 3
+			invBtn.Text = INV_NAMES[inversion]
+		end)
+		local down = UI.button(bar, "Oct −", "dark", { LayoutOrder = 4, Size = UDim2.fromOffset(70, 38), TextSize = 14 })
+		local octL = UI.label(bar, "Oct " .. octave, { LayoutOrder = 5, Size = UDim2.fromOffset(56, 38), TextXAlignment = Enum.TextXAlignment.Center, TextSize = 14 })
+		local up = UI.button(bar, "Oct +", "dark", { LayoutOrder = 6, Size = UDim2.fromOffset(70, 38), TextSize = 14 })
 		down.Activated:Connect(function()
 			octave = math.max(-1, octave - 1)
 			octL.Text = "Oct " .. octave
+			if toggles.Keys then
+				Music.ShowPlay()
+			end
 		end)
 		up.Activated:Connect(function()
 			octave = math.min(1, octave + 1)
 			octL.Text = "Oct " .. octave
+			if toggles.Keys then
+				Music.ShowPlay()
+			end
 		end)
 	elseif current == "Violin" then
 		toggleButton(bar, "✌ Pizz", "Pizz", 1)
 	end
-	local spacer = UI.new("Frame", { BackgroundTransparency = 1, LayoutOrder = 50, Size = UDim2.fromOffset(10, 10), Parent = bar })
-	spacer.Size = UDim2.fromOffset(math.max(10, 300 - (current == "Piano" and 250 or 0)), 10)
+	UI.new("Frame", { BackgroundTransparency = 1, LayoutOrder = 50, Size = UDim2.fromOffset(current == "Piano" and 10 or 220, 10), Parent = bar })
 	if current ~= "Drums" then
-		local edit = UI.button(bar, "✎ Chords", "secondary", { LayoutOrder = 60, Size = UDim2.fromOffset(110, 38), TextSize = 15 })
+		local edit = UI.button(bar, "✎ Chords", "secondary", { LayoutOrder = 60, Size = UDim2.fromOffset(106, 38), TextSize = 15 })
 		edit.Activated:Connect(function()
 			UI.open("ChordPicker")
 		end)
 	end
-	local swap = UI.button(bar, "⇄ Instrument", "light", { LayoutOrder = 61, Size = UDim2.fromOffset(130, 38), TextSize = 15 })
+	local swap = UI.button(bar, "⇄ Instrument", "light", { LayoutOrder = 61, Size = UDim2.fromOffset(126, 38), TextSize = 15 })
 	swap.Activated:Connect(function()
 		UI.open("MusicPicker")
 	end)
-	local stop = UI.button(bar, "✕ Stop", "danger", { LayoutOrder = 62, Size = UDim2.fromOffset(96, 38), TextSize = 15 })
+	local stop = UI.button(bar, "✕ Stop", "danger", { LayoutOrder = 62, Size = UDim2.fromOffset(90, 38), TextSize = 15 })
 	stop.Activated:Connect(function()
 		Music.Stop()
 	end)
 
-	local content = UI.new("Frame", { BackgroundTransparency = 1, Position = UDim2.fromOffset(16, 58), Size = UDim2.new(1, -32, 1, -70), Parent = bg })
-	local cw, ch = W - 32, H - 70
+	-- row 2: auto-play (progression / beat) + now-playing chord
+	local row2 = UI.new("Frame", { BackgroundTransparency = 1, Position = UDim2.fromOffset(16, 56), Size = UDim2.new(1, -32, 0, 38), Parent = bg })
+	UI.list(row2, Enum.FillDirection.Horizontal, 8, nil, Enum.VerticalAlignment.Center)
+	local autoBtn = UI.button(row2, auto.On and "⏸ Auto" or "▶ Auto", auto.On and "gold" or "secondary", { LayoutOrder = 1, Size = UDim2.fromOffset(96, 36), TextSize = 15 })
+	local slower = UI.button(row2, "−", "dark", { LayoutOrder = 2, Size = UDim2.fromOffset(36, 36), TextSize = 18 })
+	local bpmL = UI.label(row2, auto.Bpm .. " BPM", { LayoutOrder = 3, Size = UDim2.fromOffset(84, 36), TextXAlignment = Enum.TextXAlignment.Center, TextSize = 15 })
+	local faster = UI.button(row2, "+", "dark", { LayoutOrder = 4, Size = UDim2.fromOffset(36, 36), TextSize = 18 })
+	local patterns = PATTERNS[current] or { "—" }
+	auto.Pattern = math.clamp(auto.Pattern, 1, #patterns)
+	local patBtn = UI.button(row2, "♪ " .. patterns[auto.Pattern], "light", { LayoutOrder = 5, Size = UDim2.fromOffset(150, 36), TextSize = 14 })
+	chordLabel = UI.label(row2, current == "Drums" and "Tap pads or press ▶ Auto for a beat" or "Hold a chord to play", {
+		LayoutOrder = 6,
+		Size = UDim2.fromOffset(560, 36),
+		TextSize = 20,
+		Font = UI.Font.Title,
+		TextColor3 = P.Blush,
+		TextXAlignment = Enum.TextXAlignment.Right,
+	})
+	autoBtn.Activated:Connect(function()
+		auto.On = not auto.On
+		autoBtn.Text = auto.On and "⏸ Auto" or "▶ Auto"
+		UI.style(autoBtn, auto.On and "gold" or "secondary")
+		if auto.On then
+			runAuto()
+		else
+			auto.Token += 1
+		end
+	end)
+	slower.Activated:Connect(function()
+		auto.Bpm = math.max(50, auto.Bpm - 6)
+		bpmL.Text = auto.Bpm .. " BPM"
+	end)
+	faster.Activated:Connect(function()
+		auto.Bpm = math.min(200, auto.Bpm + 6)
+		bpmL.Text = auto.Bpm .. " BPM"
+	end)
+	patBtn.Activated:Connect(function()
+		auto.Pattern = auto.Pattern % #patterns + 1
+		patBtn.Text = "♪ " .. patterns[auto.Pattern]
+	end)
+
+	local content = UI.new("Frame", { BackgroundTransparency = 1, Position = UDim2.fromOffset(16, 102), Size = UDim2.new(1, -32, 1, -114), Parent = bg })
+	local cw, ch = W - 32, H - 114
+	local function registerChordButtons(area)
+		for _, b in area:GetChildren() do
+			if b:IsA("TextButton") then
+				table.insert(chordButtons, b)
+			end
+		end
+	end
 	if current == "Guitar" or current == "Electric" then
-		chordArea(content, Vector2.new(cw - 210, ch), { S = "down" })
+		registerChordButtons(chordArea(content, Vector2.new(cw - 210, ch), { S = "down" }))
 		strumStrip(content, "up", UDim2.new(1, -196, 0, 0), Vector2.new(90, ch))
 		strumStrip(content, "down", UDim2.new(1, -96, 0, 0), Vector2.new(90, ch))
 	elseif current == "Piano" then
 		if toggles.Keys then
-			pianoKeys(content, Vector2.new(cw - 150, ch))
+			keyboard(content, Vector2.new(cw - 150, ch), 48 + octave * 12, 3, true)
 		else
-			chordArea(content, Vector2.new(cw - 150, ch), { S = "block" })
+			keyboard(content, Vector2.new(cw - 150, 70), 36, 5, false)
+			local area = chordArea(content, Vector2.new(cw - 150, ch - 80), { S = "block" })
+			area.Position = UDim2.fromOffset(0, 80)
+			registerChordButtons(area)
 		end
 		local sus, sc, st = blobButton(content, "Sustain", "hold pedal", P.Champagne, Vector2.new(136, ch))
 		sus.Position = UDim2.new(1, -136, 0, 0)
@@ -693,12 +981,15 @@ function Music.ShowPlay()
 			end
 		end)
 	elseif current == "Violin" then
-		chordArea(content, Vector2.new(cw - 330, ch), { S = "block" })
+		registerChordButtons(chordArea(content, Vector2.new(cw - 330, ch), { S = "block" }))
 		bowPad(content, UDim2.new(1, -316, 0, 0), Vector2.new(316, ch))
 	elseif current == "Drums" then
 		local pw = math.min(cw, 700)
 		local area = drumPads(content, Vector2.new(pw, ch))
 		area.Position = UDim2.fromOffset((cw - pw) / 2, 0)
+	end
+	if auto.On then
+		runAuto()
 	end
 end
 

@@ -6,9 +6,12 @@
 --  Chords are built by pitch-shifting these notes, so one clean note per
 --  instrument is enough (more samples across the range = more realistic).
 --
---  If a list is empty the game searches Roblox's public audio library at
---  startup for a matching sample (best effort). Setting your own IDs is
---  strongly recommended.
+--  EASIEST: upload build/AuraSoundPack.ogg (made by tools/make_soundpack.py,
+--  every instrument in one file) and set Config.SoundPackId — then you can
+--  leave all the lists below empty.
+--
+--  Priority: your own Samples here > the sound pack > an automatic search of
+--  Roblox's public audio library (best effort).
 -- ============================================================
 local Instruments = {}
 

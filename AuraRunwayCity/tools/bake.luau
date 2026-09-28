@@ -30,14 +30,16 @@ local CFrameShim = setmetatable({ lookAt = lookAt }, { __index = RCFrame })
 local cache = {}
 local env
 local function requireModule(ms)
-	if cache[ms] ~= nil then
-		return cache[ms]
+	-- Lune returns a fresh userdata per lookup, so cache by path
+	local key = ms and ms:GetFullName()
+	if key and cache[key] ~= nil then
+		return cache[key]
 	end
 	assert(ms and ms:IsA("ModuleScript"), "require target is not a ModuleScript: " .. tostring(ms))
 	local src = ms.Source
 	local fn = luau.load(src, { debugName = ms:GetFullName(), environment = env(ms) })
 	local result = fn()
-	cache[ms] = result
+	cache[key] = result
 	return result
 end
 

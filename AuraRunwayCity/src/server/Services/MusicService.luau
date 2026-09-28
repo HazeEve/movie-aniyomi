@@ -251,6 +251,10 @@ local function searchSample(query: string): string?
 end
 
 local function resolveSamples()
+	if typeof(Config.SoundPackId) == "string" and Config.SoundPackId ~= "" then
+		samplesFolder:SetAttribute("Resolved", true)
+		return -- the uploaded sound pack covers every instrument
+	end
 	for kind, info in Instruments.Info do
 		if info.Samples and #info.Samples == 0 and info.Search then
 			for _, q in info.Search do

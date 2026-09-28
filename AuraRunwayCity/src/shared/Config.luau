@@ -66,6 +66,10 @@ Config.CreatorStallItems = {}
 Config.CreatorStallName = "Creator's Atelier"
 
 -- ============ MUSIC ============
+-- Upload build/AuraSoundPack.ogg to Roblox ONCE (Creator Hub > Audio) and paste
+-- its id here, e.g. "rbxassetid://1234567890". It contains every instrument.
+Config.SoundPackId = ""
+
 Config.Music = {
 	MinChords = 3,
 	MaxChords = 19,

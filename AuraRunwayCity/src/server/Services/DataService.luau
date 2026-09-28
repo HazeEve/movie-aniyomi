@@ -170,6 +170,9 @@ local function load(player: Player)
 			end
 			failed = true
 			warn("[Data] load attempt", attempt, "failed:", res)
+			if RunService:IsStudio() then
+				break -- API access is probably off in Studio; play without saving
+			end
 			task.wait(1.5 * attempt)
 		end
 	end

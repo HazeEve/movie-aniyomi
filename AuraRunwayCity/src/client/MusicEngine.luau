@@ -59,45 +59,103 @@ local function emitter(player: Player): Instance?
 	return a
 end
 
--- returns soundId, playbackSpeed for (instrument, midi)
-function Engine.Sample(kind: string, note: number): (string?, number)
-	local info = Instruments.Info[kind]
-	if info and info.Samples and #info.Samples > 0 then
-		return Instruments.SampleFor(info.Samples, note)
-	end
-	local auto = samplesCfg:GetAttribute(kind)
-	if auto then
-		return auto, 2 ^ ((note - 60) / 12)
-	end
-	return nil, 1
-end
+local SoundPack = require(ReplicatedStorage.Shared.SoundPack)
 
-function Engine.PadSample(padId: string): string?
-	local info = Instruments.Info.Drums
-	for _, p in info.Pads do
-		if p.Id == padId then
-			if p.Sample ~= "" then
-				return p.Sample
-			end
-			return samplesCfg:GetAttribute("Drums_" .. padId)
+local function packId(): string?
+	local id = Config.SoundPackId
+	if typeof(id) == "string" and id ~= "" then
+		if not id:find("rbxassetid://") and tonumber(id) then
+			id = "rbxassetid://" .. id
 		end
+		return id
 	end
 	return nil
 end
 
-local function makeSound(parent: Instance, id: string, speed: number, volume: number, looped: boolean, onStage: boolean?, drive: boolean?)
+-- Returns a playback spec for (instrument, midi):
+-- { Id, Speed, Region = NumberRange?, Loop = NumberRange? } or nil
+function Engine.Sample(kind: string, note: number)
+	local info = Instruments.Info[kind]
+	if info and info.Samples and #info.Samples > 0 then
+		local id, speed = Instruments.SampleFor(info.Samples, note)
+		return { Id = id, Speed = speed }
+	end
+	local pack = packId()
+	local slices = SoundPack[kind]
+	if pack and slices and #slices > 0 then
+		local best, bestD = slices[1], math.huge
+		for _, sl in slices do
+			local d = math.abs(note - sl.Note)
+			if d < bestD then
+				best, bestD = sl, d
+			end
+		end
+		return {
+			Id = pack,
+			Speed = 2 ^ ((note - best.Note) / 12),
+			Region = NumberRange.new(best.Start, best.Start + best.Length),
+			Loop = best.LoopStart and NumberRange.new(best.LoopStart, best.LoopEnd) or nil,
+		}
+	end
+	local auto = samplesCfg:GetAttribute(kind)
+	if auto then
+		return { Id = auto, Speed = 2 ^ ((note - 60) / 12) }
+	end
+	return nil
+end
+
+function Engine.PadSample(padId: string)
+	local info = Instruments.Info.Drums
+	for _, p in info.Pads do
+		if p.Id == padId and p.Sample ~= "" then
+			return { Id = p.Sample, Speed = 1 }
+		end
+	end
+	local pack = packId()
+	local sl = SoundPack.Drums and SoundPack.Drums[padId]
+	if pack and sl then
+		return { Id = pack, Speed = 1, Region = NumberRange.new(sl.Start, sl.Start + sl.Length) }
+	end
+	local auto = samplesCfg:GetAttribute("Drums_" .. padId)
+	return auto and { Id = auto, Speed = 1 } or nil
+end
+
+local function makeSound(parent: Instance, spec, volume: number, looped: boolean, onStage: boolean?, drive: boolean?)
 	local s = Instance.new("Sound")
-	s.SoundId = id
-	s.PlaybackSpeed = math.clamp(speed, 0.05, 8)
+	s.SoundId = spec.Id
+	s.PlaybackSpeed = math.clamp(spec.Speed or 1, 0.05, 8)
 	s.Volume = volume
-	s.Looped = looped
 	s.RollOffMode = Enum.RollOffMode.InverseTapered
 	s.RollOffMinDistance = 12
 	s.RollOffMaxDistance = onStage and Config.Music.StageHearDistance or Config.Music.HearDistance
 	s.SoundGroup = drive and groupDrive or groupClean
+	if spec.Region then
+		s.PlaybackRegionsEnabled = true
+		s.PlaybackRegion = spec.Region
+		if looped and spec.Loop then
+			s.LoopRegion = spec.Loop
+			s.Looped = true
+		else
+			s.Looped = false
+		end
+	else
+		s.Looped = looped
+	end
 	s.Parent = parent
 	return s
 end
+
+-- warm the pack up so the first note plays instantly
+task.spawn(function()
+	local id = packId()
+	if id then
+		local s = Instance.new("Sound")
+		s.SoundId = id
+		pcall(function()
+			game:GetService("ContentProvider"):PreloadAsync({ s })
+		end)
+	end
+end)
 
 local function notifyMissing()
 	if not warned then
@@ -116,7 +174,7 @@ function Engine.Start(owner: Player, handleKey: string, kind: string, chordOrNot
 	end
 	local notes
 	if typeof(chordOrNotes) == "string" then
-		notes = Chords.Voicing(chordOrNotes, kind, { Power = style.P, Octave = style.O })
+		notes = Chords.Voicing(chordOrNotes, kind, { Power = style.P, Octave = style.O, Inversion = style.I })
 	else
 		notes = chordOrNotes
 	end
@@ -148,12 +206,12 @@ function Engine.Start(owner: Player, handleKey: string, kind: string, chordOrNot
 			if h.Released and not style.M then
 				return
 			end
-			local id, speed = Engine.Sample(kind, n)
-			if not id then
+			local spec = Engine.Sample(kind, n)
+			if not spec then
 				notifyMissing()
 				return
 			end
-			local s = makeSound(parent, id, speed, vol * (0.85 + math.random() * 0.2), info.Looped == true, onStage, style.D)
+			local s = makeSound(parent, spec, vol * (0.85 + math.random() * 0.2), info.Looped == true, onStage, style.D)
 			s:Play()
 			table.insert(h.Sounds, s)
 			if not info.Looped then
@@ -179,6 +237,14 @@ function Engine.Start(owner: Player, handleKey: string, kind: string, chordOrNot
 		end)
 	end
 	return h
+end
+
+function Engine.Notes(kind: string, chordOrNotes, style): { number }
+	style = style or {}
+	if typeof(chordOrNotes) == "string" then
+		return Chords.Voicing(chordOrNotes, kind, { Power = style.P, Octave = style.O, Inversion = style.I })
+	end
+	return chordOrNotes
 end
 
 function Engine.Stop(handleKey: string, fade: number?)
@@ -215,15 +281,15 @@ end
 
 function Engine.Pad(owner: Player, padId: string, onStage: boolean?)
 	local parent = emitter(owner)
-	local id = Engine.PadSample(padId)
+	local spec = Engine.PadSample(padId)
 	if not parent then
 		return
 	end
-	if not id then
+	if not spec then
 		notifyMissing()
 		return
 	end
-	local s = makeSound(parent, id, 1, Instruments.Info.Drums.Volume or 0.8, false, onStage, false)
+	local s = makeSound(parent, spec, Instruments.Info.Drums.Volume or 0.8, false, onStage, false)
 	s:Play()
 	s.Ended:Connect(function()
 		s:Destroy()

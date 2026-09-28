@@ -80,15 +80,21 @@ function AvatarService.Serialize(desc: HumanoidDescription)
 	end
 	for _, prop in AvatarTypes.SingleProps do
 		local v = desc[prop]
-		if v and v ~= 0 then
+		if typeof(v) == "number" and v ~= 0 then
 			snap.P[prop] = v
 		end
 	end
 	for _, prop in SCALE_PROPS do
-		snap.S[prop] = desc[prop]
+		local v = desc[prop]
+		if typeof(v) == "number" then
+			snap.S[prop] = v
+		end
 	end
 	for _, prop in COLOR_PROPS do
-		snap.C[prop] = desc[prop]:ToHex()
+		local c = desc[prop]
+		if typeof(c) == "Color3" then
+			snap.C[prop] = c:ToHex()
+		end
 	end
 	return snap
 end
@@ -164,7 +170,7 @@ function AvatarService.WornList(desc: HumanoidDescription?)
 	end
 	for _, prop in AvatarTypes.SingleProps do
 		local v = desc[prop]
-		if v and v ~= 0 then
+		if typeof(v) == "number" and v ~= 0 then
 			table.insert(list, { Id = v, Type = AvatarTypes.PropTypeName[prop] or prop, Slot = "prop", Prop = prop })
 		end
 	end
@@ -323,8 +329,9 @@ function AvatarService.ToggleBundle(player: Player, bundleId: number)
 		end
 		if src then
 			for _, prop in AvatarTypes.SingleProps do
-				if src[prop] and src[prop] ~= 0 then
-					desc[prop] = src[prop]
+				local v = src[prop]
+				if typeof(v) == "number" and v ~= 0 then
+					desc[prop] = v
 				end
 			end
 			local accs = desc:GetAccessories(true)

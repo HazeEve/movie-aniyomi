@@ -7,6 +7,7 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local TextService = game:GetService("TextService")
 local DataStoreService = game:GetService("DataStoreService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
 local Config = require(ReplicatedStorage.Shared.Config)
 local Palette = require(ReplicatedStorage.Shared.Palette)
@@ -56,7 +57,16 @@ end
 
 local function canManage(player: Player, s): boolean
 	if s.IsCreator then
-		return player.UserId == creatorId() or (game.CreatorType == Enum.CreatorType.Group and player:GetRankInGroup(game.CreatorId) >= 254)
+		if player.UserId == creatorId() or RunService:IsStudio() then
+			return true
+		end
+		if game.CreatorType == Enum.CreatorType.Group then
+			local ok, rank = pcall(function()
+				return player:GetRankInGroup(game.CreatorId)
+			end)
+			return ok and rank >= 254
+		end
+		return false
 	end
 	return s.OwnerId == player.UserId
 end

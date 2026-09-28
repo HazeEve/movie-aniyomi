@@ -54,15 +54,26 @@ If the world isn't in the place file, the server builds it automatically when th
 | Auction length and increments | `Config.Auction` |
 | **Instrument sounds** | `src/shared/Instruments.luau` (see below) |
 
-### Instrument sounds
+### Instrument sounds (one upload)
 
-Roblox doesn't ship tonal instrument samples, so the game needs single-note audio IDs:
+All instrument sounds were **synthesized from scratch** for this game, so you own them. They are a concert grand piano, acoustic and electric guitar (physically-modelled strings), violin with vibrato and a sustaining bow, and a 9-piece drum kit. Everything is packed into **one file**: `build/AuraSoundPack.ogg` (0.9 MB, 41 samples).
 
-1. In Studio, open **Toolbox → Audio** (or Creator Store) and search for things like `piano C4 note`, `acoustic guitar note`, `violin note`, `kick drum` or `snare`. Pick short, clean single notes.
-2. Put each ID in `Instruments.Info.<Instrument>.Samples = { { Id = "rbxassetid://ID", Note = 60 } }`. `Note` is the note the sample plays (60 = middle C, 52 = E3, and so on). Every chord is made by pitch-shifting, so one sample per instrument works, and more samples sound better.
-3. For drums, set each pad's `Sample`.
+1. Go to **create.roblox.com → Creations → Development Items → Audio → Upload Asset** (or use **Asset Manager → Import** in Studio) and upload `build/AuraSoundPack.ogg`.
+2. Copy its ID and paste it in `src/shared/Config.luau`:
+   `Config.SoundPackId = "rbxassetid://YOUR_ID"`. In the `.rbxl`, that's **ReplicatedStorage → Shared → Config**.
+3. That's it. Every chord, strum, bow and drum hit plays from slices of that one sound, pitch-shifted note by note.
 
-If you leave them empty, the server tries to auto-pick samples from Roblox's public audio library at startup. It is best effort and the pitch may be off, so set your own for the best sound.
+You can regenerate or tweak the sounds with `python tools/make_soundpack.py`. It rewrites the `.ogg` and `src/shared/SoundPack.luau`, which maps each slice. To use your own samples instead, fill `Samples` in `src/shared/Instruments.luau`; those take priority.
+
+**Music features:**
+- Pick 3–19 chords from all 300. The chord picker shows each chord's notes and lights them on a preview keyboard.
+- The piano has a 5-octave keyboard that **lights up the notes you play**. It also has inversions, octave shift, a sustain pedal, arpeggio, and a playable Keys mode.
+- **▶ Auto** plays your chord progression with a pattern at any BPM:
+  - Piano: Block, Arp Up, Alberti, Waltz, Ballad
+  - Guitar: Strum, Down 4, Fingerpick, Island
+  - Electric: Power 8ths
+  - Violin: Long Bow, Pulse
+  - Drums: Pop, Rock, Hip-Hop, Disco and Waltz beats
 
 ---
 

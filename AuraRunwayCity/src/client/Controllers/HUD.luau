@@ -4,6 +4,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 
 local UI = require(script.Parent.Parent.UI)
 local State = require(script.Parent.Parent.State)
@@ -30,11 +31,13 @@ function HUD.Init(controllers)
 	local gui = UI.screen("AuraHUD", 5)
 
 	-- ============ Dock (left) ============
+	-- phones/tablets: dock on the right (the thumbstick lives bottom-left)
+	local touch = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 	local dockHolder = UI.new("Frame", {
 		BackgroundTransparency = 1,
-		AnchorPoint = Vector2.new(0, 0.5),
-		Position = UDim2.new(0, 10, 0.5, 10),
-		Size = UDim2.fromOffset(70, 500),
+		AnchorPoint = touch and Vector2.new(1, 0.5) or Vector2.new(0, 0.5),
+		Position = touch and UDim2.new(1, -8, 0.42, 0) or UDim2.new(0, 10, 0.52, 0),
+		Size = UDim2.fromOffset(70, 440),
 		Parent = gui,
 	})
 	UI.autoScale(dockHolder)
@@ -101,9 +104,10 @@ function HUD.Init(controllers)
 	refreshData(State.Data)
 
 	-- ============ Stats (bottom left) ============
+	-- desktop: bottom-left; phones: top-left (the thumbstick is bottom-left)
 	local stats = UI.panel(gui, {
-		AnchorPoint = Vector2.new(0, 1),
-		Position = UDim2.new(0, 12, 1, -12),
+		AnchorPoint = touch and Vector2.new(0, 0) or Vector2.new(0, 1),
+		Position = touch and UDim2.new(0, 12, 0, 8) or UDim2.new(0, 12, 1, -12),
 		Size = UDim2.fromOffset(230, 76),
 	})
 	UI.autoScale(stats)
