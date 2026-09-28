@@ -37,11 +37,10 @@ Config.Show = {
 Config.Products = {
 	-- Developer Product (can be bought again and again): re-rolls the runway theme
 	ChangeTheme = 0,
-}
-Config.GamePasses = {
-	-- Game Pass: dressing time becomes 10 minutes in rounds you join
+	-- Developer Product (repurchasable): 10 minutes dressing time for one round
 	ExtraTime = 0,
 }
+Config.GamePasses = {}
 -- ✨ SPARKLES = the game currency (bids, stall rent, rewards).
 -- Make one Developer Product per bundle and paste its id.
 Config.CurrencyName = "Sparkles"
@@ -52,10 +51,6 @@ Config.SparkleBundles = {
 	{ Name = "Sparkle Jar", Amount = 3000, Robux = 110, ProductId = 0 },
 	{ Name = "Sparkle Chest", Amount = 8000, Robux = 250, ProductId = 0 },
 	{ Name = "Galaxy Vault", Amount = 25000, Robux = 700, ProductId = 0 },
-}
--- Game passes listed in the Store (Extra Time is automatic).
-Config.StorePasses = {
-	{ Name = "⏰ 10 Min Dress Time", Key = "ExtraTime", Desc = "Dress for 10 minutes instead of 8." },
 }
 
 -- ============ AUCTION (limiteds shown on stage) ============

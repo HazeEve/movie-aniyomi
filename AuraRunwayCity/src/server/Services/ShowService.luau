@@ -29,20 +29,9 @@ local lastThemes = {}
 local passCache = {} :: { [number]: boolean }
 local MarketplaceService = game:GetService("MarketplaceService")
 
--- ---------- Extra Time game pass ----------
+-- ---------- Extra Time (repurchasable product: one credit = one round) ----------
 local function hasExtraTime(player: Player): boolean
-	local id = Config.GamePasses.ExtraTime
-	if not id or id == 0 then
-		return false
-	end
-	if passCache[player.UserId] ~= nil then
-		return passCache[player.UserId]
-	end
-	local ok, owns = pcall(function()
-		return MarketplaceService:UserOwnsGamePassAsync(player.UserId, id)
-	end)
-	passCache[player.UserId] = ok and owns or false
-	return passCache[player.UserId]
+	return passCache[player.UserId] == true
 end
 
 -- stretch the dressing timer to 10 min if any model owns the pass
@@ -53,6 +42,9 @@ local function applyExtraTime()
 	for _, p in joinOrder do
 		if p.Parent and p:GetAttribute("InShow") and hasExtraTime(p) then
 			local target = (state:GetAttribute("DressStart") or Util.Now()) + Config.Show.ExtraDressingTime
+			if not state:GetAttribute("ExtraTime") then
+				passCache[p.UserId] = nil -- credit used for this round
+			end
 			if target > (state:GetAttribute("EndsAt") or 0) then
 				state:SetAttribute("EndsAt", target)
 				state:SetAttribute("ExtraTime", true)
@@ -339,16 +331,16 @@ function ShowService.Init(deps)
 		leave(p)
 		passCache[p.UserId] = nil
 	end)
-	MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player, passId, bought)
-		if bought and passId == Config.GamePasses.ExtraTime then
-			passCache[player.UserId] = true
-			applyExtraTime()
-		end
-	end)
 	MarketplaceService.ProcessReceipt = function(info)
 		local buyer = Players:GetPlayerByUserId(info.PlayerId)
 		if not buyer then
 			return Enum.ProductPurchaseDecision.NotProcessedYet
+		end
+		if info.ProductId == Config.Products.ExtraTime then
+			passCache[buyer.UserId] = true
+			Util.Notify(buyer, "⏰ Extra Time ready! Your next dressing round lasts 10 minutes.", "success")
+			applyExtraTime()
+			return Enum.ProductPurchaseDecision.PurchaseGranted
 		end
 		if info.ProductId == Config.Products.ChangeTheme then
 			local ok = pcall(ShowService.ChangeTheme, buyer)

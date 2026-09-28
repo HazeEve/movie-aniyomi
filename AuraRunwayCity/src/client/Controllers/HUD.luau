@@ -235,11 +235,11 @@ function HUD.Init(controllers)
 		MarketplaceService:PromptProductPurchase(player, Config.Products.ChangeTheme)
 	end)
 	timeBtn.Activated:Connect(function()
-		if (Config.GamePasses.ExtraTime or 0) == 0 then
-			controllers.Notify.Show("Owner: set Config.GamePasses.ExtraTime to your game pass id.", "warn")
+		if (Config.Products.ExtraTime or 0) == 0 then
+			controllers.Notify.Show("Owner: set Config.Products.ExtraTime to your developer product id.", "warn")
 			return
 		end
-		MarketplaceService:PromptGamePassPurchase(player, Config.GamePasses.ExtraTime)
+		MarketplaceService:PromptProductPurchase(player, Config.Products.ExtraTime)
 	end)
 	local function refreshCard()
 		local phase = show:GetAttribute("Phase")
@@ -316,17 +316,13 @@ function HUD.Init(controllers)
 			MarketplaceService:PromptProductPurchase(player, b.ProductId)
 		end)
 	end
-	header(50, "🎫 GAME PASSES")
-	for i, p in Config.StorePasses do
-		storeRow(50 + i, "🎫", p.Name, p.Desc, "Buy", "light", function()
-			local id = Config.GamePasses[p.Key] or 0
-			if id == 0 then
-				return ownerWarn("GamePasses." .. p.Key)
-			end
-			MarketplaceService:PromptGamePassPurchase(player, id)
-		end)
-	end
-	header(80, "🛍️ PRODUCTS")
+	header(80, "🛍️ BOOSTS (buy any time)")
+	storeRow(82, "⏰", "10 Min Dress Time", "Next dressing round lasts 10 minutes instead of 8.", "Buy", "light", function()
+		if (Config.Products.ExtraTime or 0) == 0 then
+			return ownerWarn("Products.ExtraTime")
+		end
+		MarketplaceService:PromptProductPurchase(player, Config.Products.ExtraTime)
+	end)
 	storeRow(81, "🔄", "Change Theme", "Re-roll the runway theme (buy any time).", "Buy", "secondary", function()
 		if (Config.Products.ChangeTheme or 0) == 0 then
 			return ownerWarn("Products.ChangeTheme")
