@@ -34,33 +34,36 @@ It adds:
 
 1. **Order card:** the customer, your picture of the drink, its tier, its ingredient list, and a live "Yours" cup that fills as you work.
 2. **Shelf screens** for each storage visit (Cup Rack, Pantry Shelf, Fridge, Freezer, Syrup Shelf). Tap the right items. Wrong picks cost a little, and an idle player gets a gentle hint.
-3. **A mini-game per appliance action,** each with its own painted station scene: coffee machine, stove, blender, juicer, cutting board, tea & boba, shaker, soda fountain, topping station, cup sealer and infusion barrel.
+3. **One of the 12 mini-games per appliance action,** each with its own painted station scene: coffee machine, stove, blender, juicer, cutting board, tea & boba, shaker, soda fountain, topping station, cup sealer and infusion barrel.
 4. **Serve:** a star rating, a score bar and grade per step, a tip count-up, the customer's reaction, and confetti for 4.5★ and up.
 
 **Serve customers** runs a shift of 6 orders. **Practice from the menu** lets you pick any drink by category.
 
-## Mini-game types
+## The 12 mini-games
 
-Your 6 catalog types are all supported with the settings from `DrinkCatalog.Actions`. There are also 6 Cooking Mama-style types:
+There are 6 Papa's-style games (build it right) and 6 Cooking Mama-style games (skill and rhythm). Every one of your 56 catalog actions is assigned to one of them in `Config.Games`, so all 12 show up in real play:
 
-| Type | Play | Your actions using it by default |
+| Papa's-style | How it plays | Your actions |
 |---|---|---|
-| Tap | Tap N times before time runs out | pump, sprinkle*, … |
-| Swipe | Swipe N times (back and forth if `alternate`) | peel, zest, drizzle, strain |
-| Hold | Hold, then let go in the gold zone (spills if you hold too long) | blend, squeeze, steam, fizz, seal, … |
-| Circle | Drag in circles N turns | grind, froth, stir, whisk, melt |
-| Cook | The gauge rises by itself, stop it in the gold zone (°C shown if `maxTemp`) | pull_shot, brew_tea, heat_milk, cook_pearls, … |
-| Timing | Stop the moving marker in the zone N times | scoop |
-| **Trace** | Drag the knife along dotted cut lines | chop, slice, wedge |
-| **Mash** | Alternate ◀ ▶ fast (or A/D, ←/→) | crush, muddle, scrape |
-| **Sequence** | Follow the arrow pattern (buttons, arrows or WASD) | shake, shake_boba, dry_shake |
-| **Catch** | Slide the cup to catch toppings and dodge grey duds | sprinkle, add_topping |
-| **Steady** | Hold = up, let go = down; stay in a drifting gold zone | layer, float_cream |
-| **Drag** | Drag garnish pieces onto the dotted spots | garnish |
+| **Fill** | Hold to pour into the actual cup; let go on the dashed line (it spills if you overfill) | hot_water, fizz, soda_water, pour_soda, carbonate, nitro, seal |
+| **Blend** | Hold to blend while the arrow climbs Chunky → Regular → Smooth; let go on the target. The chunks in the jar melt away as you go | blend, puree, blend_fruit, squeeze, press, steam, scoop |
+| **Cook** | A kitchen timer dial ticks round (°C shown for heat); stop it in the gold wedge. There's a *ding* when it's ready, and leaving it too long fails | pull_shot, brew_coffee, brew_tea, heat_milk, cook_pearls, boil_cezve, steep_cold_brew, mash, boil_wort, ferment, age_oak, age_french_oak, cellar, torch |
+| **Stack** | The ticket shows the layers bottom → top; tap the recipe's ingredients in that order (with decoys) and each layer drops into the cup | layer, float_cream, spoon |
+| **Toppings** | Drag each topping (your real fruit picture when the drink has fruit) onto the marked spots for an even spread | garnish, add_topping |
+| **Drizzle** | Top view into the cup: hold and trace the sauce over the dotted swirl. You score for coverage, and messy sauce off the path costs points | drizzle, whip |
 
-\* The swaps come from `Config.GameOverrides`. Delete a line to get your original type back, or set it to `{}` to turn all swaps off. New actions in your catalog can use the new names directly (`game = "Trace"`).
+| Cooking Mama-style | How it plays | Your actions |
+|---|---|---|
+| **Trace** | Start at the gold dot and drag the knife along each dotted cut line | chop, slice, wedge |
+| **Peel** | Swipe strips off (back and forth when `alternate`) | peel, zest, strain |
+| **Mash** | Alternate ◀ ▶ as fast as you can (also A/D and ←/→) | crush, muddle, scrape |
+| **Stir** | Drag in circles for the number of turns | grind, grind_fine, froth, melt, simmer, stir, whisk |
+| **Shake** | Follow the arrow pattern ↑↓←→ (buttons, arrow keys or WASD) | shake, shake_boba, dry_shake |
+| **Catch** | Slide the cup to catch the falling drops and dodge the grey bits | pump, sprinkle |
 
-Grades after each step: **Perfect! / Great! / Good / Okay… / Oops!**, with fun variants from `Config.GradeLines`.
+To change a game, edit its line in `Config.Games`. An action that isn't listed plays by its catalog type: Hold → Fill, Cook → Cook, Timing → Blend, Tap → Mash, Swipe → Peel, Circle → Stir. New catalog actions can also name a game directly (`game = "Drizzle"`). Each game still uses your catalog settings: `fillTime`, the gold zone, `duration`, `maxTemp`, `turns` and `count`.
+
+Grades after each step: **Perfect! / Great! / Good / Okay… / Oops!**, with fun variants from `Config.GradeLines`. The words "Papa's" and "Cooking Mama" appear only in these docs and code comments, never on screen.
 
 ## Hooking up your 3D stations
 
@@ -90,6 +93,7 @@ The score comes back to the server in `Hooks.OnStepResult`.
 |---|---|
 | Pay tips with your coins | `AuraFizz2DServer` → `Hooks.Reward` (default adds to `leaderstats.Coins` if it exists) |
 | Only order drinks the player unlocked | `AuraFizz2DServer` → `Hooks.CanMake` |
+| Which game each action plays | `Config.Games` |
 | Tip per tier, customers per shift, open button, F key | `AuraFizz2D.Config` |
 | Which sound plays when | `Config.SoundMap` (uses the names in your `Sounds` module) |
 | Easier or harder time limits | `Config.TimeLimitScale` |
@@ -104,8 +108,8 @@ The 2D game follows your data. Add the new stations, items, actions and recipes 
 ## Checked here vs. in Studio
 
 - ✅ Every file compiles, and the **Roblox type check** (luau-lsp with the official Roblox definitions) is clean.
-- ✅ All 584 GUI property names were checked against the Roblox API dump.
-- ✅ Your real `DrinkRecipes` and `DrinkCatalog` load through the bridge: 232 drinks, every station, item, cup and action found, every action has a 2D game.
+- ✅ All 679 GUI property names were checked against the Roblox API dump.
+- ✅ Your real `DrinkRecipes` and `DrinkCatalog` load through the bridge: 232 drinks, every station, item, cup and action found, and all 12 games are used.
 - ❌ **Not yet seen running in Studio.** Layout, feel and timing still need a real playtest. Tell me what looks off, or send screenshots.
 
 ## Tools

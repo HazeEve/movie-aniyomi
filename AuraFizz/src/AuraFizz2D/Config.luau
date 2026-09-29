@@ -27,23 +27,36 @@ Config.TierOrder = { "Tasty", "Delish", "Mouthwatering", "Scrumptious", "Toothso
 -- Mini-game difficulty (1 = as tuned in DrinkCatalog; lower = more forgiving time limits)
 Config.TimeLimitScale = 1
 
--- Cooking-Mama-style variety: these actions from your DrinkCatalog play one of the extra
--- 2D game types instead of their original type. Delete a line (or set this to {}) to keep
--- your original Tap/Swipe/Hold/Circle/Cook/Timing games. New actions you add to your
--- catalog can also use these game names directly: game = "Trace", "Mash", ...
---   Trace     drag the knife along dotted cut lines
---   Mash      alternate left/right as fast as you can
---   Sequence  follow the arrow pattern (↑ ↓ ← →)
---   Catch     slide the cup to catch falling toppings, dodge the duds
---   Steady    keep the pour marker inside the drifting gold zone
---   Drag      drag garnish pieces onto the marked spots
-Config.GameOverrides = {
+-- The 12 mini-games (6 Papa's-style + 6 Cooking-Mama-style) and which of YOUR
+-- DrinkCatalog actions plays which. Change any line to swap a game. An action that
+-- isn't listed plays by its catalog type: Hold -> Fill, Cook -> Cook, Timing -> Blend,
+-- Tap -> Mash, Swipe -> Peel, Circle -> Stir. New catalog actions can also name a
+-- game directly: game = "Drizzle".
+--
+--  Papa's-style                                     Cooking-Mama-style
+--   Fill      pour into the cup, stop on the line    Trace   knife along dotted cut lines
+--   Blend     hold, let go on Chunky/Regular/Smooth  Peel    swipe strips off
+--   Cook      timer dial, stop in the gold wedge     Mash    alternate left/right fast
+--   Stack     add layers in the ticket's order       Stir    drag in circles
+--   Toppings  drag toppings evenly onto the drink    Shake   follow the arrow pattern
+--   Drizzle   trace sauce over the dotted swirl      Catch   catch falling drops in the cup
+Config.Games = {
+	-- Papa's-style
+	hot_water = "Fill", fizz = "Fill", soda_water = "Fill", pour_soda = "Fill", carbonate = "Fill", nitro = "Fill", seal = "Fill",
+	blend = "Blend", puree = "Blend", blend_fruit = "Blend", squeeze = "Blend", press = "Blend", steam = "Blend", scoop = "Blend",
+	pull_shot = "Cook", brew_coffee = "Cook", steep_cold_brew = "Cook", heat_milk = "Cook", boil_cezve = "Cook", mash = "Cook",
+	boil_wort = "Cook", brew_tea = "Cook", cook_pearls = "Cook", ferment = "Cook", age_oak = "Cook", age_french_oak = "Cook",
+	cellar = "Cook", torch = "Cook",
+	layer = "Stack", float_cream = "Stack", spoon = "Stack",
+	garnish = "Toppings", add_topping = "Toppings",
+	drizzle = "Drizzle", whip = "Drizzle",
+	-- Cooking-Mama-style
 	chop = "Trace", slice = "Trace", wedge = "Trace",
+	peel = "Peel", zest = "Peel", strain = "Peel",
 	crush = "Mash", muddle = "Mash", scrape = "Mash",
-	shake = "Sequence", shake_boba = "Sequence", dry_shake = "Sequence",
-	sprinkle = "Catch", add_topping = "Catch",
-	layer = "Steady", float_cream = "Steady",
-	garnish = "Drag",
+	grind = "Stir", grind_fine = "Stir", froth = "Stir", melt = "Stir", simmer = "Stir", stir = "Stir", whisk = "Stir",
+	shake = "Shake", shake_boba = "Shake", dry_shake = "Shake",
+	pump = "Catch", sprinkle = "Catch",
 }
 
 -- Fun lines shown with the grade after each step (picked at random).

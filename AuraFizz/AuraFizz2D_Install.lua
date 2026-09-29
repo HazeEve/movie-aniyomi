@@ -87,6 +87,7 @@ local function extrasFor(recipe)
 		if it and it.color then
 			if it.storage == "Fridge" and not extra.fruitColor then
 				extra.fruitColor = it.color
+				extra.fruitId = st[2]
 			elseif it.storage == "BarShelf" and not extra.syrupColor then
 				extra.syrupColor = it.color
 			end
@@ -654,6 +655,7 @@ function Cafe.makeDrink(recipe, look, orderId)
 				if it and it.color then
 					if it.storage == "Fridge" and not extra.fruitColor then
 						extra.fruitColor = it.color
+						extra.fruitId = st[2]
 					elseif it.storage == "BarShelf" and not extra.syrupColor then
 						extra.syrupColor = it.color
 					end
@@ -997,23 +999,36 @@ Config.TierOrder = { "Tasty", "Delish", "Mouthwatering", "Scrumptious", "Toothso
 -- Mini-game difficulty (1 = as tuned in DrinkCatalog; lower = more forgiving time limits)
 Config.TimeLimitScale = 1
 
--- Cooking-Mama-style variety: these actions from your DrinkCatalog play one of the extra
--- 2D game types instead of their original type. Delete a line (or set this to {}) to keep
--- your original Tap/Swipe/Hold/Circle/Cook/Timing games. New actions you add to your
--- catalog can also use these game names directly: game = "Trace", "Mash", ...
---   Trace     drag the knife along dotted cut lines
---   Mash      alternate left/right as fast as you can
---   Sequence  follow the arrow pattern (↑ ↓ ← →)
---   Catch     slide the cup to catch falling toppings, dodge the duds
---   Steady    keep the pour marker inside the drifting gold zone
---   Drag      drag garnish pieces onto the marked spots
-Config.GameOverrides = {
+-- The 12 mini-games (6 Papa's-style + 6 Cooking-Mama-style) and which of YOUR
+-- DrinkCatalog actions plays which. Change any line to swap a game. An action that
+-- isn't listed plays by its catalog type: Hold -> Fill, Cook -> Cook, Timing -> Blend,
+-- Tap -> Mash, Swipe -> Peel, Circle -> Stir. New catalog actions can also name a
+-- game directly: game = "Drizzle".
+--
+--  Papa's-style                                     Cooking-Mama-style
+--   Fill      pour into the cup, stop on the line    Trace   knife along dotted cut lines
+--   Blend     hold, let go on Chunky/Regular/Smooth  Peel    swipe strips off
+--   Cook      timer dial, stop in the gold wedge     Mash    alternate left/right fast
+--   Stack     add layers in the ticket's order       Stir    drag in circles
+--   Toppings  drag toppings evenly onto the drink    Shake   follow the arrow pattern
+--   Drizzle   trace sauce over the dotted swirl      Catch   catch falling drops in the cup
+Config.Games = {
+	-- Papa's-style
+	hot_water = "Fill", fizz = "Fill", soda_water = "Fill", pour_soda = "Fill", carbonate = "Fill", nitro = "Fill", seal = "Fill",
+	blend = "Blend", puree = "Blend", blend_fruit = "Blend", squeeze = "Blend", press = "Blend", steam = "Blend", scoop = "Blend",
+	pull_shot = "Cook", brew_coffee = "Cook", steep_cold_brew = "Cook", heat_milk = "Cook", boil_cezve = "Cook", mash = "Cook",
+	boil_wort = "Cook", brew_tea = "Cook", cook_pearls = "Cook", ferment = "Cook", age_oak = "Cook", age_french_oak = "Cook",
+	cellar = "Cook", torch = "Cook",
+	layer = "Stack", float_cream = "Stack", spoon = "Stack",
+	garnish = "Toppings", add_topping = "Toppings",
+	drizzle = "Drizzle", whip = "Drizzle",
+	-- Cooking-Mama-style
 	chop = "Trace", slice = "Trace", wedge = "Trace",
+	peel = "Peel", zest = "Peel", strain = "Peel",
 	crush = "Mash", muddle = "Mash", scrape = "Mash",
-	shake = "Sequence", shake_boba = "Sequence", dry_shake = "Sequence",
-	sprinkle = "Catch", add_topping = "Catch",
-	layer = "Steady", float_cream = "Steady",
-	garnish = "Drag",
+	grind = "Stir", grind_fine = "Stir", froth = "Stir", melt = "Stir", simmer = "Stir", stir = "Stir", whisk = "Stir",
+	shake = "Shake", shake_boba = "Shake", dry_shake = "Shake",
+	pump = "Catch", sprinkle = "Catch",
 }
 
 -- Fun lines shown with the grade after each step (picked at random).
@@ -1252,21 +1267,17 @@ return FX
 ]========])
 put("ModuleScript", "MiniGames", pkg, [========[
 --!nonstrict
--- AuraFizz2D · MiniGames — 2D versions of YOUR DrinkCatalog.Actions mini-games.
--- Each action names a game type + params; this file plays it and returns a score 0..1.
---   Tap     { count, label }                            tap N times before time runs out
---   Swipe   { count, alternate, vertical, label }       swipe N times (alternating = back & forth)
---   Hold    { fillTime, zoneMin, zoneMax, label }       hold, let go in the gold zone
---   Circle  { turns, label }                            drag in circles N turns
---   Cook    { duration, zoneMin, zoneMax, gauge, maxTemp, label }  it rises by itself, stop in the gold zone
---   Timing  { count, zone, speed, label }               stop the moving marker in the gold zone N times
--- Plus Cooking-Mama-style extras (see Config.GameOverrides):
---   Trace   { count }            drag the knife along dotted cut lines
---   Mash    { count }            alternate left/right fast
---   Sequence{ count }            follow the arrow pattern
---   Catch   { count }            move the cup to catch falling toppings
---   Steady  { fillTime, zoneMin, zoneMax }  keep the marker in a drifting zone
---   Drag    { count }            drag garnish pieces onto marked spots
+-- AuraFizz2D · MiniGames — 12 2D mini-games for YOUR DrinkCatalog actions.
+-- Config.Games says which game each action plays; any action not listed uses its
+-- catalog type (Hold -> Fill, Cook -> Cook, Timing -> Blend, Tap -> Mash, Swipe -> Peel, Circle -> Stir).
+--
+--  Papa's-style (build it right)                    Cooking-Mama-style (skill & rhythm)
+--   Fill      pour into the cup, stop on the line    Trace   knife along dotted cut lines
+--   Blend     hold, let go on Chunky/Regular/Smooth  Peel    swipe strips off (back & forth if alternate)
+--   Cook      timer dial, stop in the gold wedge     Mash    alternate left/right fast
+--   Stack     add the layers in the ticket's order   Stir    drag in circles N turns
+--   Toppings  drag toppings evenly onto the drink    Shake   follow the arrow pattern
+--   Drizzle   trace sauce over the dotted swirl      Catch   catch falling drops in the cup
 -- Every station gets its own painted scene (coffee machine, stove, blender, juicer, ...).
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -1617,307 +1628,6 @@ end
 -- ================= game types =================
 local Games = {}
 
-function Games.Tap(panel, action, ctx)
-	local prm = action.params or {}
-	local count = prm.count or 5
-	local L = layout(panel, action, ctx.label)
-	local rig = scene(L.art, action.station, ctx.color, ctx.extra)
-	local limit = (count * 0.75 + 3) * Config.TimeLimitScale
-	return run(panel, function(api)
-		local timer = UI.timer(panel, limit, { Position = P(0.04, 0.215), Size = P(0.92, 0.02) })
-		local pips = UI.pips(L.ctrl, count, { Position = P(0.5, 0.1), Size = P(1, 0.09) })
-		local btn = UI.button(L.ctrl, prm.label or "TAP", T.Accent, { Position = P(0.5, 0.48), Size = P(0.9, 0.3) })
-		local n = 0
-		api.on(btn.Activated, function()
-			n += 1
-			pips.set(n)
-			rig.set(n / count)
-			rig.kick(n)
-			FX.sound("Pick")
-			FX.sparkle(L.art, P(0.5, 0.55), nil, 3)
-			if n >= count then
-				timer.stop()
-				api.finish(speedScore(timer.elapsed(), count * 0.45, limit))
-			end
-		end)
-		api.on(RunService.Heartbeat, function(dt)
-			rig.tick(dt)
-			if timer.remaining() <= 0 then
-				api.finish(0.7 * n / count)
-			end
-		end)
-	end)
-end
-
-function Games.Swipe(panel, action, ctx)
-	local prm = action.params or {}
-	local count, vertical, alternate = prm.count or 4, prm.vertical == true, prm.alternate == true
-	local L = layout(panel, action, ctx.label)
-	local rig = scene(L.art, action.station, ctx.color, ctx.extra)
-	local limit = (count * 0.9 + 3.5) * Config.TimeLimitScale
-	return run(panel, function(api)
-		local timer = UI.timer(panel, limit, { Position = P(0.04, 0.215), Size = P(0.92, 0.02) })
-		local pips = UI.pips(L.ctrl, count, { Position = P(0.5, 0.06), Size = P(1, 0.08) })
-		local pad = UI.card(L.ctrl, T.PanelLight, { Position = P(0.05, 0.14), Size = P(0.9, 0.62), Radius = 26 })
-		local arrow = Paint.text(pad, "", { Color = T.Gold, Position = P(0.2, 0.25), Size = P(0.6, 0.5), ZIndex = pad.ZIndex + 2 })
-		Paint.text(pad, prm.label or "SWIPE", { Color = T.TextSoft, Position = P(0.1, 0.8), Size = P(0.8, 0.12), ZIndex = pad.ZIndex + 2 })
-		local dir = 1 -- +1 = right/down, -1 = left/up
-		local function showArrow()
-			if vertical then
-				arrow.Text = if dir > 0 then "⬇" else "⬆"
-			else
-				arrow.Text = if dir > 0 then "➡" else "⬅"
-			end
-		end
-		showArrow()
-		local n, start, armed = 0, nil, true
-		api.on(pad.InputBegan, function(input)
-			if UI.isPress(input) then
-				start = UI.pointer(input)
-			end
-		end)
-		api.on(UserInputService.InputChanged, function(input)
-			if not start or not armed then
-				return
-			end
-			if input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch then
-				return
-			end
-			local pos = UI.pointer(input)
-			local d = if vertical then pos.Y - start.Y else pos.X - start.X
-			local need = (if vertical then pad.AbsoluteSize.Y else pad.AbsoluteSize.X) * 0.35
-			if d * dir >= need then
-				n += 1
-				pips.set(n)
-				rig.set(n / count)
-				rig.kick(n)
-				FX.sound(if action.station == "MixingStation" then "Fizz" else "Pick")
-				if rig.vessel then
-					local base = rig.vessel.Position
-					FX.tween(rig.vessel, 0.08, { Position = base + P(0, if vertical then 0.04 * dir else 0) })
-					task.delay(0.09, function()
-						if rig.vessel.Parent then
-							FX.tween(rig.vessel, 0.1, { Position = base })
-						end
-					end)
-				end
-				start = pos
-				if alternate then
-					dir = -dir
-				else
-					armed = false -- lift and swipe again
-				end
-				showArrow()
-				if n >= count then
-					timer.stop()
-					api.finish(speedScore(timer.elapsed(), count * 0.55, limit))
-				end
-			end
-		end)
-		api.on(UserInputService.InputEnded, function(input)
-			if UI.isPress(input) then
-				start, armed = nil, true
-			end
-		end)
-		api.on(RunService.Heartbeat, function(dt)
-			rig.tick(dt)
-			if timer.remaining() <= 0 then
-				api.finish(0.7 * n / count)
-			end
-		end)
-	end)
-end
-
-function Games.Hold(panel, action, ctx)
-	local prm = action.params or {}
-	local fillTime, a, b = prm.fillTime or 2, prm.zoneMin or 0.72, prm.zoneMax or 0.9
-	local L = layout(panel, action, ctx.label)
-	local rig = scene(L.art, action.station, ctx.color, ctx.extra)
-	return run(panel, function(api)
-		local gauge = UI.gauge(L.ctrl, a, b, { Vertical = true, Position = P(0.08, 0.02), Size = P(0.22, 0.8), Color = ctx.color })
-		local btn = UI.button(L.ctrl, prm.label or "HOLD", T.Accent, { Position = P(0.66, 0.44), Size = P(0.62, 0.3) })
-		local holding, p = false, 0
-		local sfx = if action.station == "SodaFountain" then "Fizz" else "Pour"
-		api.on(btn.InputBegan, function(input)
-			if UI.isPress(input) and api.alive() then
-				holding = true
-				rig.flow = 1
-				FX.sound(sfx)
-			end
-		end)
-		local function release()
-			if holding then
-				holding = false
-				rig.flow = 0
-				api.finish(zoneScore(p, a, b))
-			end
-		end
-		api.on(btn.InputEnded, function(input)
-			if UI.isPress(input) then
-				release()
-			end
-		end)
-		api.on(UserInputService.InputEnded, function(input)
-			if UI.isPress(input) then
-				release()
-			end
-		end)
-		api.on(RunService.Heartbeat, function(dt)
-			if holding then
-				p += dt / fillTime
-				if p >= 1.15 then -- spilled!
-					holding = false
-					rig.flow = 0
-					FX.wobble(L.art, 6, 0.4)
-					api.finish(0.15)
-				end
-			end
-			gauge.set(p)
-			rig.set(p)
-			rig.tick(dt)
-		end)
-	end)
-end
-
-function Games.Circle(panel, action, ctx)
-	local prm = action.params or {}
-	local turns = prm.turns or 2
-	local L = layout(panel, action, ctx.label)
-	local rig = scene(L.art, action.station, ctx.color, ctx.extra)
-	local limit = (turns * 3.2 + 3) * Config.TimeLimitScale
-	return run(panel, function(api)
-		local timer = UI.timer(panel, limit, { Position = P(0.04, 0.215), Size = P(0.92, 0.02) })
-		local ring = UI.card(L.ctrl, T.PanelLight, { AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.5, 0.42), Size = P(0.9, 0.9), Corner = UDim.new(0.5, 0) })
-		Paint.new("UIAspectRatioConstraint", { AspectRatio = 1, Parent = ring })
-		local inner = UI.card(ring, T.Panel, { AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.5, 0.5), Size = P(0.56, 0.56), Corner = UDim.new(0.5, 0) })
-		local pct = Paint.text(inner, "0%", { Color = T.Gold, Position = P(0.15, 0.3), Size = P(0.7, 0.4), ZIndex = inner.ZIndex + 1 })
-		Paint.text(ring, prm.label or "STIR", { Color = T.TextSoft, AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 1.02), Size = P(1, 0.12) })
-		local knob = Paint.blob(ring, T.Accent, { Position = P(0.5, 0.1), Size = P(0.2, 0.2), ZIndex = ring.ZIndex + 3 })
-		local dragging, lastA, total = false, nil, 0
-		local goal = turns * math.pi * 2
-		local function angleAt(pos)
-			local c = ring.AbsolutePosition + ring.AbsoluteSize / 2
-			return math.atan2(pos.Y - c.Y, pos.X - c.X)
-		end
-		api.on(ring.InputBegan, function(input)
-			if UI.isPress(input) then
-				dragging = true
-				lastA = angleAt(UI.pointer(input))
-			end
-		end)
-		api.on(UserInputService.InputEnded, function(input)
-			if UI.isPress(input) then
-				dragging = false
-			end
-		end)
-		api.on(UserInputService.InputChanged, function(input)
-			if not dragging then
-				return
-			end
-			if input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch then
-				return
-			end
-			local ang = angleAt(UI.pointer(input))
-			local d = ang - lastA
-			if d > math.pi then
-				d -= math.pi * 2
-			elseif d < -math.pi then
-				d += math.pi * 2
-			end
-			lastA = ang
-			total += d
-			knob.Position = P(0.5 + math.cos(ang) * 0.4, 0.5 + math.sin(ang) * 0.4)
-			local prog = math.clamp(math.abs(total) / goal, 0, 1)
-			pct.Text = string.format("%d%%", math.floor(prog * 100))
-			rig.spin = math.abs(d) * 60
-			rig.set(prog)
-			if prog >= 1 then
-				timer.stop()
-				api.finish(speedScore(timer.elapsed(), turns * 1.6, limit))
-			end
-		end)
-		api.on(RunService.Heartbeat, function(dt)
-			rig.spin *= 0.9
-			rig.tick(dt)
-			if timer.remaining() <= 0 then
-				api.finish(0.7 * math.clamp(math.abs(total) / goal, 0, 1))
-			end
-		end)
-	end)
-end
-
-function Games.Cook(panel, action, ctx)
-	local prm = action.params or {}
-	local duration, a, b = prm.duration or 4, prm.zoneMin or 0.72, prm.zoneMax or 0.9
-	local L = layout(panel, action, ctx.label)
-	local rig = scene(L.art, action.station, ctx.color, ctx.extra)
-	return run(panel, function(api)
-		local gauge = UI.gauge(L.ctrl, a, math.min(b, 1), { Position = P(0.05, 0.12), Size = P(0.9, 0.1), Color = T.Warn })
-		Paint.text(L.ctrl, prm.gauge or "Progress", { Color = T.TextSoft, Position = P(0.05, 0.02), Size = P(0.5, 0.08), AlignX = Enum.TextXAlignment.Left })
-		local readout = Paint.text(L.ctrl, "", { Color = T.Gold, Position = P(0.5, 0.02), Size = P(0.45, 0.08), AlignX = Enum.TextXAlignment.Right })
-		local btn = UI.button(L.ctrl, prm.label or "STOP", T.Accent, { Position = P(0.5, 0.52), Size = P(0.9, 0.28) })
-		local p = 0
-		rig.flow = 1
-		api.on(btn.Activated, function()
-			rig.flow = 0
-			api.finish(zoneScore(p, a, b))
-		end)
-		api.on(RunService.Heartbeat, function(dt)
-			p += dt / duration
-			gauge.set(p)
-			rig.set(p)
-			rig.tick(dt)
-			if prm.maxTemp then
-				readout.Text = string.format("%d°C", math.floor(math.min(p, 1.2) * prm.maxTemp))
-			else
-				readout.Text = string.format("%d%%", math.floor(math.min(p, 1.2) * 100))
-			end
-			if p >= math.max(b, 1) + 0.25 then -- left too long: burnt / over-steeped
-				rig.flow = 0
-				api.finish(0.2)
-			end
-		end)
-	end)
-end
-
-function Games.Timing(panel, action, ctx)
-	local prm = action.params or {}
-	local count, width, speed = prm.count or 2, prm.zone or 0.2, prm.speed or 0.9
-	local L = layout(panel, action, ctx.label)
-	local rig = scene(L.art, action.station, ctx.color, ctx.extra)
-	return run(panel, function(api)
-		local pips = UI.pips(L.ctrl, count, { Position = P(0.5, 0.06), Size = P(1, 0.08) })
-		local center = rng:NextNumber(width / 2 + 0.05, 1 - width / 2 - 0.05)
-		local gauge = UI.gauge(L.ctrl, center - width / 2, center + width / 2, { Position = P(0.05, 0.18), Size = P(0.9, 0.1), Color = T.Steel })
-		local marker = Paint.blob(gauge.frame, T.Text, { Position = P(0, 0.5), Size = P(0.03, 1.3), Corner = 0.4, ZIndex = gauge.frame.ZIndex + 4, Blotch = false })
-		local btn = UI.button(L.ctrl, prm.label or "NOW!", T.Accent, { Position = P(0.5, 0.56), Size = P(0.9, 0.28) })
-		local t, n, sum = 0, 0, 0
-		local pos = 0
-		api.on(btn.Activated, function()
-			n += 1
-			local s = zoneScore(pos, center - width / 2, center + width / 2)
-			sum += s
-			pips.set(n)
-			rig.set(n / count)
-			rig.kick(n)
-			FX.sound(if s > 0.8 then "Pick" else "Wrong")
-			if n >= count then
-				api.finish(sum / count)
-			else
-				center = rng:NextNumber(width / 2 + 0.05, 1 - width / 2 - 0.05)
-				gauge.setZone(center - width / 2, center + width / 2)
-			end
-		end)
-		api.on(RunService.Heartbeat, function(dt)
-			t += dt * speed
-			pos = 1 - math.abs((t % 2) - 1) -- ping-pong 0..1
-			marker.Position = P(pos, 0.5)
-			rig.tick(dt)
-		end)
-	end)
-end
-
--- ================= Cooking-Mama-style extras =================
 -- pointer -> 0..1 coordinates inside a frame
 local function inFrame(frame, pos)
 	local rel = pos - frame.AbsolutePosition
@@ -1926,6 +1636,568 @@ end
 local function isMove(input)
 	return input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch
 end
+
+-- ================================================================
+-- PAPA'S-STYLE GAMES
+-- ================================================================
+
+-- a cup of the recipe drawn in the art area; returns vessel + info (holder scale == art scale)
+local function recipeCup(art, ctx, opts)
+	local holder = Paint.new("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 1), Size = P(0.9, 0.9),
+		ZIndex = art.ZIndex + 2, Parent = art })
+	local vessel, info = Paint.cup(holder, ctx.recipe and ctx.recipe.cup or "tall_glass", { Behind = T.Panel, NoLid = true })
+	-- convert holder-scale y to art-scale y
+	info.toArt = function(y)
+		return 0.1 + y * 0.9
+	end
+	info.holder = holder
+	return vessel, info
+end
+
+local function liquidIn(vessel, color)
+	local liquid = Paint.new("Frame", { Name = "Liquid", AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 1), Size = P(1, 0),
+		ZIndex = vessel.ZIndex + 1, Parent = vessel })
+	Paint.shade(liquid, color, 0)
+	local surface = Paint.blob(vessel, Paint.tone(color).light, { AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.5, 1), Size = P(1, 0.035),
+		ZIndex = vessel.ZIndex + 2, Blotch = false })
+	surface.BackgroundTransparency = 0.3
+	return function(level)
+		level = math.clamp(level, 0, 1)
+		liquid.Size = P(1, level)
+		surface.Position = P(0.5, 1 - level)
+		surface.Visible = level > 0.01
+	end
+end
+
+-- Fill: hold to pour into the actual cup and let go on the dashed line.
+function Games.Fill(panel, action, ctx)
+	local prm = action.params or {}
+	local fillTime, a, b = prm.fillTime or 2, prm.zoneMin or 0.75, prm.zoneMax or 0.9
+	local L = layout(panel, action, ctx.label)
+	local vessel, info = recipeCup(L.art, ctx)
+	local setLevel = liquidIn(vessel, ctx.color)
+	-- gold band + dashed line where it should stop
+	local band = Paint.new("Frame", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 1 - a), Size = P(1, b - a),
+		BackgroundColor3 = Paint.C(T.Gold), BackgroundTransparency = 0.72, ZIndex = vessel.ZIndex + 3, Parent = vessel })
+	for k = 0, 5 do
+		local dash = Paint.new("Frame", { AnchorPoint = Vector2.new(0, 0.5), Position = P(k / 6 + 0.02, 1 - (a + b) / 2), Size = P(0.1, 0.012),
+			BackgroundColor3 = Color3.new(1, 1, 1), ZIndex = vessel.ZIndex + 4, Parent = vessel })
+		Paint.round(dash, 0.5)
+	end
+	-- the spout above the cup
+	local spoutColor = if action.station == "SodaFountain" then "#8ec5f0" elseif action.station == "CoffeeMachine" then "#8c93a6" else "#c7b3e6"
+	Paint.blob(L.art, spoutColor, { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0), Size = P(0.5, 0.12), Corner = 0.3, ZIndex = L.art.ZIndex + 3 })
+	Paint.blob(L.art, "#3b4763", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.11), Size = P(0.08, 0.06), Corner = 0.3, ZIndex = L.art.ZIndex + 3 })
+	local stream = Paint.new("Frame", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.16), Size = P(0.035, 0), ZIndex = L.art.ZIndex + 1, Parent = L.art })
+	Paint.round(stream, 0.5)
+	Paint.shade(stream, ctx.color, 0)
+	local st = info.style
+	return run(panel, function(api)
+		local btn = UI.button(L.ctrl, prm.label or "HOLD TO POUR", T.Accent, { Position = P(0.5, 0.4), Size = P(0.9, 0.3) })
+		Paint.text(L.ctrl, "Let go on the dashed line", { Color = T.TextSoft, Position = P(0, 0.62), Size = P(1, 0.08) })
+		local holding, p = false, 0
+		local sfx = if action.station == "SodaFountain" then "Fizz" else "Pour"
+		api.on(btn.InputBegan, function(input)
+			if UI.isPress(input) and api.alive() then
+				holding = true
+				FX.sound(sfx)
+			end
+		end)
+		local function release()
+			if holding then
+				holding = false
+				stream.Size = P(0.035, 0)
+				api.finish(zoneScore(p, a, b))
+			end
+		end
+		api.on(UserInputService.InputEnded, function(input)
+			if UI.isPress(input) then
+				release()
+			end
+		end)
+		api.on(RunService.Heartbeat, function(dt)
+			if holding then
+				p += dt / fillTime
+				if p >= 1.1 then -- overflow!
+					holding = false
+					stream.Size = P(0.035, 0)
+					for _ = 1, 6 do
+						local d = Paint.blob(L.art, ctx.color, { Position = P(0.5 + rng:NextNumber(-0.2, 0.2), info.toArt(info.top)), Size = P(0.04, 0.04), ZIndex = L.art.ZIndex + 9, Blotch = false })
+						FX.tween(d, 0.6, { Position = P(d.Position.X.Scale + rng:NextNumber(-0.1, 0.1), 0.98), BackgroundTransparency = 1 })
+					end
+					FX.floatText(panel, "Spilled!", T.Bad, P(0.3, 0.3), P(0.4, 0.1))
+					api.finish(0.15)
+					return
+				end
+			end
+			setLevel(p)
+			band.BackgroundTransparency = if p >= a and p <= b then 0.45 else 0.72
+			local surfaceY = info.toArt(info.bottom - math.min(p, 1) * st.h)
+			stream.Size = if holding then P(0.035, math.max(0, surfaceY - 0.16)) else P(0.035, 0)
+		end)
+	end)
+end
+
+-- Blend: hold to blend; the arrow climbs Chunky -> Regular -> Smooth; let go in the target.
+local BLEND_BANDS = { { "Chunky", 0, 0.42 }, { "Regular", 0.42, 0.7 }, { "Smooth", 0.7, 1 } }
+function Games.Blend(panel, action, ctx)
+	local prm = action.params or {}
+	local a, b, fillTime, rounds
+	if prm.zoneMin then
+		a, b, fillTime, rounds = prm.zoneMin, prm.zoneMax or 0.9, prm.fillTime or 2, 1
+	else -- timing-style params (count, zone, speed)
+		local w = prm.zone or 0.2
+		a, b, fillTime, rounds = 0.75 - w / 2, 0.75 + w / 2, 1.4 / (prm.speed or 0.9), math.clamp(prm.count or 1, 1, 3)
+	end
+	local target = "Regular"
+	for _, band in BLEND_BANDS do
+		local c = (a + b) / 2
+		if c >= band[2] and c < band[3] + 1e-6 then
+			target = band[1]
+		end
+	end
+	local L = layout(panel, action, ctx.label)
+	local rig = scene(L.art, action.station, ctx.color, ctx.extra)
+	-- chunks in the jar that melt away as you blend
+	local chunks = {}
+	if rig.vessel then
+		for i = 1, 7 do
+			local c = Paint.blob(rig.vessel, ctx.extra.fruitColor or Paint.tone(ctx.color).shade, { Position = P(0.15 + (i % 4) * 0.23, 0.55 + (i % 3) * 0.14),
+				Size = P(0.16, 0.1), Corner = 0.3, Rotation = i * 25, ZIndex = rig.vessel.ZIndex + 3 })
+			chunks[i] = c
+		end
+	end
+	return run(panel, function(api)
+		Paint.text(L.ctrl, "Make it " .. string.upper(target), { Color = T.Gold, Position = P(0.34, 0.02), Size = P(0.64, 0.09) })
+		local meter = UI.card(L.ctrl, "#1b2131", { Position = P(0.04, 0.02), Size = P(0.24, 0.82), Corner = UDim.new(0.3, 0), Clip = true })
+		for _, band in BLEND_BANDS do
+			local isT = band[1] == target
+			local f = Paint.new("Frame", { AnchorPoint = Vector2.new(0, 1), Position = P(0, 1 - band[2]), Size = P(1, band[3] - band[2]),
+				BackgroundColor3 = Paint.C(if isT then T.Gold elseif band[1] == "Chunky" then "#8c93a6" elseif band[1] == "Regular" then "#8ec5f0" else "#c7b3e6"),
+				BackgroundTransparency = if isT then 0.1 else 0.6, ZIndex = meter.ZIndex + 1, Parent = meter })
+			Paint.text(f, band[1], { Color = T.TextDark, Rotation = 0, Position = P(0.05, 0.35), Size = P(0.9, 0.3), ZIndex = f.ZIndex + 1, MaxSize = 16 })
+		end
+		local arrow = Paint.blob(meter, T.Text, { Position = P(0.5, 1), Size = P(1.1, 0.03), Corner = 0.4, ZIndex = meter.ZIndex + 4, Blotch = false })
+		local pips = UI.pips(L.ctrl, rounds, { Position = P(0.66, 0.16), Size = P(0.6, 0.06) })
+		local btn = UI.button(L.ctrl, prm.label or "HOLD TO BLEND", T.Accent, { Position = P(0.66, 0.46), Size = P(0.62, 0.28) })
+		local holding, p, round, sum = false, 0, 1, 0
+		api.on(btn.InputBegan, function(input)
+			if UI.isPress(input) and api.alive() then
+				holding = true
+				rig.flow = 1
+				FX.sound("Pour")
+			end
+		end)
+		local function score(s)
+			sum += s
+			pips.set(round)
+			if round >= rounds then
+				api.finish(sum / rounds)
+			else
+				round += 1
+				p = 0
+				FX.floatText(panel, (UI.grade(s, true)), select(2, UI.grade(s)), P(0.3, 0.4), P(0.4, 0.1))
+			end
+		end
+		api.on(UserInputService.InputEnded, function(input)
+			if UI.isPress(input) and holding then
+				holding = false
+				rig.flow = 0
+				score(zoneScore(p, a, b))
+			end
+		end)
+		api.on(RunService.Heartbeat, function(dt)
+			if holding then
+				p += dt / fillTime
+				if p >= 1.08 then
+					holding = false
+					rig.flow = 0
+					FX.floatText(panel, "Over-blended!", T.Bad, P(0.3, 0.3), P(0.4, 0.1))
+					score(0.3)
+				end
+			end
+			arrow.Position = P(0.5, 1 - math.clamp(p, 0, 1))
+			rig.spin = if holding then 6 else 0
+			rig.set(0.5 + p * 0.4)
+			for i, c in chunks do
+				local k = math.clamp(1 - p * 1.2 + (i % 3) * 0.05, 0, 1)
+				c.Size = P(0.16 * k, 0.1 * k)
+				c.Rotation += if holding then dt * 400 else 0
+			end
+			rig.tick(dt)
+		end)
+	end)
+end
+
+-- Cook: a kitchen timer dial; stop it while the hand is in the gold wedge.
+function Games.Cook(panel, action, ctx)
+	local prm = action.params or {}
+	local duration = prm.duration or (prm.fillTime and prm.fillTime * 2.2) or 4
+	local a, b = prm.zoneMin or 0.72, prm.zoneMax or 0.9
+	local L = layout(panel, action, ctx.label)
+	local rig = scene(L.art, action.station, ctx.color, ctx.extra)
+	return run(panel, function(api)
+		local dial = UI.card(L.ctrl, "#fbf3e2", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0), Size = P(0.78, 0.78), Corner = UDim.new(0.5, 0) })
+		Paint.new("UIAspectRatioConstraint", { AspectRatio = 1, Parent = dial })
+		local dz = dial.ZIndex
+		for k = 0, 35 do -- tick dots, gold inside the target wedge
+			local p = k / 36
+			local ang = p * math.pi * 2 - math.pi / 2
+			local inZone = p >= a and p <= math.min(b, 1)
+			local dot = Paint.new("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.5 + math.cos(ang) * 0.42, 0.5 + math.sin(ang) * 0.42),
+				Size = if inZone then P(0.075, 0.075) else P(0.04, 0.04), BackgroundColor3 = Paint.C(if inZone then T.Gold else "#c9bfb0"), ZIndex = dz + 1, Parent = dial })
+			Paint.round(dot, 0.5)
+		end
+		local handPivot = Paint.new("Frame", { BackgroundTransparency = 1, Size = P(1, 1), ZIndex = dz + 2, Parent = dial })
+		local hand = Paint.new("Frame", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 0.5), Size = P(0.035, 0.36),
+			BackgroundColor3 = Paint.C("#3a2f45"), ZIndex = dz + 3, Parent = handPivot })
+		Paint.round(hand, 0.5)
+		Paint.blob(dial, T.Accent, { Size = P(0.12, 0.12), ZIndex = dz + 4, Blotch = false })
+		local readout = Paint.text(dial, "", { Color = T.TextDark, Position = P(0.25, 0.6), Size = P(0.5, 0.14), ZIndex = dz + 5 })
+		Paint.text(dial, prm.gauge or "Timer", { Color = "#8a7a90", Position = P(0.25, 0.26), Size = P(0.5, 0.09), ZIndex = dz + 5 })
+		local btn = UI.button(L.ctrl, prm.label or "STOP", T.Accent, { Position = P(0.5, 0.88), Size = P(0.8, 0.16) })
+		local p, dinged = 0, false
+		rig.flow = 1
+		api.on(btn.Activated, function()
+			rig.flow = 0
+			api.finish(zoneScore(p, a, b))
+		end)
+		api.on(RunService.Heartbeat, function(dt)
+			p += dt / duration
+			handPivot.Rotation = math.min(p, 1.3) * 360
+			rig.set(p)
+			rig.tick(dt)
+			if not dinged and p >= a then
+				dinged = true
+				FX.sound("Order")
+				FX.bounce(dial, 0.06)
+			end
+			readout.Text = if prm.maxTemp then string.format("%d°C", math.floor(math.min(p, 1.2) * prm.maxTemp)) else string.format("%d%%", math.floor(math.min(p, 1.2) * 100))
+			if p >= math.max(b, 1) + 0.25 then
+				rig.flow = 0
+				FX.floatText(panel, "Too long!", T.Bad, P(0.3, 0.3), P(0.4, 0.1))
+				api.finish(0.2)
+			end
+		end)
+	end)
+end
+
+-- Stack: add the layers in the exact order on the ticket.
+function Games.Stack(panel, action, ctx)
+	local L = layout(panel, action, ctx.label)
+	local vessel = recipeCup(L.art, ctx)
+	-- layers = the recipe's ingredients in step order (up to 4); decoys from the same shelves
+	local layers, seen, shelves = {}, {}, {}
+	for _, st in ctx.recipe and ctx.recipe.steps or {} do
+		local it = Bridge.item(st[2])
+		if it and it.storage and st[1] ~= "CupRack" and not seen[st[2]] and #layers < 4 then
+			seen[st[2]] = true
+			table.insert(layers, st[2])
+			shelves[it.storage] = true
+		end
+	end
+	local usePictures = #layers >= 2
+	if not usePictures then
+		layers = {}
+		local grad = if ctx.recipe then Bridge.liquid(ctx.recipe) else { ctx.color }
+		for i = 1, math.max(#grad, 3) do
+			table.insert(layers, grad[((i - 1) % #grad) + 1])
+		end
+	end
+	local options = table.clone(layers)
+	if usePictures then
+		local pool = {}
+		for shelf in shelves do
+			for _, id in Bridge.itemsIn(shelf) do
+				if not seen[id] then
+					table.insert(pool, id)
+				end
+			end
+		end
+		for _ = 1, math.min(2, #pool) do
+			table.insert(options, table.remove(pool, rng:NextInteger(1, #pool)))
+		end
+	end
+	for i = #options, 2, -1 do
+		local j = rng:NextInteger(1, i)
+		options[i], options[j] = options[j], options[i]
+	end
+	local n = #layers
+	local limit = (n * 2 + 4) * Config.TimeLimitScale
+	local function colorOf(v)
+		if usePictures then
+			local it = Bridge.item(v)
+			return it and it.color or ctx.color
+		end
+		return v
+	end
+	return run(panel, function(api)
+		local timer = UI.timer(panel, limit, { Position = P(0.04, 0.215), Size = P(0.92, 0.02) })
+		-- the ticket: order of layers, bottom first
+		local ticket = UI.card(L.ctrl, T.Paper, { Position = P(0.02, 0), Size = P(0.96, 0.2), Radius = 12 })
+		Paint.text(ticket, "Order (bottom → top)", { Color = "#8a7a90", Position = P(0.04, 0.02), Size = P(0.9, 0.28), AlignX = Enum.TextXAlignment.Left, ZIndex = ticket.ZIndex + 1 })
+		local steps = {}
+		for i, v in layers do
+			local c = UI.card(ticket, colorOf(v), { Position = P(0.04 + (i - 1) * (0.92 / n), 0.36), Size = P(0.92 / n - 0.02, 0.56), Corner = UDim.new(0.3, 0) })
+			Paint.text(c, tostring(i), { Color = T.TextDark, Position = P(0.05, 0.1), Size = P(0.3, 0.8), ZIndex = c.ZIndex + 1 })
+			if usePictures then
+				local ic = Paint.new("Frame", { BackgroundTransparency = 1, Position = P(0.36, 0.05), Size = P(0.6, 0.9), ZIndex = c.ZIndex + 1, Parent = c })
+				Paint.new("UIAspectRatioConstraint", { AspectRatio = 1, Parent = ic })
+				Bridge.icon(ic, "item", v, { Behind = T.Paper })
+			end
+			steps[i] = c
+		end
+		local grid = Paint.new("Frame", { BackgroundTransparency = 1, Position = P(0, 0.25), Size = P(1, 0.58), ZIndex = L.ctrl.ZIndex + 1, Parent = L.ctrl })
+		Paint.new("UIGridLayout", { CellSize = P(0.31, 0.46), CellPadding = P(0.02, 0.04), Parent = grid })
+		local nextI, mistakes = 1, 0
+		local layerH = 0.86 / n
+		for _, v in options do
+			local b = Paint.new("TextButton", { Text = "", AutoButtonColor = false, ZIndex = grid.ZIndex + 1, Parent = grid })
+			Paint.round(b, UDim.new(0, 14))
+			Paint.shade(b, T.PanelLight, 60, true)
+			local ic = Paint.new("Frame", { BackgroundTransparency = 1, Position = P(0.15, 0.04), Size = P(0.7, 0.64), ZIndex = b.ZIndex + 1, Parent = b })
+			Paint.new("UIAspectRatioConstraint", { AspectRatio = 1, Parent = ic })
+			if usePictures then
+				Bridge.icon(ic, "item", v, { Behind = T.PanelLight })
+				Paint.text(b, Bridge.itemName(v), { Color = T.TextSoft, Position = P(0.04, 0.7), Size = P(0.92, 0.26), ZIndex = b.ZIndex + 1, MaxSize = 16 })
+			else
+				Paint.blob(ic, v, { Size = P(0.9, 0.9) })
+			end
+			api.on(b.Activated, function()
+				if not api.alive() then
+					return
+				end
+				if layers[nextI] == v then
+					local band = Paint.new("Frame", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 1 - (nextI - 1) * layerH), Size = P(1, layerH + 0.004),
+						ZIndex = vessel.ZIndex + 1, Parent = vessel })
+					Paint.shade(band, colorOf(v), 0)
+					FX.drop(band, 0.6)
+					Paint.shade(steps[nextI], T.Good, 60, true)
+					FX.bounce(steps[nextI], 0.3)
+					FX.sound("Pick")
+					nextI += 1
+					if nextI > n then
+						timer.stop()
+						api.finish(n / (n + mistakes * 0.6) * speedScore(timer.elapsed(), n * 1.1, limit))
+					end
+				else
+					mistakes += 1
+					FX.sound("Wrong")
+					FX.wobble(b, 10, 0.3)
+					FX.floatText(panel, "Wrong order!", T.Bad, P(0.3, 0.3), P(0.4, 0.08))
+				end
+			end)
+		end
+		api.on(RunService.Heartbeat, function()
+			if timer.remaining() <= 0 then
+				api.finish(0.7 * (nextI - 1) / n)
+			end
+		end)
+	end)
+end
+
+-- Toppings: drag each topping onto a marked spot on the drink (even placement scores best).
+function Games.Toppings(panel, action, ctx)
+	local prm = action.params or {}
+	local n = math.clamp(prm.count or 3, 2, 5)
+	local L = layout(panel, action, ctx.label)
+	local rig = scene(L.art, action.station, ctx.color, ctx.extra)
+	local limit = (n * 2.2 + 4) * Config.TimeLimitScale
+	local pieceColor = ctx.extra.fruitColor or "#55a444"
+	return run(panel, function(api)
+		local timer = UI.timer(panel, limit, { Position = P(0.04, 0.215), Size = P(0.92, 0.02) })
+		Paint.text(L.ctrl, prm.label or "DECORATE", { Color = T.Gold, Position = P(0, 0.04), Size = P(1, 0.12) })
+		Paint.text(L.ctrl, "Drag each piece onto a dotted spot", { Color = T.TextSoft, Position = P(0, 0.17), Size = P(1, 0.07) })
+		local tray = UI.card(L.ctrl, T.PanelLight, { Position = P(0.05, 0.3), Size = P(0.9, 0.44), Radius = 20 })
+		-- target spots across the top of the drink
+		local topY = (rig.vtop or 0.5) - 0.02
+		local spots = {}
+		for i = 1, n do
+			local x = 0.5 + (i - (n + 1) / 2) * (0.34 / n)
+			local ring = Paint.new("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = P(x, topY), Size = P(0.09, 0.09),
+				BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 0.65, ZIndex = L.art.ZIndex + 9, Parent = L.art })
+			Paint.round(ring, 0.5)
+			spots[i] = { pos = Vector2.new(x, topY), ring = ring, used = false }
+			FX.pop(ring, i * 0.08)
+		end
+		local placed, accSum = 0, 0
+		local dragging, grabOffset = nil, Vector2.zero
+		local homes = {}
+		for i = 1, n do
+			local col = (i - 1) % 3
+			local rowi = math.floor((i - 1) / 3)
+			local piece = Paint.new("TextButton", { Text = "", BackgroundTransparency = 1, AutoButtonColor = false, AnchorPoint = Vector2.new(0.5, 0.5),
+				Position = P(0.2 + col * 0.3, 0.3 + rowi * 0.42), Size = P(0.26, 0.36), ZIndex = tray.ZIndex + 3, Parent = tray })
+			Paint.new("UIAspectRatioConstraint", { AspectRatio = 1, Parent = piece })
+			if ctx.extra.fruitId then
+				Bridge.icon(piece, "item", ctx.extra.fruitId, { Behind = T.PanelLight })
+			else
+				Paint.art(piece, { Shape = if ctx.extra.fruitColor then "slice" else "leaf", Color = pieceColor })
+			end
+			homes[piece] = piece.Position
+			api.on(piece.InputBegan, function(input)
+				if UI.isPress(input) and not piece:GetAttribute("Placed") then
+					dragging = piece
+					-- lift the piece to the panel so it can travel over the drink
+					local abs = piece.AbsolutePosition + piece.AbsoluteSize / 2
+					local size = piece.AbsoluteSize
+					piece.Parent = panel
+					piece.ZIndex = panel.ZIndex + 30
+					piece.Size = UDim2.fromOffset(size.X, size.Y)
+					piece.Position = UDim2.fromOffset(abs.X - panel.AbsolutePosition.X, abs.Y - panel.AbsolutePosition.Y)
+					grabOffset = abs - UI.pointer(input)
+					FX.bounce(piece, 0.2)
+				end
+			end)
+		end
+		api.on(UserInputService.InputChanged, function(input)
+			if dragging and isMove(input) then
+				local p = UI.pointer(input) + grabOffset - panel.AbsolutePosition
+				dragging.Position = UDim2.fromOffset(p.X, p.Y)
+			end
+		end)
+		api.on(UserInputService.InputEnded, function(input)
+			if not (dragging and UI.isPress(input)) then
+				return
+			end
+			local piece = dragging
+			dragging = nil
+			local q = inFrame(L.art, piece.AbsolutePosition + piece.AbsoluteSize / 2)
+			local best, bestD = nil, math.huge
+			for _, s in spots do
+				if not s.used then
+					local d = (q - s.pos).Magnitude
+					if d < bestD then
+						best, bestD = s, d
+					end
+				end
+			end
+			if best and bestD < 0.1 then
+				best.used = true
+				best.ring.Visible = false
+				piece:SetAttribute("Placed", true)
+				piece.Parent = L.art
+				piece.ZIndex = L.art.ZIndex + 10
+				piece.Size = P(0.11, 0.11)
+				piece.Position = P(best.pos.X, best.pos.Y)
+				FX.bounce(piece, 0.3)
+				FX.sound("Pick")
+				FX.sparkle(L.art, P(best.pos.X, best.pos.Y), T.Gold, 4)
+				accSum += math.clamp(1 - bestD / 0.1 * 0.3, 0, 1)
+				placed += 1
+				if placed >= n then
+					timer.stop()
+					api.finish(accSum / n * speedScore(timer.elapsed(), n * 1.3, limit))
+				end
+			else
+				piece.Parent = tray
+				piece.ZIndex = tray.ZIndex + 3
+				piece.Size = P(0.26, 0.36)
+				piece.Position = homes[piece]
+				FX.sound("Wrong")
+			end
+		end)
+		api.on(RunService.Heartbeat, function(dt)
+			rig.tick(dt)
+			if timer.remaining() <= 0 then
+				api.finish(0.7 * placed / n)
+			end
+		end)
+	end)
+end
+
+
+-- Drizzle: looking down into the cup, hold and drag the sauce over the dotted swirl.
+function Games.Drizzle(panel, action, ctx)
+	local prm = action.params or {}
+	local L = layout(panel, action, ctx.label)
+	local sauce = ctx.extra.syrupColor or Paint.tone(ctx.color).shade
+	local limit = 12 * Config.TimeLimitScale
+	-- top view: rim, drink surface, swirl of target dots
+	local rim = Paint.blob(L.art, "#e3f1f8", { Size = P(0.9, 0.9), ZIndex = L.art.ZIndex + 1, Blotch = false })
+	rim.BackgroundTransparency = 0.2
+	Paint.blob(L.art, ctx.color, { Size = P(0.8, 0.8), ZIndex = L.art.ZIndex + 2 }) -- the drink, seen from above
+	local targets = {}
+	local N = 28
+	for i = 1, N do
+		local t = i / N
+		local ang = t * math.pi * 4.2
+		local r = 0.05 + t * 0.29
+		local pos = Vector2.new(0.5 + math.cos(ang) * r, 0.5 + math.sin(ang) * r)
+		local d = Paint.new("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = P(pos.X, pos.Y), Size = P(0.022, 0.022),
+			BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 0.25, ZIndex = L.art.ZIndex + 4, Parent = L.art })
+		Paint.round(d, 0.5)
+		targets[i] = { pos = pos, dot = d, hit = false }
+	end
+	return run(panel, function(api)
+		local timer = UI.timer(panel, limit, { Position = P(0.04, 0.215), Size = P(0.92, 0.02) })
+		local bar = UI.gauge(L.ctrl, 0.9, 1, { Position = P(0.05, 0.08), Size = P(0.9, 0.08), Color = T.Good })
+		Paint.text(L.ctrl, prm.label or "DRIZZLE", { Color = T.Gold, Position = P(0, 0.22), Size = P(1, 0.12) })
+		Paint.text(L.ctrl, "Hold and trace the dotted swirl", { Color = T.TextSoft, Position = P(0, 0.36), Size = P(1, 0.07) })
+		local done = UI.button(L.ctrl, "DONE", T.PanelLight, { Position = P(0.5, 0.6), Size = P(0.6, 0.16), TextColor = T.Text })
+		local drawing, lastQ, samples, mess, hits = false, nil, 0, 0, 0
+		local function result()
+			local cover = hits / N
+			return math.clamp(cover - (mess / math.max(samples, 1)) * 0.5, 0, 1)
+		end
+		api.on(done.Activated, function()
+			api.finish(result())
+		end)
+		api.on(L.art.InputBegan, function(input)
+			if UI.isPress(input) then
+				drawing = true
+				lastQ = nil
+			end
+		end)
+		api.on(UserInputService.InputEnded, function(input)
+			if UI.isPress(input) then
+				drawing = false
+			end
+		end)
+		api.on(UserInputService.InputChanged, function(input)
+			if not (drawing and isMove(input)) then
+				return
+			end
+			local q = inFrame(L.art, UI.pointer(input))
+			if lastQ and (q - lastQ).Magnitude < 0.012 then
+				return
+			end
+			lastQ = q
+			samples += 1
+			local blob = Paint.blob(L.art, sauce, { Position = P(q.X, q.Y), Size = P(0.035, 0.035), ZIndex = L.art.ZIndex + 5, Blotch = false })
+			local near = false
+			for _, t in targets do
+				local d = (q - t.pos).Magnitude
+				if d < 0.09 then
+					near = true
+				end
+				if not t.hit and d < 0.045 then
+					t.hit = true
+					hits += 1
+					t.dot.Visible = false
+				end
+			end
+			if not near then
+				mess += 1
+				blob.BackgroundTransparency = 0.35
+			end
+			bar.set(hits / N)
+			if hits / N >= 0.92 then
+				timer.stop()
+				api.finish(result())
+			end
+		end)
+		api.on(RunService.Heartbeat, function()
+			if timer.remaining() <= 0 then
+				api.finish(result() * 0.85)
+			end
+		end)
+	end)
+end
+
+-- ================================================================
+-- COOKING-MAMA-STYLE GAMES
+-- ================================================================
 
 -- Trace: drag the knife along each dotted cut line.
 function Games.Trace(panel, action, ctx)
@@ -2031,6 +2303,94 @@ function Games.Trace(panel, action, ctx)
 	end)
 end
 
+function Games.Peel(panel, action, ctx)
+	local prm = action.params or {}
+	local count, vertical, alternate = prm.count or 4, prm.vertical == true, prm.alternate == true
+	local L = layout(panel, action, ctx.label)
+	local rig = scene(L.art, action.station, ctx.color, ctx.extra)
+	local limit = (count * 0.9 + 3.5) * Config.TimeLimitScale
+	return run(panel, function(api)
+		local timer = UI.timer(panel, limit, { Position = P(0.04, 0.215), Size = P(0.92, 0.02) })
+		local pips = UI.pips(L.ctrl, count, { Position = P(0.5, 0.06), Size = P(1, 0.08) })
+		local pad = UI.card(L.ctrl, T.PanelLight, { Position = P(0.05, 0.14), Size = P(0.9, 0.62), Radius = 26 })
+		local arrow = Paint.text(pad, "", { Color = T.Gold, Position = P(0.2, 0.25), Size = P(0.6, 0.5), ZIndex = pad.ZIndex + 2 })
+		Paint.text(pad, prm.label or "SWIPE", { Color = T.TextSoft, Position = P(0.1, 0.8), Size = P(0.8, 0.12), ZIndex = pad.ZIndex + 2 })
+		local dir = 1 -- +1 = right/down, -1 = left/up
+		local function showArrow()
+			if vertical then
+				arrow.Text = if dir > 0 then "⬇" else "⬆"
+			else
+				arrow.Text = if dir > 0 then "➡" else "⬅"
+			end
+		end
+		showArrow()
+		local n, start, armed = 0, nil, true
+		api.on(pad.InputBegan, function(input)
+			if UI.isPress(input) then
+				start = UI.pointer(input)
+			end
+		end)
+		api.on(UserInputService.InputChanged, function(input)
+			if not start or not armed then
+				return
+			end
+			if input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch then
+				return
+			end
+			local pos = UI.pointer(input)
+			local d = if vertical then pos.Y - start.Y else pos.X - start.X
+			local need = (if vertical then pad.AbsoluteSize.Y else pad.AbsoluteSize.X) * 0.35
+			if d * dir >= need then
+				n += 1
+				pips.set(n)
+				rig.set(n / count)
+				rig.kick(n)
+				FX.sound(if action.station == "MixingStation" then "Fizz" else "Pick")
+				-- a peel strip flies off the fruit
+				local strip = Paint.blob(L.art, ctx.extra.fruitColor or ctx.color, { Position = P(0.5, 0.6), Size = P(0.05, 0.16),
+					Rotation = rng:NextNumber(-40, 40), ZIndex = L.art.ZIndex + 12 })
+				FX.tween(strip, 0.6, { Position = P(0.5 + (if vertical then 0 else dir * 0.35), 0.6 - 0.25), Rotation = strip.Rotation + dir * 120,
+					BackgroundTransparency = 1 })
+				task.delay(0.62, function()
+					strip:Destroy()
+				end)
+				if rig.vessel then
+					local base = rig.vessel.Position
+					FX.tween(rig.vessel, 0.08, { Position = base + P(0, if vertical then 0.04 * dir else 0) })
+					task.delay(0.09, function()
+						if rig.vessel.Parent then
+							FX.tween(rig.vessel, 0.1, { Position = base })
+						end
+					end)
+				end
+				start = pos
+				if alternate then
+					dir = -dir
+				else
+					armed = false -- lift and swipe again
+				end
+				showArrow()
+				if n >= count then
+					timer.stop()
+					api.finish(speedScore(timer.elapsed(), count * 0.55, limit))
+				end
+			end
+		end)
+		api.on(UserInputService.InputEnded, function(input)
+			if UI.isPress(input) then
+				start, armed = nil, true
+			end
+		end)
+		api.on(RunService.Heartbeat, function(dt)
+			rig.tick(dt)
+			if timer.remaining() <= 0 then
+				api.finish(0.7 * n / count)
+			end
+		end)
+	end)
+end
+
+
 -- Mash: alternate left / right as fast as you can.
 function Games.Mash(panel, action, ctx)
 	local prm = action.params or {}
@@ -2093,7 +2453,75 @@ function Games.Mash(panel, action, ctx)
 	end)
 end
 
--- Sequence: follow the arrow pattern.
+function Games.Stir(panel, action, ctx)
+	local prm = action.params or {}
+	local turns = prm.turns or 2
+	local L = layout(panel, action, ctx.label)
+	local rig = scene(L.art, action.station, ctx.color, ctx.extra)
+	local limit = (turns * 3.2 + 3) * Config.TimeLimitScale
+	return run(panel, function(api)
+		local timer = UI.timer(panel, limit, { Position = P(0.04, 0.215), Size = P(0.92, 0.02) })
+		local ring = UI.card(L.ctrl, T.PanelLight, { AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.5, 0.42), Size = P(0.9, 0.9), Corner = UDim.new(0.5, 0) })
+		Paint.new("UIAspectRatioConstraint", { AspectRatio = 1, Parent = ring })
+		local inner = UI.card(ring, T.Panel, { AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.5, 0.5), Size = P(0.56, 0.56), Corner = UDim.new(0.5, 0) })
+		local pct = Paint.text(inner, "0%", { Color = T.Gold, Position = P(0.15, 0.3), Size = P(0.7, 0.4), ZIndex = inner.ZIndex + 1 })
+		Paint.text(ring, prm.label or "STIR", { Color = T.TextSoft, AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 1.02), Size = P(1, 0.12) })
+		local knob = Paint.blob(ring, T.Accent, { Position = P(0.5, 0.1), Size = P(0.2, 0.2), ZIndex = ring.ZIndex + 3 })
+		local dragging, lastA, total = false, nil, 0
+		local goal = turns * math.pi * 2
+		local function angleAt(pos)
+			local c = ring.AbsolutePosition + ring.AbsoluteSize / 2
+			return math.atan2(pos.Y - c.Y, pos.X - c.X)
+		end
+		api.on(ring.InputBegan, function(input)
+			if UI.isPress(input) then
+				dragging = true
+				lastA = angleAt(UI.pointer(input))
+			end
+		end)
+		api.on(UserInputService.InputEnded, function(input)
+			if UI.isPress(input) then
+				dragging = false
+			end
+		end)
+		api.on(UserInputService.InputChanged, function(input)
+			if not dragging then
+				return
+			end
+			if input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch then
+				return
+			end
+			local ang = angleAt(UI.pointer(input))
+			local d = ang - lastA
+			if d > math.pi then
+				d -= math.pi * 2
+			elseif d < -math.pi then
+				d += math.pi * 2
+			end
+			lastA = ang
+			total += d
+			knob.Position = P(0.5 + math.cos(ang) * 0.4, 0.5 + math.sin(ang) * 0.4)
+			local prog = math.clamp(math.abs(total) / goal, 0, 1)
+			pct.Text = string.format("%d%%", math.floor(prog * 100))
+			rig.spin = math.abs(d) * 60
+			rig.set(prog)
+			if prog >= 1 then
+				timer.stop()
+				api.finish(speedScore(timer.elapsed(), turns * 1.6, limit))
+			end
+		end)
+		api.on(RunService.Heartbeat, function(dt)
+			rig.spin *= 0.9
+			rig.tick(dt)
+			if timer.remaining() <= 0 then
+				api.finish(0.7 * math.clamp(math.abs(total) / goal, 0, 1))
+			end
+		end)
+	end)
+end
+
+
+-- Shake: follow the arrow pattern.
 local ARROWS = {
 	Up = { "⬆", Vector2.new(0, -1), { Enum.KeyCode.Up, Enum.KeyCode.W } },
 	Down = { "⬇", Vector2.new(0, 1), { Enum.KeyCode.Down, Enum.KeyCode.S } },
@@ -2101,7 +2529,7 @@ local ARROWS = {
 	Right = { "➡", Vector2.new(1, 0), { Enum.KeyCode.Right, Enum.KeyCode.D } },
 }
 local ARROW_NAMES = { "Up", "Down", "Left", "Right" }
-function Games.Sequence(panel, action, ctx)
+function Games.Shake(panel, action, ctx)
 	local prm = action.params or {}
 	local len = math.clamp(math.floor((prm.count or 6) / 1.4), 3, 6)
 	local L = layout(panel, action, ctx.label)
@@ -2283,172 +2711,16 @@ function Games.Catch(panel, action, ctx)
 	end)
 end
 
--- Steady: hold to lift the marker, let go to drop; stay inside the drifting gold zone.
-function Games.Steady(panel, action, ctx)
-	local prm = action.params or {}
-	local goal = (prm.fillTime or 1.6) * 1.8
-	local half = math.max(((prm.zoneMax or 0.9) - (prm.zoneMin or 0.72)) / 2 + 0.05, 0.08)
-	local L = layout(panel, action, ctx.label)
-	local rig = scene(L.art, action.station, ctx.color, ctx.extra)
-	local limit = (goal * 3 + 3) * Config.TimeLimitScale
-	return run(panel, function(api)
-		local timer = UI.timer(panel, limit, { Position = P(0.04, 0.215), Size = P(0.92, 0.02) })
-		local gauge = UI.gauge(L.ctrl, 0.4, 0.6, { Vertical = true, Position = P(0.08, 0.02), Size = P(0.2, 0.8), Color = T.Steel })
-		local marker = Paint.blob(gauge.frame, T.Text, { Position = P(0.5, 0.5), Size = P(1.2, 0.035), Corner = 0.4, ZIndex = gauge.frame.ZIndex + 4, Blotch = false })
-		local prog = UI.gauge(L.ctrl, 0.97, 1, { Position = P(0.36, 0.06), Size = P(0.6, 0.07), Color = T.Good })
-		prog.zone.BackgroundTransparency = 1
-		local btn = UI.button(L.ctrl, prm.label or "HOLD", T.Accent, { Position = P(0.66, 0.46), Size = P(0.62, 0.3) })
-		Paint.text(L.ctrl, "Hold = up · let go = down", { Color = T.TextSoft, Position = P(0.34, 0.68), Size = P(0.64, 0.07) })
-		local holding, m, vel, t, inside, outside = false, 0.3, 0, 0, 0, 0
-		api.on(btn.InputBegan, function(input)
-			if UI.isPress(input) then
-				holding = true
-			end
-		end)
-		api.on(UserInputService.InputEnded, function(input)
-			if UI.isPress(input) then
-				holding = false
-			end
-		end)
-		api.on(RunService.Heartbeat, function(dt)
-			t += dt
-			local c = 0.5 + 0.28 * math.sin(t * 1.2) + 0.08 * math.sin(t * 2.9)
-			gauge.setZone(math.clamp(c - half, 0, 1), math.clamp(c + half, 0, 1))
-			vel += (if holding then 2.2 else -1.8) * dt
-			vel = math.clamp(vel, -0.9, 0.9)
-			m = math.clamp(m + vel * dt, 0, 1)
-			if m <= 0 or m >= 1 then
-				vel = 0
-			end
-			marker.Position = P(0.5, 1 - m)
-			local ok = math.abs(m - c) <= half
-			if ok then
-				inside += dt
-				rig.flow = 1
-			else
-				outside += dt
-				rig.flow = 0
-			end
-			marker.BackgroundColor3 = if ok then Paint.C(T.Good) else Paint.C(T.Text)
-			prog.set(inside / goal)
-			rig.set(inside / goal)
-			rig.tick(dt)
-			if inside >= goal then
-				rig.flow = 0
-				timer.stop()
-				api.finish(math.clamp(1 - outside / (goal * 1.5), 0.3, 1))
-			elseif timer.remaining() <= 0 then
-				api.finish(0.7 * inside / goal)
-			end
-		end)
-	end)
-end
 
--- Drag: drag each garnish piece onto a marked spot on the drink.
-function Games.Drag(panel, action, ctx)
-	local prm = action.params or {}
-	local n = math.clamp(prm.count or 3, 2, 5)
-	local L = layout(panel, action, ctx.label)
-	local rig = scene(L.art, action.station, ctx.color, ctx.extra)
-	local limit = (n * 2.2 + 4) * Config.TimeLimitScale
-	local pieceColor = ctx.extra.fruitColor or "#55a444"
-	return run(panel, function(api)
-		local timer = UI.timer(panel, limit, { Position = P(0.04, 0.215), Size = P(0.92, 0.02) })
-		Paint.text(L.ctrl, prm.label or "DECORATE", { Color = T.Gold, Position = P(0, 0.04), Size = P(1, 0.12) })
-		Paint.text(L.ctrl, "Drag each piece onto a dotted spot", { Color = T.TextSoft, Position = P(0, 0.17), Size = P(1, 0.07) })
-		local tray = UI.card(L.ctrl, T.PanelLight, { Position = P(0.05, 0.3), Size = P(0.9, 0.44), Radius = 20 })
-		-- target spots across the top of the drink
-		local topY = (rig.vtop or 0.5) - 0.02
-		local spots = {}
-		for i = 1, n do
-			local x = 0.5 + (i - (n + 1) / 2) * (0.34 / n)
-			local ring = Paint.new("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = P(x, topY), Size = P(0.09, 0.09),
-				BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 0.65, ZIndex = L.art.ZIndex + 9, Parent = L.art })
-			Paint.round(ring, 0.5)
-			spots[i] = { pos = Vector2.new(x, topY), ring = ring, used = false }
-			FX.pop(ring, i * 0.08)
-		end
-		local placed, accSum = 0, 0
-		local dragging, grabOffset = nil, Vector2.zero
-		local homes = {}
-		for i = 1, n do
-			local col = (i - 1) % 3
-			local rowi = math.floor((i - 1) / 3)
-			local piece = Paint.new("TextButton", { Text = "", BackgroundTransparency = 1, AutoButtonColor = false, AnchorPoint = Vector2.new(0.5, 0.5),
-				Position = P(0.2 + col * 0.3, 0.3 + rowi * 0.42), Size = P(0.26, 0.36), ZIndex = tray.ZIndex + 3, Parent = tray })
-			Paint.new("UIAspectRatioConstraint", { AspectRatio = 1, Parent = piece })
-			Paint.art(piece, { Shape = if ctx.extra.fruitColor then "slice" else "leaf", Color = pieceColor })
-			homes[piece] = piece.Position
-			api.on(piece.InputBegan, function(input)
-				if UI.isPress(input) and not piece:GetAttribute("Placed") then
-					dragging = piece
-					-- lift the piece to the panel so it can travel over the drink
-					local abs = piece.AbsolutePosition + piece.AbsoluteSize / 2
-					local size = piece.AbsoluteSize
-					piece.Parent = panel
-					piece.ZIndex = panel.ZIndex + 30
-					piece.Size = UDim2.fromOffset(size.X, size.Y)
-					piece.Position = UDim2.fromOffset(abs.X - panel.AbsolutePosition.X, abs.Y - panel.AbsolutePosition.Y)
-					grabOffset = abs - UI.pointer(input)
-					FX.bounce(piece, 0.2)
-				end
-			end)
-		end
-		api.on(UserInputService.InputChanged, function(input)
-			if dragging and isMove(input) then
-				local p = UI.pointer(input) + grabOffset - panel.AbsolutePosition
-				dragging.Position = UDim2.fromOffset(p.X, p.Y)
-			end
-		end)
-		api.on(UserInputService.InputEnded, function(input)
-			if not (dragging and UI.isPress(input)) then
-				return
-			end
-			local piece = dragging
-			dragging = nil
-			local q = inFrame(L.art, piece.AbsolutePosition + piece.AbsoluteSize / 2)
-			local best, bestD = nil, math.huge
-			for _, s in spots do
-				if not s.used then
-					local d = (q - s.pos).Magnitude
-					if d < bestD then
-						best, bestD = s, d
-					end
-				end
-			end
-			if best and bestD < 0.1 then
-				best.used = true
-				best.ring.Visible = false
-				piece:SetAttribute("Placed", true)
-				piece.Parent = L.art
-				piece.ZIndex = L.art.ZIndex + 10
-				piece.Size = P(0.11, 0.11)
-				piece.Position = P(best.pos.X, best.pos.Y)
-				FX.bounce(piece, 0.3)
-				FX.sound("Pick")
-				FX.sparkle(L.art, P(best.pos.X, best.pos.Y), T.Gold, 4)
-				accSum += math.clamp(1 - bestD / 0.1 * 0.3, 0, 1)
-				placed += 1
-				if placed >= n then
-					timer.stop()
-					api.finish(accSum / n * speedScore(timer.elapsed(), n * 1.3, limit))
-				end
-			else
-				piece.Parent = tray
-				piece.ZIndex = tray.ZIndex + 3
-				piece.Size = P(0.26, 0.36)
-				piece.Position = homes[piece]
-				FX.sound("Wrong")
-			end
-		end)
-		api.on(RunService.Heartbeat, function(dt)
-			rig.tick(dt)
-			if timer.remaining() <= 0 then
-				api.finish(0.7 * placed / n)
-			end
-		end)
-	end)
-end
+-- Your DrinkCatalog game types (and older names) map onto the 12 games.
+Games.Hold = Games.Fill
+Games.Timing = Games.Blend
+Games.Tap = Games.Mash
+Games.Swipe = Games.Peel
+Games.Circle = Games.Stir
+Games.Sequence = Games.Shake
+Games.Drag = Games.Toppings
+Games.Steady = Games.Fill
 
 -- ================= public =================
 -- Plays one of your DrinkCatalog actions in `panel`. Yields; returns score 0..1
@@ -2462,8 +2734,8 @@ function MiniGames.play(panel, actionId, ctx)
 	end
 	ctx.color = ctx.color or Color3.fromHex("#d9c9b8")
 	ctx.extra = ctx.extra or {}
-	local kind = (Config.GameOverrides and Config.GameOverrides[actionId]) or action.game
-	local playFn = Games[kind] or Games[action.game] or Games.Tap
+	local kind = (Config.Games and Config.Games[actionId]) or action.game
+	local playFn = Games[kind] or Games[action.game] or Games.Mash
 	return playFn(panel, action, ctx)
 end
 

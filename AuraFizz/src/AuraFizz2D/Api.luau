@@ -50,6 +50,7 @@ local function extrasFor(recipe)
 		if it and it.color then
 			if it.storage == "Fridge" and not extra.fruitColor then
 				extra.fruitColor = it.color
+				extra.fruitId = st[2]
 			elseif it.storage == "BarShelf" and not extra.syrupColor then
 				extra.syrupColor = it.color
 			end
