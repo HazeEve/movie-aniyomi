@@ -2,9 +2,11 @@
 -- AuraFizz2D · Storage — the 2D shelf screen for your storage stations
 -- (Cup Rack, Pantry Shelf, Fridge, Freezer, Syrup Shelf).
 -- Shows every item kept there (DrinkCatalog.Items / Cups) with YOUR pictures;
--- tap the ones the recipe needs. Wrong picks cost a little score.
+-- pick up the ones the recipe needs and drag them into the prep tray (a quick tap works too).
+-- Wrong ones bounce back out and cost a little score.
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 
 local Config = require(script.Parent.Config)
 local Paint = require(script.Parent.Paint)
@@ -63,7 +65,7 @@ function Storage.play(panel, stationKey, needed, opts)
 
 	-- the shelf: a scrolling grid of every item in this storage
 	local shelf = Paint.new("ScrollingFrame", {
-		Name = "Shelf", BackgroundTransparency = 1, Position = P(0.03, 0.29), Size = P(0.94, 0.69), ZIndex = z + 1,
+		Name = "Shelf", BackgroundTransparency = 1, Position = P(0.03, 0.29), Size = P(0.94, 0.5), ZIndex = z + 1,
 		ScrollBarThickness = 6, ScrollBarImageColor3 = Paint.C(T.TextSoft), CanvasSize = UDim2.new(),
 		AutomaticCanvasSize = Enum.AutomaticSize.Y, ScrollingDirection = Enum.ScrollingDirection.Y, Parent = panel,
 	})
@@ -77,10 +79,21 @@ function Storage.play(panel, stationKey, needed, opts)
 	resize()
 	local shelfColor = SHELF_COLOR[stationKey] or T.Wood
 
+	-- the prep tray: drag ingredients here (black tray with a gold rim, like your stations)
+	local tray = Paint.new("Frame", { Name = "Tray", AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.81), Size = P(0.7, 0.16), ZIndex = z + 2, Parent = panel })
+	Paint.round(tray, UDim.new(0.3, 0))
+	Paint.shade(tray, T.Appliance, 90, true)
+	local rim = Paint.new("Frame", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0), Size = P(0.96, 0.08), ZIndex = z + 3, Parent = tray })
+	Paint.round(rim, 0.5)
+	Paint.shade(rim, T.Trim, 90, true)
+	local trayHint = Paint.text(tray, "Drag ingredients here", { Color = T.TextSoft, Position = P(0.1, 0.3), Size = P(0.8, 0.4), ZIndex = z + 3 })
+	local traySlots = 0
+
 	return (function()
 		local done = Instance.new("BindableEvent")
 		local conns, finished = {}, false
 		local mistakes, lastAction = 0, os.clock()
+		local dragging = nil
 		local cells = {}
 		table.insert(conns, shelf:GetPropertyChangedSignal("AbsoluteSize"):Connect(resize))
 
@@ -115,56 +128,114 @@ function Storage.play(panel, stationKey, needed, opts)
 			Bridge.icon(ic, kind, id, { Behind = T.Panel })
 			Paint.text(cell, Bridge.itemName(id), { Color = T.TextSoft, Position = P(0.02, 0.85), Size = P(0.96, 0.14), ZIndex = z + 3, MaxSize = 16 })
 			cells[id] = cell
-			table.insert(conns, cell.Activated:Connect(function()
-				if finished or cell:GetAttribute("Taken") then
+			ic:SetAttribute("Id", id)
+			table.insert(conns, cell.InputBegan:Connect(function(input)
+				if finished or dragging or cell:GetAttribute("Taken") or not UI.isPress(input) then
 					return
 				end
 				lastAction = os.clock()
-				if want[id] then
-					cell:SetAttribute("Taken", true)
-					FX.sound("Pick")
-					FX.bounce(ic, 0.3)
-					-- fly a copy up toward the checklist chip
-					local chip = chipOf[id]
-					local fly = ic:Clone()
-					fly.Parent = panel
-					fly.ZIndex = z + 40
-					for _, d in fly:GetDescendants() do
-						if d:IsA("GuiObject") then
-							d.ZIndex += 40
-						end
+				-- pick up: the ingredient lifts off the shelf, grows a little and tilts
+				local held = ic:Clone()
+				for _, d in held:GetDescendants() do
+					if d:IsA("GuiObject") then
+						d.ZIndex += 60
 					end
-					fly.AnchorPoint = Vector2.new(0.5, 0.5)
-					local pa, ps = panel.AbsolutePosition, panel.AbsoluteSize
-					local from = ic.AbsolutePosition + ic.AbsoluteSize / 2 - pa
-					local to = chip.AbsolutePosition + chip.AbsoluteSize / 2 - pa
-					fly.Position = P(from.X / ps.X, from.Y / ps.Y)
-					fly.Size = UDim2.fromOffset(ic.AbsoluteSize.X, ic.AbsoluteSize.Y)
-					FX.tween(fly, 0.45, { Position = P(to.X / ps.X, to.Y / ps.Y), Size = UDim2.fromOffset(20, 20) }, Enum.EasingStyle.Back, Enum.EasingDirection.In)
-					task.delay(0.46, function()
-						fly:Destroy()
-						if chip.Parent then
-							Paint.shade(chip, T.Good, 60, true)
-							FX.bounce(chip, 0.3)
-							FX.sparkle(panel, P(to.X / ps.X, to.Y / ps.Y), T.Gold, 5)
-						end
-					end)
-					ic.Visible = false
-					if opts.onPick then
-						task.spawn(opts.onPick, id)
-					end
-					remaining -= 1
-					if remaining <= 0 then
-						finish(math.clamp(total / (total + mistakes * 0.6), 0, 1))
-					end
-				else
-					mistakes += 1
-					FX.sound("Wrong")
-					FX.wobble(cell, 10, 0.35)
-					FX.floatText(panel, "Not in this drink!", T.Bad, P(0.5, 0.27), P(0.45, 0.06))
 				end
+				held.ZIndex = z + 60
+				held.AnchorPoint = Vector2.new(0.5, 0.5)
+				held.Size = UDim2.fromOffset(ic.AbsoluteSize.X, ic.AbsoluteSize.Y)
+				local p0 = UI.pointer(input) - panel.AbsolutePosition
+				held.Position = UDim2.fromOffset(p0.X, p0.Y)
+				held.Parent = panel
+				ic.Visible = false
+				FX.tween(held, 0.12, { Size = UDim2.fromOffset(ic.AbsoluteSize.X * 1.18, ic.AbsoluteSize.Y * 1.18), Rotation = -8 }, Enum.EasingStyle.Back)
+				FX.sound("Pick")
+				dragging = { id = id, held = held, ic = ic, cell = cell, start = UI.pointer(input), last = UI.pointer(input) }
 			end))
 		end
+
+		local function inTray(pos)
+			local a, sz = tray.AbsolutePosition, tray.AbsoluteSize
+			return pos.X >= a.X - 20 and pos.X <= a.X + sz.X + 20 and pos.Y >= a.Y - 30 and pos.Y <= a.Y + sz.Y + 20
+		end
+		-- the held ingredient follows the finger and tilts with the movement
+		table.insert(conns, UserInputService.InputChanged:Connect(function(input)
+			if not dragging then
+				return
+			end
+			if input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch then
+				return
+			end
+			local pos = UI.pointer(input)
+			local rel = pos - panel.AbsolutePosition
+			dragging.held.Position = UDim2.fromOffset(rel.X, rel.Y)
+			dragging.held.Rotation = math.clamp((pos.X - dragging.last.X) * 1.2, -22, 22)
+			dragging.last = pos
+			rim.BackgroundColor3 = if inTray(pos) then Paint.C(T.Gold) else Color3.new(1, 1, 1)
+		end))
+		table.insert(conns, UserInputService.InputEnded:Connect(function(input)
+			if not (dragging and UI.isPress(input)) then
+				return
+			end
+			local d = dragging
+			dragging = nil
+			rim.BackgroundColor3 = Color3.new(1, 1, 1)
+			local pos = UI.pointer(input)
+			local tapped = (pos - d.start).Magnitude < 10 -- a quick tap still works (it hops into the tray)
+			local function back()
+				local home = d.ic.AbsolutePosition + d.ic.AbsoluteSize / 2 - panel.AbsolutePosition
+				FX.tween(d.held, 0.35, { Position = UDim2.fromOffset(home.X, home.Y), Rotation = 0,
+					Size = UDim2.fromOffset(d.ic.AbsoluteSize.X, d.ic.AbsoluteSize.Y) }, Enum.EasingStyle.Back)
+				task.delay(0.36, function()
+					d.held:Destroy()
+					d.ic.Visible = true
+					FX.bounce(d.ic, 0.2)
+				end)
+			end
+			if not (tapped or inTray(pos)) then
+				back() -- dropped somewhere else: floats back to its shelf spot
+				return
+			end
+			if want[d.id] then
+				-- lands in the tray with a squash, stays there
+				d.cell:SetAttribute("Taken", true)
+				traySlots += 1
+				trayHint.Visible = false
+				local slotX = 0.12 + (traySlots - 1) * 0.16
+				local target = tray.AbsolutePosition + Vector2.new(tray.AbsoluteSize.X * slotX, tray.AbsoluteSize.Y * 0.55) - panel.AbsolutePosition
+				local sz = tray.AbsoluteSize.Y * 0.95
+				FX.tween(d.held, 0.28, { Position = UDim2.fromOffset(target.X, target.Y), Rotation = 0, Size = UDim2.fromOffset(sz, sz) }, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+				task.delay(0.29, function()
+					if not d.held.Parent then
+						return
+					end
+					FX.squash(d.held, 0.2)
+					FX.sparkle(panel, UDim2.fromOffset(target.X, target.Y), T.Gold, 5)
+					FX.sound("Pick")
+					local chip = chipOf[d.id]
+					if chip and chip.Parent then
+						Paint.shade(chip, T.Good, 60, true)
+						FX.bounce(chip, 0.3)
+					end
+				end)
+				if opts.onPick then
+					task.spawn(opts.onPick, d.id)
+				end
+				remaining -= 1
+				if remaining <= 0 then
+					task.delay(0.35, function()
+						finish(math.clamp(total / (total + mistakes * 0.6), 0, 1))
+					end)
+				end
+			else
+				-- wrong ingredient: it bounces out of the tray and hops home
+				mistakes += 1
+				FX.sound("Wrong")
+				FX.wobble(d.held, 16, 0.3)
+				FX.floatText(panel, "Not in this drink!", T.Bad, P(0.5, 0.74), P(0.45, 0.06))
+				task.delay(0.3, back)
+			end
+		end))
 
 		-- gentle hint: pulse the next needed item after a while idle
 		table.insert(conns, RunService.Heartbeat:Connect(function()

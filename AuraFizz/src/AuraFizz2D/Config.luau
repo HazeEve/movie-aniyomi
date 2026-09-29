@@ -81,23 +81,25 @@ Config.SoundMap = {
 
 -- Pastel painted UI (same rules as the pastel-fruit-art skill: soft 3-tone shading,
 -- chunky rounded shapes, no outlines, no gloss).
-Config.Theme = {
-	Ground = "#232b3d",
-	Panel = "#2f3950",
-	PanelLight = "#3b4763",
+Config.Theme = { -- black & gold, to match your appliances
+	Ground = "#121015",
+	Panel = "#1d1a21",
+	PanelLight = "#2a2530",
 	Paper = "#fbf3e2",
-	Text = "#fbf7f2",
-	TextDark = "#3a2f45",
-	TextSoft = "#b9c0d4",
-	Accent = "#f59ac0",
-	Gold = "#f7c95b",
+	Text = "#fbf3e2",
+	TextDark = "#2a2016",
+	TextSoft = "#b8ab98",
+	Accent = "#d8b45a",
+	Gold = "#f2d27a",
 	Good = "#8ed5b4",
 	Warn = "#f7c95b",
 	Bad = "#f0899b",
-	Wood = "#c98a52",
-	Steel = "#aeb6c6",
+	Wood = "#6b4a33",
+	Steel = "#3a3440",
+	Appliance = "#221e27", -- black appliance bodies
+	Trim = "#d8b45a",      -- gold trim
 }
-Config.Pastels = { "#f4b6c2", "#a8d8b9", "#c7b3e6", "#ffd97a", "#8ec5f0", "#f5a86b", "#e6a0b4", "#9fd8d0" }
+Config.Pastels = { "#f2d27a", "#d8b45a", "#f7e3a5", "#e8c46a", "#fbf3e2", "#c9a24a", "#f5d98c", "#e0c07a" } -- gold sparkle tones
 Config.CustomerNames = {
 	"Mia", "Leo", "Zoe", "Kai", "Luna", "Nico", "Ivy", "Theo", "Aria", "Jax",
 	"Ruby", "Finn", "Nova", "Eli", "Sage", "Remy", "Cleo", "Milo", "Skye", "Juno",

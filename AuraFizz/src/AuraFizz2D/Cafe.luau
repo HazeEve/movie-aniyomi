@@ -1,6 +1,6 @@
 --!nonstrict
 -- AuraFizz2D · Cafe — the 2D window and the full "make one drink" flow.
---   customer orders ONE drink -> every step of YOUR DrinkRecipes steps in 2D
+--   your 3D game hands over ONE drink -> every step of YOUR DrinkRecipes steps in 2D
 --   (shelf screens + mini-games) -> Serve -> stars, tip, confetti.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -37,20 +37,14 @@ local state = { tips = 0, served = 0, starSum = 0, busy = false }
 
 local function background(parent)
 	local z = parent.ZIndex
-	for i = 1, 9 do
-		local s = rng:NextNumber(0.08, 0.2)
-		local b = Paint.blob(parent, Config.Pastels[(i % #Config.Pastels) + 1], { Position = P(rng:NextNumber(0, 1), rng:NextNumber(0.15, 1)),
-			Size = P(s, s * 1.78), ZIndex = z, Blotch = false })
-		b.BackgroundTransparency = 0.9
+	-- black & gold: soft gold dust + a thin gold line along the top
+	for _ = 1, 26 do
+		local d = rng:NextNumber(0.004, 0.012)
+		local b = Paint.blob(parent, T.Gold, { Position = P(rng:NextNumber(0, 1), rng:NextNumber(0.1, 1)), Size = P(d, d * 1.78), ZIndex = z, Blotch = false })
+		b.BackgroundTransparency = rng:NextNumber(0.55, 0.85)
 	end
-	-- café awning: scalloped pastel edge along the top
-	local n = 16
-	for i = 0, n do
-		local c = Config.Pastels[(i % 2 == 0) and 1 or 4]
-		Paint.blob(parent, c, { Position = P(i / n, 0.005), Size = P(1 / n * 1.02, 0.07), ZIndex = z + 1, LightRot = 90 })
-	end
-	local band = Paint.new("Frame", { Position = P(0, 0), Size = P(1, 0.01), ZIndex = z + 1, Parent = parent })
-	Paint.shade(band, Config.Pastels[1], 90, true)
+	local line = Paint.new("Frame", { Position = P(0.02, 0.045), Size = P(0.96, 0.004), ZIndex = z + 1, Parent = parent })
+	Paint.shade(line, T.Trim, 90, true)
 end
 
 local function ensureWindow()
@@ -60,7 +54,7 @@ local function ensureWindow()
 	local pg = Players.LocalPlayer:WaitForChild("PlayerGui")
 	gui = Paint.new("ScreenGui", { Name = "AuraFizz2D", ResetOnSpawn = false, IgnoreGuiInset = true, DisplayOrder = 30,
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling, Enabled = false, Parent = pg })
-	Paint.new("Frame", { Name = "Dim", Size = P(1, 1), BackgroundColor3 = Paint.C("#0f131c"), BackgroundTransparency = 0.35, Parent = gui })
+	Paint.new("Frame", { Name = "Dim", Size = P(1, 1), BackgroundColor3 = Paint.C("#050406"), BackgroundTransparency = 0.35, Parent = gui })
 	stage = Paint.new("Frame", { Name = "Stage", AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.5, 0.5), Size = P(0.96, 0.94),
 		BackgroundColor3 = Paint.C(T.Ground), ZIndex = 2, Parent = gui })
 	Paint.new("UIAspectRatioConstraint", { AspectRatio = 16 / 9, Parent = stage })
@@ -174,18 +168,15 @@ local function drawPreview(frame, recipe, progress, hasCup)
 	end
 end
 
-local function drawOrder(recipe, look)
+local function drawOrder(recipe)
 	left:ClearAllChildren()
 	Paint.round(left, UDim.new(0, 24))
 	Paint.shade(left, T.Paper, 60, true)
 	local z = left.ZIndex
-	-- customer peeking over the ticket
-	local cust, setMood = UI.customer(left, look, { AnchorPoint = Vector2.new(0, 1), Position = P(0.05, 0.24), Size = P(0.3, 0.22), ZIndex = z + 2 })
-	FX.pop(cust, 0.05)
-	FX.bob(cust, 0.004, 2.2)
-	Paint.text(left, look.Name .. " ordered:", { Color = "#8a7a90", Position = P(0.36, 0.05), Size = P(0.6, 0.06), AlignX = Enum.TextXAlignment.Left, ZIndex = z + 2 })
-	Paint.text(left, recipe.name, { Color = T.TextDark, Position = P(0.36, 0.11), Size = P(0.6, 0.08), AlignX = Enum.TextXAlignment.Left, ZIndex = z + 2 })
-	UI.chip(left, recipe.tier or "", Config.TierColor[recipe.tier] or T.Accent, { Position = P(0.36, 0.195), Size = P(0.32, 0.045), ZIndex = z + 2 })
+	-- the recipe ticket (ordering happens in your 3D game)
+	Paint.text(left, "NOW MAKING", { Color = "#9a8a6a", Position = P(0.06, 0.05), Size = P(0.6, 0.05), AlignX = Enum.TextXAlignment.Left, ZIndex = z + 2 })
+	Paint.text(left, recipe.name, { Color = T.TextDark, Position = P(0.06, 0.1), Size = P(0.88, 0.09), AlignX = Enum.TextXAlignment.Left, ZIndex = z + 2 })
+	UI.chip(left, recipe.tier or "", Config.TierColor[recipe.tier] or T.Accent, { Position = P(0.06, 0.195), Size = P(0.34, 0.045), ZIndex = z + 2 })
 	-- your picture of the finished drink
 	local pic = Paint.new("Frame", { BackgroundTransparency = 1, Position = P(0.05, 0.27), Size = P(0.42, 0.3), ZIndex = z + 1, Parent = left })
 	Paint.new("UIAspectRatioConstraint", { AspectRatio = 1, Parent = pic })
@@ -204,7 +195,7 @@ local function drawOrder(recipe, look)
 		Paint.new("UIAspectRatioConstraint", { AspectRatio = 1, Parent = row:FindFirstChild("Blob") })
 		Paint.text(row, txt, { Color = T.TextDark, Position = P(0.08, 0.1), Size = P(0.9, 0.8), AlignX = Enum.TextXAlignment.Left, ZIndex = z + 2, MaxSize = 24 })
 	end
-	order = { recipe = recipe, preview = prev, setMood = setMood, cust = cust, hasCup = false, progress = 0 }
+	order = { recipe = recipe, preview = prev, hasCup = false, progress = 0 }
 	drawPreview(prev, recipe, 0, false)
 end
 
@@ -218,8 +209,7 @@ end
 -- ================= one drink, start to finish =================
 -- Returns { Scores = {..}, Total = 0..100, Stars = 0..5 } or nil if closed.
 function Cafe.makeDrink(recipe, look, orderId)
-	look = look or UI.randomLook(rng)
-	drawOrder(recipe, look)
+	drawOrder(recipe)
 	local steps = Bridge.stepsOf(recipe)
 	local scores = {}
 	local work = 0
@@ -273,6 +263,57 @@ function Cafe.makeDrink(recipe, look, orderId)
 	return Cafe.serve(recipe, scores, orderId)
 end
 
+-- ================= final presentation =================
+-- The finished drink reacts to how well it was made (0..100):
+--   90+  shine sweep, sparkle burst, proud squash-and-stretch bounce, gentle steam/fizz
+--   60+  soft bounce + a few sparkles
+--   <60  drips run down the glass, it sits a little crooked and the colour goes dull
+function Cafe.presentFinal(spot, cupFrame, recipe, total)
+	if not spot.Parent then
+		return
+	end
+	local z = spot.ZIndex + 20
+	if total >= 90 then
+		FX.squash(spot, 0.18)
+		FX.sparkle(spot, P(0.5, 0.35), T.Gold, 14)
+		FX.sound("Perfect")
+		local clip = Paint.new("Frame", { BackgroundTransparency = 1, ClipsDescendants = true, AnchorPoint = Vector2.new(0.5, 1),
+			Position = P(0.5, 0.95), Size = P(0.5, 0.7), ZIndex = z, Parent = spot })
+		local glint = Paint.new("Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 0.35, Rotation = 20,
+			Position = P(-0.5, -0.2), Size = P(0.16, 1.4), ZIndex = z, Parent = clip })
+		Paint.round(glint, 0.5)
+		FX.tween(glint, 0.7, { Position = P(1.3, -0.2) }, Enum.EasingStyle.Sine)
+		task.spawn(function()
+			for _ = 1, 8 do
+				if not spot.Parent then
+					break
+				end
+				local w = Paint.blob(spot, "#ffffff", { Position = P(0.45 + rng:NextNumber(-0.08, 0.08), 0.3), Size = P(0.05, 0.05), ZIndex = z, Blotch = false })
+				w.BackgroundTransparency = 0.4
+				FX.tween(w, 1.2, { Position = P(w.Position.X.Scale, 0.05), Size = P(0.1, 0.1), BackgroundTransparency = 1 })
+				task.wait(0.25)
+			end
+		end)
+	elseif total >= 60 then
+		FX.bounce(spot, 0.1)
+		FX.sparkle(spot, P(0.5, 0.35), T.Gold, 5)
+	else
+		FX.sound("Oops")
+		FX.tween(cupFrame, 0.4, { Rotation = -7 }, Enum.EasingStyle.Back)
+		local dull = Paint.new("Frame", { BackgroundColor3 = Paint.C("#3a3440"), BackgroundTransparency = 0.7, AnchorPoint = Vector2.new(0.5, 1),
+			Position = P(0.5, 0.95), Size = P(0.46, 0.64), ZIndex = z, Parent = spot })
+		Paint.round(dull, 0.18)
+		for i = 1, 3 do
+			local d = Paint.blob(spot, Bridge.drinkColor(recipe), { Position = P(0.36 + i * 0.07, 0.34), Size = P(0.035, 0.05), ZIndex = z + 1, Blotch = false })
+			FX.tween(d, 0.9 + i * 0.2, { Position = P(d.Position.X.Scale, 0.8 + i * 0.03), Size = P(0.03, 0.09) }, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+		end
+		local puddle = Paint.blob(spot, Bridge.drinkColor(recipe), { Position = P(0.5, 0.95), Size = P(0.1, 0.03), ZIndex = z, Blotch = false })
+		task.delay(1, function()
+			FX.tween(puddle, 0.6, { Size = P(0.5, 0.05) })
+		end)
+	end
+end
+
 -- ================= serve + results =================
 function Cafe.serve(recipe, scores, orderId)
 	local panel = freshPanel()
@@ -289,12 +330,17 @@ function Cafe.serve(recipe, scores, orderId)
 	local tip = result and result.Tip or math.floor((Config.TierTip[recipe.tier] or 10) * total / 100 + 0.5)
 
 	FX.sound("Serve")
-	Paint.text(panel, "🛎  Order up!", { Position = P(0.04, 0.05), Size = P(0.6, 0.09), AlignX = Enum.TextXAlignment.Left, ZIndex = z + 2 })
-	-- the drink slides to the customer
-	local drinkPic = Paint.new("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.2, 0.46), Size = P(0.26, 0.46), ZIndex = z + 2, Parent = panel })
-	Paint.new("UIAspectRatioConstraint", { AspectRatio = 1, Parent = drinkPic })
-	Bridge.icon(drinkPic, "drink", recipe.id, { Behind = T.Panel })
-	FX.pop(drinkPic, 0.1)
+	Paint.text(panel, "✨  Drink ready!", { Position = P(0.04, 0.05), Size = P(0.6, 0.09), AlignX = Enum.TextXAlignment.Left, ZIndex = z + 2 })
+	-- the finished drink: YOUR build, and it looks as good as you made it
+	local stageSpot = Paint.new("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.2, 0.46), Size = P(0.3, 0.52), ZIndex = z + 2, Parent = panel })
+	Paint.new("UIAspectRatioConstraint", { AspectRatio = 1, Parent = stageSpot })
+	Paint.shadow(stageSpot, { Position = P(0.5, 0.96), Size = P(0.7, 0.08), ZIndex = z + 1 })
+	local cupFrame = Paint.new("Frame", { BackgroundTransparency = 1, Size = P(1, 1), ZIndex = z + 2, Parent = stageSpot })
+	drawPreview(cupFrame, recipe, 1, true)
+	FX.pop(stageSpot, 0.1)
+	task.delay(0.55, function()
+		Cafe.presentFinal(stageSpot, cupFrame, recipe, total)
+	end)
 
 	-- stars
 	local starRow = Paint.new("Frame", { BackgroundTransparency = 1, Position = P(0.4, 0.14), Size = P(0.56, 0.14), ZIndex = z + 2, Parent = panel })
@@ -347,20 +393,15 @@ function Cafe.serve(recipe, scores, orderId)
 		Paint.text(row, word, { Color = col, Position = P(0.82, 0), Size = P(0.18, 1), ZIndex = z + 3 })
 	end
 
-	-- tip + customer reaction
+	-- tip
 	local tipChip = UI.chip(panel, "+🪙 0", T.Gold, { AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.2, 0.78), Size = P(0.26, 0.09) })
 	FX.pop(tipChip, 0.6)
 	task.delay(0.7, function()
 		FX.countUp(tipChip:FindFirstChild("Text"), 0, tip, 0.9, "+🪙 %d")
 		FX.sound("Coins")
 	end)
-	local mood = if stars >= 4 then "happy" elseif stars >= 2.5 then "ok" else "sad"
 	task.delay(0.5, function()
-		if order.setMood then
-			order.setMood(mood)
-			FX.wobble(order.cust, if mood == "happy" then 6 else 2, 0.6)
-			FX.sound(if mood == "happy" then "Happy" elseif mood == "sad" then "Angry" else "Sip")
-		end
+		FX.sound(if stars >= 4 then "Happy" elseif stars < 2.5 then "Oops" else "Sip")
 	end)
 	if stars >= 4.5 then
 		FX.confetti(stage, 60)
@@ -386,22 +427,20 @@ function Cafe.home()
 	Paint.round(left, UDim.new(0, 24))
 	Paint.shade(left, T.Paper, 60, true)
 	local lz = left.ZIndex
-	Paint.text(left, "Welcome to", { Color = "#8a7a90", Position = P(0.1, 0.1), Size = P(0.8, 0.06), ZIndex = lz + 1 })
-	Paint.text(left, "AURAFIZZ", { Color = T.TextDark, Position = P(0.1, 0.16), Size = P(0.8, 0.1), ZIndex = lz + 1 })
-	local c = UI.customer(left, UI.randomLook(rng), { Position = P(0.5, 0.78), Size = P(0.5, 0.42), ZIndex = lz + 2, Mood = "happy" })
-	FX.bob(c, 0.006, 2)
-	Paint.text(left, string.format("Served %d  ·  🪙 %d", state.served, state.tips), { Color = "#8a7a90", Position = P(0.1, 0.86), Size = P(0.8, 0.06), ZIndex = lz + 1 })
+	Paint.text(left, "AURAFIZZ", { Color = T.TextDark, Position = P(0.1, 0.12), Size = P(0.8, 0.1), ZIndex = lz + 1 })
+	Paint.text(left, "Kitchen", { Color = "#9a8a6a", Position = P(0.1, 0.22), Size = P(0.8, 0.06), ZIndex = lz + 1 })
+	Paint.text(left, string.format("Made %d  ·  🪙 %d", state.served, state.tips), { Color = "#9a8a6a", Position = P(0.1, 0.86), Size = P(0.8, 0.06), ZIndex = lz + 1 })
 	drawTracker({}, 0)
 
 	local panel = freshPanel()
 	local z = panel.ZIndex
 	Paint.text(panel, "What's next?", { Position = P(0.05, 0.08), Size = P(0.9, 0.1), ZIndex = z + 1 })
-	local serve = UI.button(panel, "🛎  Serve customers", T.Accent, { Position = P(0.5, 0.38), Size = P(0.56, 0.14) })
+	local serve = UI.button(panel, "🎲  Make a random drink", T.Accent, { Position = P(0.5, 0.38), Size = P(0.56, 0.14) })
 	FX.pop(serve, 0.1)
-	local menu = UI.button(panel, "📖  Practice from the menu", "#8ec5f0", { Position = P(0.5, 0.58), Size = P(0.56, 0.14) })
+	local menu = UI.button(panel, "📖  Practice from the menu", T.PanelLight, { Position = P(0.5, 0.58), Size = P(0.56, 0.14), TextColor = T.Text })
 	FX.pop(menu, 0.2)
 	serve.Activated:Connect(function()
-		task.spawn(Cafe.shift)
+		task.spawn(Cafe.quickDrink)
 	end)
 	menu.Activated:Connect(function()
 		Cafe.menu()
@@ -450,9 +489,9 @@ function Cafe.menu()
 				task.spawn(function()
 					local res = call("NextOrder", "practice", r.id)
 					local oid = res and res.OrderId
-					local out = Cafe.makeDrink(r, UI.randomLook(rng), oid)
+					local out = Cafe.makeDrink(r, nil, oid)
 					if out then
-						buttonsRow(out.Panel, { { "Menu", "#8ec5f0", Cafe.menu }, { "Home", T.PanelLight, Cafe.home } })
+						buttonsRow(out.Panel, { { "Menu", T.Accent, Cafe.menu }, { "Home", T.PanelLight, Cafe.home } })
 					end
 				end)
 			end)
@@ -471,55 +510,24 @@ function Cafe.menu()
 	end
 end
 
--- A shift of customers: each orders one drink the player can make.
-function Cafe.shift()
+-- One random drink (practice). Real orders come from your 3D game via Api.MakeDrink.
+function Cafe.quickDrink()
 	if state.busy then
 		return
 	end
 	state.busy = true
 	local all = Bridge.allRecipes()
-	for n = 1, Config.CustomersPerShift do
-		if not (gui and gui.Enabled) then
-			break
+	local recipe = all[rng:NextInteger(1, math.max(#all, 1))]
+	if recipe then
+		local res = call("NextOrder", "practice", recipe.id)
+		local out = Cafe.makeDrink(recipe, nil, res and res.OrderId)
+		if out then
+			buttonsRow(out.Panel, { { "Another", T.Accent, function()
+				task.spawn(Cafe.quickDrink)
+			end }, { "Home", T.PanelLight, Cafe.home } })
 		end
-		local res = call("NextOrder", "customer")
-		local recipe = res and Bridge.recipe(res.DrinkId)
-		if not recipe then
-			-- offline / no server: pick from the free "Tasty" starters first, then anything
-			local pool = {}
-			for _, r in all do
-				if r.tier == "Tasty" then
-					table.insert(pool, r)
-				end
-			end
-			if #pool == 0 then
-				pool = all
-			end
-			recipe = pool[rng:NextInteger(1, #pool)]
-		end
-		if not recipe then
-			warn("[AuraFizz2D] no recipes found in ReplicatedStorage.Drinks.DrinkRecipes")
-			break
-		end
-		FX.sound("Order")
-		local out = Cafe.makeDrink(recipe, UI.randomLook(rng), res and res.OrderId)
-		if not out then
-			break
-		end
-		local nextEvt = Instance.new("BindableEvent")
-		local label = if n < Config.CustomersPerShift then "Next customer" else "Finish shift"
-		buttonsRow(out.Panel, { { label, T.Accent, function()
-			nextEvt:Fire()
-		end } })
-		nextEvt.Event:Wait()
-		nextEvt:Destroy()
 	end
 	state.busy = false
-	if gui and gui.Enabled then
-		Cafe.home()
-		FX.confetti(stage, 40)
-		FX.sound("LevelUp")
-	end
 end
 
 -- ================= open / close / popups =================

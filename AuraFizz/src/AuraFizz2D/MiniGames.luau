@@ -47,7 +47,7 @@ end
 -- ================= station scenes =================
 local VESSEL = {
 	glass = { "#e3f1f8", 0.45 },
-	steel = { "#aeb6c6", 0 },
+	steel = { T.Appliance, 0 },
 	ceramic = { "#f6e9dc", 0 },
 	wood = { "#b87a4a", 0 },
 }
@@ -70,68 +70,99 @@ local function scene(area, stationKey, color, extra)
 	local cfg = SCENES[stationKey] or { vessel = { 0.5, 0.84, 0.36, 0.44, "glass", 0.2 }, fx = { swirl = true } }
 	local z = area.ZIndex
 	local r = { p = 0, flow = 0, spin = 0, fx = cfg.fx }
-	Paint.shadow(area, { Position = P(0.5, 0.93), Size = P(0.8, 0.06), ZIndex = z })
+	-- your stations' matte black counter with a gold edge
+	Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.9), Size = P(1.02, 0.12), Corner = 0.08, ZIndex = z, Blotch = false })
+	Paint.blob(area, T.Trim, { Position = P(0.5, 0.9), Size = P(1.02, 0.012), Corner = 0.4, ZIndex = z + 1, Blotch = false })
+	Paint.shadow(area, { Position = P(0.5, 0.9), Size = P(0.8, 0.04), ZIndex = z + 1 })
 
 	-- station furniture behind the vessel
 	if stationKey == "CoffeeMachine" then
-		Paint.blob(area, "#8c93a6", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.1), Size = P(0.72, 0.46), Corner = 0.14, ZIndex = z + 1 })
-		Paint.blob(area, "#8c93a6", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 0.92), Size = P(0.72, 0.06), Corner = 0.4, ZIndex = z + 1 })
-		Paint.blob(area, "#3b4763", { Position = P(0.5, 0.56), Size = P(0.16, 0.07), Corner = 0.3, ZIndex = z + 2 })
+		Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.1), Size = P(0.72, 0.46), Corner = 0.14, ZIndex = z + 1 })
+		Paint.blob(area, T.Trim, { Position = P(0.5, 0.47), Size = P(0.72, 0.025), Corner = 0.4, ZIndex = z + 2, Blotch = false })
+		Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 0.92), Size = P(0.72, 0.06), Corner = 0.4, ZIndex = z + 1 })
+		Paint.blob(area, "#2e2833", { Position = P(0.5, 0.56), Size = P(0.16, 0.07), Corner = 0.3, ZIndex = z + 2 })
 		Paint.blob(area, "#f59ac0", { Position = P(0.7, 0.2), Size = P(0.07, 0.07), ZIndex = z + 2, Blotch = false })
 		Paint.blob(area, "#8ed5b4", { Position = P(0.6, 0.2), Size = P(0.07, 0.07), ZIndex = z + 2, Blotch = false })
 		Paint.blob(area, "#1b2131", { Position = P(0.36, 0.26), Size = P(0.2, 0.12), Corner = 0.25, ZIndex = z + 2, Blotch = false })
 		r.spout = 0.6
 	elseif stationKey == "Stove" then
-		Paint.blob(area, "#3b4763", { Position = P(0.5, 0.86), Size = P(0.84, 0.14), Corner = 0.3, ZIndex = z + 1 })
+		Paint.blob(area, "#2e2833", { Position = P(0.5, 0.86), Size = P(0.84, 0.14), Corner = 0.3, ZIndex = z + 1 })
 		Paint.blob(area, "#1b2131", { Position = P(0.5, 0.8), Size = P(0.56, 0.08), ZIndex = z + 2, Blotch = false })
 		r.flames = {}
 		for i, x in { 0.38, 0.5, 0.62 } do
 			local f = Paint.blob(area, if i == 2 then "#f7c95b" else "#f5a86b", { AnchorPoint = Vector2.new(0.5, 1), Position = P(x, 0.8), Size = P(0.08, 0.1), ZIndex = z + 3, Blotch = false })
 			table.insert(r.flames, f)
 		end
-		Paint.blob(area, "#aeb6c6", { Position = P(0.82, 0.54), Size = P(0.22, 0.05), Corner = 0.4, ZIndex = z + 3 }) -- pot handle
+		Paint.blob(area, T.Trim, { Position = P(0.82, 0.54), Size = P(0.22, 0.05), Corner = 0.4, ZIndex = z + 3 }) -- pot handle
 	elseif stationKey == "Blender" then
-		Paint.blob(area, "#3b4763", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.74), Size = P(0.46, 0.18), Corner = 0.25, ZIndex = z + 1 })
+		Paint.blob(area, "#2e2833", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.74), Size = P(0.46, 0.18), Corner = 0.25, ZIndex = z + 1 })
 		Paint.blob(area, "#f59ac0", { Position = P(0.5, 0.83), Size = P(0.08, 0.08), ZIndex = z + 2, Blotch = false })
-		Paint.blob(area, "#3b4763", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 0.25), Size = P(0.4, 0.06), Corner = 0.4, ZIndex = z + 4 })
+		Paint.blob(area, "#2e2833", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 0.25), Size = P(0.4, 0.06), Corner = 0.4, ZIndex = z + 4 })
 	elseif stationKey == "Juicer" then
-		r.press = Paint.blob(area, "#aeb6c6", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 0.36), Size = P(0.4, 0.16), Corner = 0.45, ZIndex = z + 4 })
+		r.press = Paint.blob(area, T.Trim, { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 0.36), Size = P(0.4, 0.16), Corner = 0.45, ZIndex = z + 4 })
 		local fruit = Paint.new("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.5, 0.46), Size = P(0.28, 0.28), ZIndex = z + 3, Parent = area })
 		Paint.art(fruit, { Shape = "slice", Color = extra.fruitColor or "#f6d33f" })
 		r.fruit = fruit
-		Paint.blob(area, "#aeb6c6", { Position = P(0.5, 0.58), Size = P(0.44, 0.08), Corner = 0.4, ZIndex = z + 2 })
+		Paint.blob(area, T.Trim, { Position = P(0.5, 0.58), Size = P(0.44, 0.08), Corner = 0.4, ZIndex = z + 2 })
 		r.spout = 0.6
 	elseif stationKey == "CuttingBoard" then
 		Paint.blob(area, T.Wood, { Position = P(0.5, 0.72), Size = P(0.86, 0.34), Corner = 0.3, ZIndex = z + 1 })
 		local whole = Paint.new("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.5, 0.64), Size = P(0.36, 0.36), ZIndex = z + 3, Parent = area })
 		Paint.art(whole, { Shape = extra.fruitShape or "fruit", Color = extra.fruitColor or "#dc4a3c" })
 		r.whole = whole
-		r.knife = Paint.blob(area, "#dfe4ee", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.72, 0.5), Size = P(0.06, 0.34), Corner = 0.45, Rotation = 18, ZIndex = z + 5 })
+		r.knife = Paint.blob(area, "#efdca6", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.72, 0.5), Size = P(0.06, 0.34), Corner = 0.45, Rotation = 18, ZIndex = z + 5 })
 		r.pieces = {}
 	elseif stationKey == "TeaBobaStation" then
-		Paint.blob(area, "#3b4763", { Position = P(0.5, 0.88), Size = P(0.7, 0.08), Corner = 0.4, ZIndex = z + 1 })
-		Paint.blob(area, "#aeb6c6", { Position = P(0.5, 0.6), Size = P(0.52, 0.05), Corner = 0.4, ZIndex = z + 4 })
+		-- gold nameplate + black shelf of black/gold canisters, like your Tea & Boba station
+		local sign = Paint.blob(area, "#15121a", { Position = P(0.5, 0.07), Size = P(0.5, 0.08), Corner = 0.15, ZIndex = z + 1, Blotch = false })
+		Paint.text(sign, "TEA & BOBA", { Color = T.Trim, Position = P(0.05, 0.12), Size = P(0.9, 0.76), ZIndex = z + 2 })
+		Paint.blob(area, "#15121a", { Position = P(0.5, 0.31), Size = P(0.9, 0.022), Corner = 0.3, ZIndex = z + 1, Blotch = false })
+		for i = 0, 4 do
+			local x = 0.18 + i * 0.16
+			Paint.blob(area, "#1b1820", { AnchorPoint = Vector2.new(0.5, 1), Position = P(x, 0.3), Size = P(0.1, 0.13), Corner = 0.2, ZIndex = z + 1 })
+			Paint.blob(area, T.Trim, { AnchorPoint = Vector2.new(0.5, 1), Position = P(x, 0.2), Size = P(0.1, 0.02), Corner = 0.3, ZIndex = z + 2, Blotch = false })
+		end
+		Paint.blob(area, T.Trim, { Position = P(0.5, 0.6), Size = P(0.52, 0.05), Corner = 0.4, ZIndex = z + 4 })
 	elseif stationKey == "MixingStation" then
-		Paint.blob(area, "#dfe4ee", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 0.28), Size = P(0.2, 0.08), Corner = 0.4, ZIndex = z + 4 })
+		Paint.blob(area, "#efdca6", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 0.28), Size = P(0.2, 0.08), Corner = 0.4, ZIndex = z + 4 })
 		Paint.blob(area, T.Wood, { Position = P(0.5, 0.9), Size = P(0.7, 0.06), Corner = 0.4, ZIndex = z + 1 })
 	elseif stationKey == "SodaFountain" then
-		Paint.blob(area, "#8ec5f0", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.06), Size = P(0.62, 0.32), Corner = 0.2, ZIndex = z + 1 })
+		Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.06), Size = P(0.62, 0.32), Corner = 0.2, ZIndex = z + 1 })
+		Paint.blob(area, T.Trim, { Position = P(0.5, 0.33), Size = P(0.62, 0.022), Corner = 0.4, ZIndex = z + 2, Blotch = false })
 		for i, c in { "#f59ac0", "#f7c95b", "#8ed5b4" } do
 			Paint.blob(area, c, { Position = P(0.34 + (i - 1) * 0.16, 0.2), Size = P(0.1, 0.1), ZIndex = z + 2, Blotch = false })
 		end
-		Paint.blob(area, "#3b4763", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.36), Size = P(0.08, 0.08), Corner = 0.3, ZIndex = z + 2 })
-		Paint.blob(area, "#3b4763", { Position = P(0.5, 0.9), Size = P(0.6, 0.05), Corner = 0.4, ZIndex = z + 1 })
+		Paint.blob(area, "#2e2833", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.36), Size = P(0.08, 0.08), Corner = 0.3, ZIndex = z + 2 })
+		Paint.blob(area, "#2e2833", { Position = P(0.5, 0.9), Size = P(0.6, 0.05), Corner = 0.4, ZIndex = z + 1 })
 		r.spout = 0.44
 	elseif stationKey == "ToppingStation" then
-		Paint.blob(area, extra.syrupColor or "#d08a3a", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.8, 0.88), Size = P(0.18, 0.4), Corner = 0.3, ZIndex = z + 1 })
-		Paint.blob(area, "#3b4763", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.8, 0.5), Size = P(0.05, 0.12), Corner = 0.3, ZIndex = z + 1 })
-		r.pump = Paint.blob(area, "#3b4763", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.74, 0.39), Size = P(0.16, 0.04), Corner = 0.4, ZIndex = z + 2 })
-	elseif stationKey == "CupSealer" then
-		Paint.blob(area, "#c7b3e6", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.08), Size = P(0.6, 0.22), Corner = 0.2, ZIndex = z + 1 })
-		for _, x in { 0.24, 0.76 } do
-			Paint.blob(area, "#c7b3e6", { AnchorPoint = Vector2.new(0.5, 0), Position = P(x, 0.2), Size = P(0.1, 0.72), Corner = 0.3, ZIndex = z + 1 })
+		-- black rail of pump bottles with gold pump heads + clear acrylic topping bins, like your topping station
+		local syrups = { "#f59ac0", "#f7e3a5", "#a8d8b9", "#c7b3e6", "#f5a86b", "#8ec5f0", "#e2413f" }
+		Paint.blob(area, "#15121a", { Position = P(0.5, 0.25), Size = P(0.96, 0.02), Corner = 0.3, ZIndex = z + 1, Blotch = false })
+		for i, c in syrups do
+			local x = 0.08 + (i - 1) * 0.14
+			Paint.blob(area, c, { AnchorPoint = Vector2.new(0.5, 1), Position = P(x, 0.24), Size = P(0.07, 0.14), Corner = 0.3, ZIndex = z + 1 })
+			Paint.blob(area, T.Trim, { AnchorPoint = Vector2.new(0.5, 1), Position = P(x, 0.1), Size = P(0.018, 0.05), Corner = 0.3, ZIndex = z + 2, Blotch = false })
 		end
-		r.press = Paint.blob(area, "#8c93a6", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.28), Size = P(0.34, 0.08), Corner = 0.3, ZIndex = z + 3 })
+		local bins = { "#f7e3a5", "#f59ac0", "#c7b3e6", "#a8d8b9" }
+		for i, c in bins do
+			local bx = 0.07 + (i - 1) * 0.07
+			local bin = Paint.blob(area, "#e3f1f8", { AnchorPoint = Vector2.new(0.5, 1), Position = P(bx, 0.89), Size = P(0.065, 0.09), Corner = 0.15, ZIndex = z + 1, Blotch = false })
+			bin.BackgroundTransparency = 0.55
+			for k = 1, 4 do
+				Paint.blob(bin, c, { Position = P(0.2 + (k % 2) * 0.5, 0.55 + math.floor(k / 3) * 0.25), Size = P(0.3, 0.2), ZIndex = bin.ZIndex + 1, Blotch = false })
+			end
+		end
+		-- the pump you press for this drink's syrup
+		Paint.blob(area, extra.syrupColor or "#d08a3a", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.8, 0.89), Size = P(0.14, 0.34), Corner = 0.3, ZIndex = z + 1 })
+		Paint.blob(area, T.Trim, { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.8, 0.56), Size = P(0.04, 0.1), Corner = 0.3, ZIndex = z + 1 })
+		r.pump = Paint.blob(area, T.Trim, { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.74, 0.46), Size = P(0.16, 0.035), Corner = 0.4, ZIndex = z + 2 })
+	elseif stationKey == "CupSealer" then
+		Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.08), Size = P(0.6, 0.22), Corner = 0.2, ZIndex = z + 1 })
+		for _, x in { 0.24, 0.76 } do
+			Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 0), Position = P(x, 0.2), Size = P(0.1, 0.72), Corner = 0.3, ZIndex = z + 1 })
+		end
+		r.press = Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.28), Size = P(0.34, 0.08), Corner = 0.3, ZIndex = z + 3 })
 	elseif stationKey == "BrewBarrel" then
 		for _, y in { 0.4, 0.72 } do
 			Paint.blob(area, "#6a4a36", { Position = P(0.5, y), Size = P(0.54, 0.04), Corner = 0.4, ZIndex = z + 5 })
@@ -232,8 +263,8 @@ local function scene(area, stationKey, color, extra)
 			end
 		end
 		if r.pump then
-			FX.tween(r.pump, 0.08, { Position = P(0.74, 0.43) }).Completed:Connect(function()
-				FX.tween(r.pump, 0.15, { Position = P(0.74, 0.39) })
+			FX.tween(r.pump, 0.08, { Position = P(0.74, 0.5) }).Completed:Connect(function()
+				FX.tween(r.pump, 0.15, { Position = P(0.74, 0.46) })
 			end)
 		end
 	end
@@ -594,11 +625,39 @@ function Games.Cook(panel, action, ctx)
 			rig.flow = 0
 			api.finish(zoneScore(p, a, b))
 		end)
+		-- the food visibly cooks: raw (pale) -> done (its colour) -> overdone (dark, smoking)
+		local raw = ctx.color:Lerp(Color3.new(1, 1, 1), 0.45)
+		local burnt = ctx.color:Lerp(Color3.fromHex("#3a2418"), 0.75)
+		local tint, frameN = nil, 0
 		api.on(RunService.Heartbeat, function(dt)
 			p += dt / duration
 			handPivot.Rotation = math.min(p, 1.3) * 360
 			rig.set(p)
 			rig.tick(dt)
+			frameN += 1
+			local target = rig.liquid and rig.liquid.Visible and rig.liquid or rig.surface
+			if target and frameN % 5 == 0 then
+				local c = if p <= b then raw:Lerp(ctx.color, math.clamp(p / math.max(b, 0.01), 0, 1)) else ctx.color:Lerp(burnt, math.clamp((p - b) / 0.3, 0, 1))
+				if c ~= tint then
+					tint = c
+					Paint.shade(target, c, 0)
+				end
+			end
+			-- sizzle: the pot/cup jitters a little while it's in the gold zone
+			if rig.vessel and p >= a and p <= b then
+				rig.vessel.Rotation = math.sin(os.clock() * 60) * 1.2
+			elseif rig.vessel then
+				rig.vessel.Rotation = 0
+			end
+			-- overcooking: grey smoke billows up
+			if p > b and rng:NextNumber() < dt * 10 then
+				local sm = Paint.blob(L.art, "#6b6470", { Position = P(0.5 + rng:NextNumber(-0.15, 0.15), (rig.vtop or 0.5)), Size = P(0.1, 0.1), ZIndex = L.art.ZIndex + 12, Blotch = false })
+				sm.BackgroundTransparency = 0.3
+				FX.tween(sm, 1.2, { Position = sm.Position - P(0, 0.3), Size = P(0.22, 0.22), BackgroundTransparency = 1 })
+				task.delay(1.25, function()
+					sm:Destroy()
+				end)
+			end
 			if not dinged and p >= a then
 				dinged = true
 				FX.sound("Order")
@@ -695,29 +754,51 @@ function Games.Stack(panel, action, ctx)
 			else
 				Paint.blob(ic, v, { Size = P(0.9, 0.9) })
 			end
-			api.on(b.Activated, function()
+			-- drag each ingredient into the cup (a tap also drops it in)
+			UI.draggable(panel, b, api.on, function(pos, held)
 				if not api.alive() then
-					return
+					held:Destroy()
+					return true
 				end
-				if layers[nextI] == v then
-					local band = Paint.new("Frame", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 1 - (nextI - 1) * layerH), Size = P(1, layerH + 0.004),
-						ZIndex = vessel.ZIndex + 1, Parent = vessel })
-					Paint.shade(band, colorOf(v), 0)
-					FX.drop(band, 0.6)
-					Paint.shade(steps[nextI], T.Good, 60, true)
-					FX.bounce(steps[nextI], 0.3)
-					FX.sound("Pick")
-					nextI += 1
-					if nextI > n then
-						timer.stop()
-						api.finish(n / (n + mistakes * 0.6) * speedScore(timer.elapsed(), n * 1.1, limit))
-					end
-				else
+				if pos and not UI.inside(L.art, pos) then
+					return false -- dropped outside the cup: floats back
+				end
+				if layers[nextI] ~= v then
 					mistakes += 1
 					FX.sound("Wrong")
-					FX.wobble(b, 10, 0.3)
+					FX.wobble(held, 16, 0.3)
 					FX.floatText(panel, "Wrong order!", T.Bad, P(0.3, 0.3), P(0.4, 0.08))
+					return false
 				end
+				-- it tips into the cup, then a new layer rises with a little splash
+				local top = vessel.AbsolutePosition + Vector2.new(vessel.AbsoluteSize.X / 2, 0) - panel.AbsolutePosition
+				FX.tween(held, 0.25, { Position = UDim2.fromOffset(top.X, top.Y), Rotation = 60, Size = UDim2.fromOffset(20, 20) }, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+				local idx = nextI
+				task.delay(0.26, function()
+					held:Destroy()
+					if not vessel.Parent then
+						return
+					end
+					local band = Paint.new("Frame", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 1 - (idx - 1) * layerH), Size = P(1, 0),
+						ZIndex = vessel.ZIndex + 1, Parent = vessel })
+					Paint.shade(band, colorOf(v), 0)
+					FX.tween(band, 0.35, { Size = P(1, layerH + 0.004) }, Enum.EasingStyle.Back)
+					for _ = 1, 4 do
+						local drop = Paint.blob(vessel, colorOf(v), { Position = P(0.5 + rng:NextNumber(-0.25, 0.25), 1 - idx * layerH), Size = P(0.08, 0.06), ZIndex = vessel.ZIndex + 3, Blotch = false })
+						FX.tween(drop, 0.35, { Position = drop.Position - P(0, 0.08), BackgroundTransparency = 1 })
+					end
+					FX.sound("Pour")
+				end)
+				Paint.shade(steps[nextI], T.Good, 60, true)
+				FX.bounce(steps[nextI], 0.3)
+				nextI += 1
+				if nextI > n then
+					timer.stop()
+					task.delay(0.6, function()
+						api.finish(n / (n + mistakes * 0.6) * speedScore(timer.elapsed(), n * 1.3, limit))
+					end)
+				end
+				return true
 			end)
 		end
 		api.on(RunService.Heartbeat, function()

@@ -195,6 +195,73 @@ function UI.isPress(input)
 	return input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch
 end
 
+-- Makes `source` draggable: press to pick up a copy (it lifts, grows, tilts with the
+-- movement and follows the finger), release to drop. onDrop(screenPos, held) returns
+-- true to keep it (you animate/destroy `held`), false to float it back home.
+-- `on` is api.on from a mini-game (so connections are cleaned up). Tap = drop at start.
+function UI.draggable(panel, source, on, onDrop)
+	local drag
+	on(source.InputBegan, function(input)
+		if drag or not UI.isPress(input) then
+			return
+		end
+		local held = source:Clone()
+		for _, d in held:GetDescendants() do
+			if d:IsA("GuiObject") then
+				d.ZIndex += 60
+			end
+			if d:IsA("UIGridLayout") or d:IsA("UIListLayout") then
+				d:Destroy()
+			end
+		end
+		held.ZIndex += 60
+		held.AnchorPoint = Vector2.new(0.5, 0.5)
+		held.Size = UDim2.fromOffset(source.AbsoluteSize.X, source.AbsoluteSize.Y)
+		local p0 = UI.pointer(input) - panel.AbsolutePosition
+		held.Position = UDim2.fromOffset(p0.X, p0.Y)
+		held.Parent = panel
+		FX.tween(held, 0.12, { Size = UDim2.fromOffset(source.AbsoluteSize.X * 1.15, source.AbsoluteSize.Y * 1.15), Rotation = -8 }, Enum.EasingStyle.Back)
+		FX.sound("Pick")
+		drag = { held = held, start = UI.pointer(input), last = UI.pointer(input) }
+	end)
+	on(UserInputService.InputChanged, function(input)
+		if not drag then
+			return
+		end
+		if input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch then
+			return
+		end
+		local pos = UI.pointer(input)
+		local rel = pos - panel.AbsolutePosition
+		drag.held.Position = UDim2.fromOffset(rel.X, rel.Y)
+		drag.held.Rotation = math.clamp((pos.X - drag.last.X) * 1.2, -22, 22)
+		drag.last = pos
+	end)
+	on(UserInputService.InputEnded, function(input)
+		if not (drag and UI.isPress(input)) then
+			return
+		end
+		local d = drag
+		drag = nil
+		local pos = UI.pointer(input)
+		local tapped = (pos - d.start).Magnitude < 10
+		if onDrop(if tapped then nil else pos, d.held) then
+			return
+		end
+		local home = source.AbsolutePosition + source.AbsoluteSize / 2 - panel.AbsolutePosition
+		FX.tween(d.held, 0.3, { Position = UDim2.fromOffset(home.X, home.Y), Rotation = 0,
+			Size = UDim2.fromOffset(source.AbsoluteSize.X, source.AbsoluteSize.Y) }, Enum.EasingStyle.Back)
+		task.delay(0.31, function()
+			d.held:Destroy()
+		end)
+	end)
+end
+
+function UI.inside(frame, pos)
+	local a, sz = frame.AbsolutePosition, frame.AbsoluteSize
+	return pos.X >= a.X and pos.X <= a.X + sz.X and pos.Y >= a.Y and pos.Y <= a.Y + sz.Y
+end
+
 -- Cute painted customer. mood: "happy" | "ok" | "sad"
 function UI.customer(parent, look, props)
 	props = props or {}

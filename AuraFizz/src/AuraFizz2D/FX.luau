@@ -44,6 +44,20 @@ function FX.bounce(obj, amount)
 	FX.tween(s, 0.35, { Scale = 1 }, Enum.EasingStyle.Back)
 end
 
+-- Squash-and-stretch: flatten + widen, then spring back.
+function FX.squash(obj, amount)
+	amount = amount or 0.15
+	local base = obj:GetAttribute("BaseSize") or obj.Size
+	obj:SetAttribute("BaseSize", base)
+	local function sz(sx, sy)
+		return UDim2.new(base.X.Scale * sx, base.X.Offset * sx, base.Y.Scale * sy, base.Y.Offset * sy)
+	end
+	obj.Size = sz(1 + amount, 1 - amount)
+	FX.tween(obj, 0.12, { Size = sz(1 - amount * 0.5, 1 + amount * 0.6) }).Completed:Connect(function()
+		FX.tween(obj, 0.35, { Size = base }, Enum.EasingStyle.Elastic)
+	end)
+end
+
 -- Gentle idle bob (for customers, the order card, the logo).
 function FX.bob(obj, amp, period)
 	local base = obj.Position

@@ -400,7 +400,7 @@ return Bridge
 put("ModuleScript", "Cafe", pkg, [========[
 --!nonstrict
 -- AuraFizz2D · Cafe — the 2D window and the full "make one drink" flow.
---   customer orders ONE drink -> every step of YOUR DrinkRecipes steps in 2D
+--   your 3D game hands over ONE drink -> every step of YOUR DrinkRecipes steps in 2D
 --   (shelf screens + mini-games) -> Serve -> stars, tip, confetti.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -437,20 +437,14 @@ local state = { tips = 0, served = 0, starSum = 0, busy = false }
 
 local function background(parent)
 	local z = parent.ZIndex
-	for i = 1, 9 do
-		local s = rng:NextNumber(0.08, 0.2)
-		local b = Paint.blob(parent, Config.Pastels[(i % #Config.Pastels) + 1], { Position = P(rng:NextNumber(0, 1), rng:NextNumber(0.15, 1)),
-			Size = P(s, s * 1.78), ZIndex = z, Blotch = false })
-		b.BackgroundTransparency = 0.9
+	-- black & gold: soft gold dust + a thin gold line along the top
+	for _ = 1, 26 do
+		local d = rng:NextNumber(0.004, 0.012)
+		local b = Paint.blob(parent, T.Gold, { Position = P(rng:NextNumber(0, 1), rng:NextNumber(0.1, 1)), Size = P(d, d * 1.78), ZIndex = z, Blotch = false })
+		b.BackgroundTransparency = rng:NextNumber(0.55, 0.85)
 	end
-	-- café awning: scalloped pastel edge along the top
-	local n = 16
-	for i = 0, n do
-		local c = Config.Pastels[(i % 2 == 0) and 1 or 4]
-		Paint.blob(parent, c, { Position = P(i / n, 0.005), Size = P(1 / n * 1.02, 0.07), ZIndex = z + 1, LightRot = 90 })
-	end
-	local band = Paint.new("Frame", { Position = P(0, 0), Size = P(1, 0.01), ZIndex = z + 1, Parent = parent })
-	Paint.shade(band, Config.Pastels[1], 90, true)
+	local line = Paint.new("Frame", { Position = P(0.02, 0.045), Size = P(0.96, 0.004), ZIndex = z + 1, Parent = parent })
+	Paint.shade(line, T.Trim, 90, true)
 end
 
 local function ensureWindow()
@@ -460,7 +454,7 @@ local function ensureWindow()
 	local pg = Players.LocalPlayer:WaitForChild("PlayerGui")
 	gui = Paint.new("ScreenGui", { Name = "AuraFizz2D", ResetOnSpawn = false, IgnoreGuiInset = true, DisplayOrder = 30,
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling, Enabled = false, Parent = pg })
-	Paint.new("Frame", { Name = "Dim", Size = P(1, 1), BackgroundColor3 = Paint.C("#0f131c"), BackgroundTransparency = 0.35, Parent = gui })
+	Paint.new("Frame", { Name = "Dim", Size = P(1, 1), BackgroundColor3 = Paint.C("#050406"), BackgroundTransparency = 0.35, Parent = gui })
 	stage = Paint.new("Frame", { Name = "Stage", AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.5, 0.5), Size = P(0.96, 0.94),
 		BackgroundColor3 = Paint.C(T.Ground), ZIndex = 2, Parent = gui })
 	Paint.new("UIAspectRatioConstraint", { AspectRatio = 16 / 9, Parent = stage })
@@ -574,18 +568,15 @@ local function drawPreview(frame, recipe, progress, hasCup)
 	end
 end
 
-local function drawOrder(recipe, look)
+local function drawOrder(recipe)
 	left:ClearAllChildren()
 	Paint.round(left, UDim.new(0, 24))
 	Paint.shade(left, T.Paper, 60, true)
 	local z = left.ZIndex
-	-- customer peeking over the ticket
-	local cust, setMood = UI.customer(left, look, { AnchorPoint = Vector2.new(0, 1), Position = P(0.05, 0.24), Size = P(0.3, 0.22), ZIndex = z + 2 })
-	FX.pop(cust, 0.05)
-	FX.bob(cust, 0.004, 2.2)
-	Paint.text(left, look.Name .. " ordered:", { Color = "#8a7a90", Position = P(0.36, 0.05), Size = P(0.6, 0.06), AlignX = Enum.TextXAlignment.Left, ZIndex = z + 2 })
-	Paint.text(left, recipe.name, { Color = T.TextDark, Position = P(0.36, 0.11), Size = P(0.6, 0.08), AlignX = Enum.TextXAlignment.Left, ZIndex = z + 2 })
-	UI.chip(left, recipe.tier or "", Config.TierColor[recipe.tier] or T.Accent, { Position = P(0.36, 0.195), Size = P(0.32, 0.045), ZIndex = z + 2 })
+	-- the recipe ticket (ordering happens in your 3D game)
+	Paint.text(left, "NOW MAKING", { Color = "#9a8a6a", Position = P(0.06, 0.05), Size = P(0.6, 0.05), AlignX = Enum.TextXAlignment.Left, ZIndex = z + 2 })
+	Paint.text(left, recipe.name, { Color = T.TextDark, Position = P(0.06, 0.1), Size = P(0.88, 0.09), AlignX = Enum.TextXAlignment.Left, ZIndex = z + 2 })
+	UI.chip(left, recipe.tier or "", Config.TierColor[recipe.tier] or T.Accent, { Position = P(0.06, 0.195), Size = P(0.34, 0.045), ZIndex = z + 2 })
 	-- your picture of the finished drink
 	local pic = Paint.new("Frame", { BackgroundTransparency = 1, Position = P(0.05, 0.27), Size = P(0.42, 0.3), ZIndex = z + 1, Parent = left })
 	Paint.new("UIAspectRatioConstraint", { AspectRatio = 1, Parent = pic })
@@ -604,7 +595,7 @@ local function drawOrder(recipe, look)
 		Paint.new("UIAspectRatioConstraint", { AspectRatio = 1, Parent = row:FindFirstChild("Blob") })
 		Paint.text(row, txt, { Color = T.TextDark, Position = P(0.08, 0.1), Size = P(0.9, 0.8), AlignX = Enum.TextXAlignment.Left, ZIndex = z + 2, MaxSize = 24 })
 	end
-	order = { recipe = recipe, preview = prev, setMood = setMood, cust = cust, hasCup = false, progress = 0 }
+	order = { recipe = recipe, preview = prev, hasCup = false, progress = 0 }
 	drawPreview(prev, recipe, 0, false)
 end
 
@@ -618,8 +609,7 @@ end
 -- ================= one drink, start to finish =================
 -- Returns { Scores = {..}, Total = 0..100, Stars = 0..5 } or nil if closed.
 function Cafe.makeDrink(recipe, look, orderId)
-	look = look or UI.randomLook(rng)
-	drawOrder(recipe, look)
+	drawOrder(recipe)
 	local steps = Bridge.stepsOf(recipe)
 	local scores = {}
 	local work = 0
@@ -673,6 +663,57 @@ function Cafe.makeDrink(recipe, look, orderId)
 	return Cafe.serve(recipe, scores, orderId)
 end
 
+-- ================= final presentation =================
+-- The finished drink reacts to how well it was made (0..100):
+--   90+  shine sweep, sparkle burst, proud squash-and-stretch bounce, gentle steam/fizz
+--   60+  soft bounce + a few sparkles
+--   <60  drips run down the glass, it sits a little crooked and the colour goes dull
+function Cafe.presentFinal(spot, cupFrame, recipe, total)
+	if not spot.Parent then
+		return
+	end
+	local z = spot.ZIndex + 20
+	if total >= 90 then
+		FX.squash(spot, 0.18)
+		FX.sparkle(spot, P(0.5, 0.35), T.Gold, 14)
+		FX.sound("Perfect")
+		local clip = Paint.new("Frame", { BackgroundTransparency = 1, ClipsDescendants = true, AnchorPoint = Vector2.new(0.5, 1),
+			Position = P(0.5, 0.95), Size = P(0.5, 0.7), ZIndex = z, Parent = spot })
+		local glint = Paint.new("Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 0.35, Rotation = 20,
+			Position = P(-0.5, -0.2), Size = P(0.16, 1.4), ZIndex = z, Parent = clip })
+		Paint.round(glint, 0.5)
+		FX.tween(glint, 0.7, { Position = P(1.3, -0.2) }, Enum.EasingStyle.Sine)
+		task.spawn(function()
+			for _ = 1, 8 do
+				if not spot.Parent then
+					break
+				end
+				local w = Paint.blob(spot, "#ffffff", { Position = P(0.45 + rng:NextNumber(-0.08, 0.08), 0.3), Size = P(0.05, 0.05), ZIndex = z, Blotch = false })
+				w.BackgroundTransparency = 0.4
+				FX.tween(w, 1.2, { Position = P(w.Position.X.Scale, 0.05), Size = P(0.1, 0.1), BackgroundTransparency = 1 })
+				task.wait(0.25)
+			end
+		end)
+	elseif total >= 60 then
+		FX.bounce(spot, 0.1)
+		FX.sparkle(spot, P(0.5, 0.35), T.Gold, 5)
+	else
+		FX.sound("Oops")
+		FX.tween(cupFrame, 0.4, { Rotation = -7 }, Enum.EasingStyle.Back)
+		local dull = Paint.new("Frame", { BackgroundColor3 = Paint.C("#3a3440"), BackgroundTransparency = 0.7, AnchorPoint = Vector2.new(0.5, 1),
+			Position = P(0.5, 0.95), Size = P(0.46, 0.64), ZIndex = z, Parent = spot })
+		Paint.round(dull, 0.18)
+		for i = 1, 3 do
+			local d = Paint.blob(spot, Bridge.drinkColor(recipe), { Position = P(0.36 + i * 0.07, 0.34), Size = P(0.035, 0.05), ZIndex = z + 1, Blotch = false })
+			FX.tween(d, 0.9 + i * 0.2, { Position = P(d.Position.X.Scale, 0.8 + i * 0.03), Size = P(0.03, 0.09) }, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+		end
+		local puddle = Paint.blob(spot, Bridge.drinkColor(recipe), { Position = P(0.5, 0.95), Size = P(0.1, 0.03), ZIndex = z, Blotch = false })
+		task.delay(1, function()
+			FX.tween(puddle, 0.6, { Size = P(0.5, 0.05) })
+		end)
+	end
+end
+
 -- ================= serve + results =================
 function Cafe.serve(recipe, scores, orderId)
 	local panel = freshPanel()
@@ -689,12 +730,17 @@ function Cafe.serve(recipe, scores, orderId)
 	local tip = result and result.Tip or math.floor((Config.TierTip[recipe.tier] or 10) * total / 100 + 0.5)
 
 	FX.sound("Serve")
-	Paint.text(panel, "🛎  Order up!", { Position = P(0.04, 0.05), Size = P(0.6, 0.09), AlignX = Enum.TextXAlignment.Left, ZIndex = z + 2 })
-	-- the drink slides to the customer
-	local drinkPic = Paint.new("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.2, 0.46), Size = P(0.26, 0.46), ZIndex = z + 2, Parent = panel })
-	Paint.new("UIAspectRatioConstraint", { AspectRatio = 1, Parent = drinkPic })
-	Bridge.icon(drinkPic, "drink", recipe.id, { Behind = T.Panel })
-	FX.pop(drinkPic, 0.1)
+	Paint.text(panel, "✨  Drink ready!", { Position = P(0.04, 0.05), Size = P(0.6, 0.09), AlignX = Enum.TextXAlignment.Left, ZIndex = z + 2 })
+	-- the finished drink: YOUR build, and it looks as good as you made it
+	local stageSpot = Paint.new("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.2, 0.46), Size = P(0.3, 0.52), ZIndex = z + 2, Parent = panel })
+	Paint.new("UIAspectRatioConstraint", { AspectRatio = 1, Parent = stageSpot })
+	Paint.shadow(stageSpot, { Position = P(0.5, 0.96), Size = P(0.7, 0.08), ZIndex = z + 1 })
+	local cupFrame = Paint.new("Frame", { BackgroundTransparency = 1, Size = P(1, 1), ZIndex = z + 2, Parent = stageSpot })
+	drawPreview(cupFrame, recipe, 1, true)
+	FX.pop(stageSpot, 0.1)
+	task.delay(0.55, function()
+		Cafe.presentFinal(stageSpot, cupFrame, recipe, total)
+	end)
 
 	-- stars
 	local starRow = Paint.new("Frame", { BackgroundTransparency = 1, Position = P(0.4, 0.14), Size = P(0.56, 0.14), ZIndex = z + 2, Parent = panel })
@@ -747,20 +793,15 @@ function Cafe.serve(recipe, scores, orderId)
 		Paint.text(row, word, { Color = col, Position = P(0.82, 0), Size = P(0.18, 1), ZIndex = z + 3 })
 	end
 
-	-- tip + customer reaction
+	-- tip
 	local tipChip = UI.chip(panel, "+🪙 0", T.Gold, { AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.2, 0.78), Size = P(0.26, 0.09) })
 	FX.pop(tipChip, 0.6)
 	task.delay(0.7, function()
 		FX.countUp(tipChip:FindFirstChild("Text"), 0, tip, 0.9, "+🪙 %d")
 		FX.sound("Coins")
 	end)
-	local mood = if stars >= 4 then "happy" elseif stars >= 2.5 then "ok" else "sad"
 	task.delay(0.5, function()
-		if order.setMood then
-			order.setMood(mood)
-			FX.wobble(order.cust, if mood == "happy" then 6 else 2, 0.6)
-			FX.sound(if mood == "happy" then "Happy" elseif mood == "sad" then "Angry" else "Sip")
-		end
+		FX.sound(if stars >= 4 then "Happy" elseif stars < 2.5 then "Oops" else "Sip")
 	end)
 	if stars >= 4.5 then
 		FX.confetti(stage, 60)
@@ -786,22 +827,20 @@ function Cafe.home()
 	Paint.round(left, UDim.new(0, 24))
 	Paint.shade(left, T.Paper, 60, true)
 	local lz = left.ZIndex
-	Paint.text(left, "Welcome to", { Color = "#8a7a90", Position = P(0.1, 0.1), Size = P(0.8, 0.06), ZIndex = lz + 1 })
-	Paint.text(left, "AURAFIZZ", { Color = T.TextDark, Position = P(0.1, 0.16), Size = P(0.8, 0.1), ZIndex = lz + 1 })
-	local c = UI.customer(left, UI.randomLook(rng), { Position = P(0.5, 0.78), Size = P(0.5, 0.42), ZIndex = lz + 2, Mood = "happy" })
-	FX.bob(c, 0.006, 2)
-	Paint.text(left, string.format("Served %d  ·  🪙 %d", state.served, state.tips), { Color = "#8a7a90", Position = P(0.1, 0.86), Size = P(0.8, 0.06), ZIndex = lz + 1 })
+	Paint.text(left, "AURAFIZZ", { Color = T.TextDark, Position = P(0.1, 0.12), Size = P(0.8, 0.1), ZIndex = lz + 1 })
+	Paint.text(left, "Kitchen", { Color = "#9a8a6a", Position = P(0.1, 0.22), Size = P(0.8, 0.06), ZIndex = lz + 1 })
+	Paint.text(left, string.format("Made %d  ·  🪙 %d", state.served, state.tips), { Color = "#9a8a6a", Position = P(0.1, 0.86), Size = P(0.8, 0.06), ZIndex = lz + 1 })
 	drawTracker({}, 0)
 
 	local panel = freshPanel()
 	local z = panel.ZIndex
 	Paint.text(panel, "What's next?", { Position = P(0.05, 0.08), Size = P(0.9, 0.1), ZIndex = z + 1 })
-	local serve = UI.button(panel, "🛎  Serve customers", T.Accent, { Position = P(0.5, 0.38), Size = P(0.56, 0.14) })
+	local serve = UI.button(panel, "🎲  Make a random drink", T.Accent, { Position = P(0.5, 0.38), Size = P(0.56, 0.14) })
 	FX.pop(serve, 0.1)
-	local menu = UI.button(panel, "📖  Practice from the menu", "#8ec5f0", { Position = P(0.5, 0.58), Size = P(0.56, 0.14) })
+	local menu = UI.button(panel, "📖  Practice from the menu", T.PanelLight, { Position = P(0.5, 0.58), Size = P(0.56, 0.14), TextColor = T.Text })
 	FX.pop(menu, 0.2)
 	serve.Activated:Connect(function()
-		task.spawn(Cafe.shift)
+		task.spawn(Cafe.quickDrink)
 	end)
 	menu.Activated:Connect(function()
 		Cafe.menu()
@@ -850,9 +889,9 @@ function Cafe.menu()
 				task.spawn(function()
 					local res = call("NextOrder", "practice", r.id)
 					local oid = res and res.OrderId
-					local out = Cafe.makeDrink(r, UI.randomLook(rng), oid)
+					local out = Cafe.makeDrink(r, nil, oid)
 					if out then
-						buttonsRow(out.Panel, { { "Menu", "#8ec5f0", Cafe.menu }, { "Home", T.PanelLight, Cafe.home } })
+						buttonsRow(out.Panel, { { "Menu", T.Accent, Cafe.menu }, { "Home", T.PanelLight, Cafe.home } })
 					end
 				end)
 			end)
@@ -871,55 +910,24 @@ function Cafe.menu()
 	end
 end
 
--- A shift of customers: each orders one drink the player can make.
-function Cafe.shift()
+-- One random drink (practice). Real orders come from your 3D game via Api.MakeDrink.
+function Cafe.quickDrink()
 	if state.busy then
 		return
 	end
 	state.busy = true
 	local all = Bridge.allRecipes()
-	for n = 1, Config.CustomersPerShift do
-		if not (gui and gui.Enabled) then
-			break
+	local recipe = all[rng:NextInteger(1, math.max(#all, 1))]
+	if recipe then
+		local res = call("NextOrder", "practice", recipe.id)
+		local out = Cafe.makeDrink(recipe, nil, res and res.OrderId)
+		if out then
+			buttonsRow(out.Panel, { { "Another", T.Accent, function()
+				task.spawn(Cafe.quickDrink)
+			end }, { "Home", T.PanelLight, Cafe.home } })
 		end
-		local res = call("NextOrder", "customer")
-		local recipe = res and Bridge.recipe(res.DrinkId)
-		if not recipe then
-			-- offline / no server: pick from the free "Tasty" starters first, then anything
-			local pool = {}
-			for _, r in all do
-				if r.tier == "Tasty" then
-					table.insert(pool, r)
-				end
-			end
-			if #pool == 0 then
-				pool = all
-			end
-			recipe = pool[rng:NextInteger(1, #pool)]
-		end
-		if not recipe then
-			warn("[AuraFizz2D] no recipes found in ReplicatedStorage.Drinks.DrinkRecipes")
-			break
-		end
-		FX.sound("Order")
-		local out = Cafe.makeDrink(recipe, UI.randomLook(rng), res and res.OrderId)
-		if not out then
-			break
-		end
-		local nextEvt = Instance.new("BindableEvent")
-		local label = if n < Config.CustomersPerShift then "Next customer" else "Finish shift"
-		buttonsRow(out.Panel, { { label, T.Accent, function()
-			nextEvt:Fire()
-		end } })
-		nextEvt.Event:Wait()
-		nextEvt:Destroy()
 	end
 	state.busy = false
-	if gui and gui.Enabled then
-		Cafe.home()
-		FX.confetti(stage, 40)
-		FX.sound("LevelUp")
-	end
 end
 
 -- ================= open / close / popups =================
@@ -1053,23 +1061,25 @@ Config.SoundMap = {
 
 -- Pastel painted UI (same rules as the pastel-fruit-art skill: soft 3-tone shading,
 -- chunky rounded shapes, no outlines, no gloss).
-Config.Theme = {
-	Ground = "#232b3d",
-	Panel = "#2f3950",
-	PanelLight = "#3b4763",
+Config.Theme = { -- black & gold, to match your appliances
+	Ground = "#121015",
+	Panel = "#1d1a21",
+	PanelLight = "#2a2530",
 	Paper = "#fbf3e2",
-	Text = "#fbf7f2",
-	TextDark = "#3a2f45",
-	TextSoft = "#b9c0d4",
-	Accent = "#f59ac0",
-	Gold = "#f7c95b",
+	Text = "#fbf3e2",
+	TextDark = "#2a2016",
+	TextSoft = "#b8ab98",
+	Accent = "#d8b45a",
+	Gold = "#f2d27a",
 	Good = "#8ed5b4",
 	Warn = "#f7c95b",
 	Bad = "#f0899b",
-	Wood = "#c98a52",
-	Steel = "#aeb6c6",
+	Wood = "#6b4a33",
+	Steel = "#3a3440",
+	Appliance = "#221e27", -- black appliance bodies
+	Trim = "#d8b45a",      -- gold trim
 }
-Config.Pastels = { "#f4b6c2", "#a8d8b9", "#c7b3e6", "#ffd97a", "#8ec5f0", "#f5a86b", "#e6a0b4", "#9fd8d0" }
+Config.Pastels = { "#f2d27a", "#d8b45a", "#f7e3a5", "#e8c46a", "#fbf3e2", "#c9a24a", "#f5d98c", "#e0c07a" } -- gold sparkle tones
 Config.CustomerNames = {
 	"Mia", "Leo", "Zoe", "Kai", "Luna", "Nico", "Ivy", "Theo", "Aria", "Jax",
 	"Ruby", "Finn", "Nova", "Eli", "Sage", "Remy", "Cleo", "Milo", "Skye", "Juno",
@@ -1124,6 +1134,20 @@ function FX.bounce(obj, amount)
 	local s = scaleOf(obj)
 	s.Scale = 1 - (amount or 0.12)
 	FX.tween(s, 0.35, { Scale = 1 }, Enum.EasingStyle.Back)
+end
+
+-- Squash-and-stretch: flatten + widen, then spring back.
+function FX.squash(obj, amount)
+	amount = amount or 0.15
+	local base = obj:GetAttribute("BaseSize") or obj.Size
+	obj:SetAttribute("BaseSize", base)
+	local function sz(sx, sy)
+		return UDim2.new(base.X.Scale * sx, base.X.Offset * sx, base.Y.Scale * sy, base.Y.Offset * sy)
+	end
+	obj.Size = sz(1 + amount, 1 - amount)
+	FX.tween(obj, 0.12, { Size = sz(1 - amount * 0.5, 1 + amount * 0.6) }).Completed:Connect(function()
+		FX.tween(obj, 0.35, { Size = base }, Enum.EasingStyle.Elastic)
+	end)
 end
 
 -- Gentle idle bob (for customers, the order card, the logo).
@@ -1315,7 +1339,7 @@ end
 -- ================= station scenes =================
 local VESSEL = {
 	glass = { "#e3f1f8", 0.45 },
-	steel = { "#aeb6c6", 0 },
+	steel = { T.Appliance, 0 },
 	ceramic = { "#f6e9dc", 0 },
 	wood = { "#b87a4a", 0 },
 }
@@ -1338,68 +1362,99 @@ local function scene(area, stationKey, color, extra)
 	local cfg = SCENES[stationKey] or { vessel = { 0.5, 0.84, 0.36, 0.44, "glass", 0.2 }, fx = { swirl = true } }
 	local z = area.ZIndex
 	local r = { p = 0, flow = 0, spin = 0, fx = cfg.fx }
-	Paint.shadow(area, { Position = P(0.5, 0.93), Size = P(0.8, 0.06), ZIndex = z })
+	-- your stations' matte black counter with a gold edge
+	Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.9), Size = P(1.02, 0.12), Corner = 0.08, ZIndex = z, Blotch = false })
+	Paint.blob(area, T.Trim, { Position = P(0.5, 0.9), Size = P(1.02, 0.012), Corner = 0.4, ZIndex = z + 1, Blotch = false })
+	Paint.shadow(area, { Position = P(0.5, 0.9), Size = P(0.8, 0.04), ZIndex = z + 1 })
 
 	-- station furniture behind the vessel
 	if stationKey == "CoffeeMachine" then
-		Paint.blob(area, "#8c93a6", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.1), Size = P(0.72, 0.46), Corner = 0.14, ZIndex = z + 1 })
-		Paint.blob(area, "#8c93a6", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 0.92), Size = P(0.72, 0.06), Corner = 0.4, ZIndex = z + 1 })
-		Paint.blob(area, "#3b4763", { Position = P(0.5, 0.56), Size = P(0.16, 0.07), Corner = 0.3, ZIndex = z + 2 })
+		Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.1), Size = P(0.72, 0.46), Corner = 0.14, ZIndex = z + 1 })
+		Paint.blob(area, T.Trim, { Position = P(0.5, 0.47), Size = P(0.72, 0.025), Corner = 0.4, ZIndex = z + 2, Blotch = false })
+		Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 0.92), Size = P(0.72, 0.06), Corner = 0.4, ZIndex = z + 1 })
+		Paint.blob(area, "#2e2833", { Position = P(0.5, 0.56), Size = P(0.16, 0.07), Corner = 0.3, ZIndex = z + 2 })
 		Paint.blob(area, "#f59ac0", { Position = P(0.7, 0.2), Size = P(0.07, 0.07), ZIndex = z + 2, Blotch = false })
 		Paint.blob(area, "#8ed5b4", { Position = P(0.6, 0.2), Size = P(0.07, 0.07), ZIndex = z + 2, Blotch = false })
 		Paint.blob(area, "#1b2131", { Position = P(0.36, 0.26), Size = P(0.2, 0.12), Corner = 0.25, ZIndex = z + 2, Blotch = false })
 		r.spout = 0.6
 	elseif stationKey == "Stove" then
-		Paint.blob(area, "#3b4763", { Position = P(0.5, 0.86), Size = P(0.84, 0.14), Corner = 0.3, ZIndex = z + 1 })
+		Paint.blob(area, "#2e2833", { Position = P(0.5, 0.86), Size = P(0.84, 0.14), Corner = 0.3, ZIndex = z + 1 })
 		Paint.blob(area, "#1b2131", { Position = P(0.5, 0.8), Size = P(0.56, 0.08), ZIndex = z + 2, Blotch = false })
 		r.flames = {}
 		for i, x in { 0.38, 0.5, 0.62 } do
 			local f = Paint.blob(area, if i == 2 then "#f7c95b" else "#f5a86b", { AnchorPoint = Vector2.new(0.5, 1), Position = P(x, 0.8), Size = P(0.08, 0.1), ZIndex = z + 3, Blotch = false })
 			table.insert(r.flames, f)
 		end
-		Paint.blob(area, "#aeb6c6", { Position = P(0.82, 0.54), Size = P(0.22, 0.05), Corner = 0.4, ZIndex = z + 3 }) -- pot handle
+		Paint.blob(area, T.Trim, { Position = P(0.82, 0.54), Size = P(0.22, 0.05), Corner = 0.4, ZIndex = z + 3 }) -- pot handle
 	elseif stationKey == "Blender" then
-		Paint.blob(area, "#3b4763", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.74), Size = P(0.46, 0.18), Corner = 0.25, ZIndex = z + 1 })
+		Paint.blob(area, "#2e2833", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.74), Size = P(0.46, 0.18), Corner = 0.25, ZIndex = z + 1 })
 		Paint.blob(area, "#f59ac0", { Position = P(0.5, 0.83), Size = P(0.08, 0.08), ZIndex = z + 2, Blotch = false })
-		Paint.blob(area, "#3b4763", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 0.25), Size = P(0.4, 0.06), Corner = 0.4, ZIndex = z + 4 })
+		Paint.blob(area, "#2e2833", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 0.25), Size = P(0.4, 0.06), Corner = 0.4, ZIndex = z + 4 })
 	elseif stationKey == "Juicer" then
-		r.press = Paint.blob(area, "#aeb6c6", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 0.36), Size = P(0.4, 0.16), Corner = 0.45, ZIndex = z + 4 })
+		r.press = Paint.blob(area, T.Trim, { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 0.36), Size = P(0.4, 0.16), Corner = 0.45, ZIndex = z + 4 })
 		local fruit = Paint.new("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.5, 0.46), Size = P(0.28, 0.28), ZIndex = z + 3, Parent = area })
 		Paint.art(fruit, { Shape = "slice", Color = extra.fruitColor or "#f6d33f" })
 		r.fruit = fruit
-		Paint.blob(area, "#aeb6c6", { Position = P(0.5, 0.58), Size = P(0.44, 0.08), Corner = 0.4, ZIndex = z + 2 })
+		Paint.blob(area, T.Trim, { Position = P(0.5, 0.58), Size = P(0.44, 0.08), Corner = 0.4, ZIndex = z + 2 })
 		r.spout = 0.6
 	elseif stationKey == "CuttingBoard" then
 		Paint.blob(area, T.Wood, { Position = P(0.5, 0.72), Size = P(0.86, 0.34), Corner = 0.3, ZIndex = z + 1 })
 		local whole = Paint.new("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.5, 0.64), Size = P(0.36, 0.36), ZIndex = z + 3, Parent = area })
 		Paint.art(whole, { Shape = extra.fruitShape or "fruit", Color = extra.fruitColor or "#dc4a3c" })
 		r.whole = whole
-		r.knife = Paint.blob(area, "#dfe4ee", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.72, 0.5), Size = P(0.06, 0.34), Corner = 0.45, Rotation = 18, ZIndex = z + 5 })
+		r.knife = Paint.blob(area, "#efdca6", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.72, 0.5), Size = P(0.06, 0.34), Corner = 0.45, Rotation = 18, ZIndex = z + 5 })
 		r.pieces = {}
 	elseif stationKey == "TeaBobaStation" then
-		Paint.blob(area, "#3b4763", { Position = P(0.5, 0.88), Size = P(0.7, 0.08), Corner = 0.4, ZIndex = z + 1 })
-		Paint.blob(area, "#aeb6c6", { Position = P(0.5, 0.6), Size = P(0.52, 0.05), Corner = 0.4, ZIndex = z + 4 })
+		-- gold nameplate + black shelf of black/gold canisters, like your Tea & Boba station
+		local sign = Paint.blob(area, "#15121a", { Position = P(0.5, 0.07), Size = P(0.5, 0.08), Corner = 0.15, ZIndex = z + 1, Blotch = false })
+		Paint.text(sign, "TEA & BOBA", { Color = T.Trim, Position = P(0.05, 0.12), Size = P(0.9, 0.76), ZIndex = z + 2 })
+		Paint.blob(area, "#15121a", { Position = P(0.5, 0.31), Size = P(0.9, 0.022), Corner = 0.3, ZIndex = z + 1, Blotch = false })
+		for i = 0, 4 do
+			local x = 0.18 + i * 0.16
+			Paint.blob(area, "#1b1820", { AnchorPoint = Vector2.new(0.5, 1), Position = P(x, 0.3), Size = P(0.1, 0.13), Corner = 0.2, ZIndex = z + 1 })
+			Paint.blob(area, T.Trim, { AnchorPoint = Vector2.new(0.5, 1), Position = P(x, 0.2), Size = P(0.1, 0.02), Corner = 0.3, ZIndex = z + 2, Blotch = false })
+		end
+		Paint.blob(area, T.Trim, { Position = P(0.5, 0.6), Size = P(0.52, 0.05), Corner = 0.4, ZIndex = z + 4 })
 	elseif stationKey == "MixingStation" then
-		Paint.blob(area, "#dfe4ee", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 0.28), Size = P(0.2, 0.08), Corner = 0.4, ZIndex = z + 4 })
+		Paint.blob(area, "#efdca6", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 0.28), Size = P(0.2, 0.08), Corner = 0.4, ZIndex = z + 4 })
 		Paint.blob(area, T.Wood, { Position = P(0.5, 0.9), Size = P(0.7, 0.06), Corner = 0.4, ZIndex = z + 1 })
 	elseif stationKey == "SodaFountain" then
-		Paint.blob(area, "#8ec5f0", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.06), Size = P(0.62, 0.32), Corner = 0.2, ZIndex = z + 1 })
+		Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.06), Size = P(0.62, 0.32), Corner = 0.2, ZIndex = z + 1 })
+		Paint.blob(area, T.Trim, { Position = P(0.5, 0.33), Size = P(0.62, 0.022), Corner = 0.4, ZIndex = z + 2, Blotch = false })
 		for i, c in { "#f59ac0", "#f7c95b", "#8ed5b4" } do
 			Paint.blob(area, c, { Position = P(0.34 + (i - 1) * 0.16, 0.2), Size = P(0.1, 0.1), ZIndex = z + 2, Blotch = false })
 		end
-		Paint.blob(area, "#3b4763", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.36), Size = P(0.08, 0.08), Corner = 0.3, ZIndex = z + 2 })
-		Paint.blob(area, "#3b4763", { Position = P(0.5, 0.9), Size = P(0.6, 0.05), Corner = 0.4, ZIndex = z + 1 })
+		Paint.blob(area, "#2e2833", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.36), Size = P(0.08, 0.08), Corner = 0.3, ZIndex = z + 2 })
+		Paint.blob(area, "#2e2833", { Position = P(0.5, 0.9), Size = P(0.6, 0.05), Corner = 0.4, ZIndex = z + 1 })
 		r.spout = 0.44
 	elseif stationKey == "ToppingStation" then
-		Paint.blob(area, extra.syrupColor or "#d08a3a", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.8, 0.88), Size = P(0.18, 0.4), Corner = 0.3, ZIndex = z + 1 })
-		Paint.blob(area, "#3b4763", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.8, 0.5), Size = P(0.05, 0.12), Corner = 0.3, ZIndex = z + 1 })
-		r.pump = Paint.blob(area, "#3b4763", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.74, 0.39), Size = P(0.16, 0.04), Corner = 0.4, ZIndex = z + 2 })
-	elseif stationKey == "CupSealer" then
-		Paint.blob(area, "#c7b3e6", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.08), Size = P(0.6, 0.22), Corner = 0.2, ZIndex = z + 1 })
-		for _, x in { 0.24, 0.76 } do
-			Paint.blob(area, "#c7b3e6", { AnchorPoint = Vector2.new(0.5, 0), Position = P(x, 0.2), Size = P(0.1, 0.72), Corner = 0.3, ZIndex = z + 1 })
+		-- black rail of pump bottles with gold pump heads + clear acrylic topping bins, like your topping station
+		local syrups = { "#f59ac0", "#f7e3a5", "#a8d8b9", "#c7b3e6", "#f5a86b", "#8ec5f0", "#e2413f" }
+		Paint.blob(area, "#15121a", { Position = P(0.5, 0.25), Size = P(0.96, 0.02), Corner = 0.3, ZIndex = z + 1, Blotch = false })
+		for i, c in syrups do
+			local x = 0.08 + (i - 1) * 0.14
+			Paint.blob(area, c, { AnchorPoint = Vector2.new(0.5, 1), Position = P(x, 0.24), Size = P(0.07, 0.14), Corner = 0.3, ZIndex = z + 1 })
+			Paint.blob(area, T.Trim, { AnchorPoint = Vector2.new(0.5, 1), Position = P(x, 0.1), Size = P(0.018, 0.05), Corner = 0.3, ZIndex = z + 2, Blotch = false })
 		end
-		r.press = Paint.blob(area, "#8c93a6", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.28), Size = P(0.34, 0.08), Corner = 0.3, ZIndex = z + 3 })
+		local bins = { "#f7e3a5", "#f59ac0", "#c7b3e6", "#a8d8b9" }
+		for i, c in bins do
+			local bx = 0.07 + (i - 1) * 0.07
+			local bin = Paint.blob(area, "#e3f1f8", { AnchorPoint = Vector2.new(0.5, 1), Position = P(bx, 0.89), Size = P(0.065, 0.09), Corner = 0.15, ZIndex = z + 1, Blotch = false })
+			bin.BackgroundTransparency = 0.55
+			for k = 1, 4 do
+				Paint.blob(bin, c, { Position = P(0.2 + (k % 2) * 0.5, 0.55 + math.floor(k / 3) * 0.25), Size = P(0.3, 0.2), ZIndex = bin.ZIndex + 1, Blotch = false })
+			end
+		end
+		-- the pump you press for this drink's syrup
+		Paint.blob(area, extra.syrupColor or "#d08a3a", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.8, 0.89), Size = P(0.14, 0.34), Corner = 0.3, ZIndex = z + 1 })
+		Paint.blob(area, T.Trim, { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.8, 0.56), Size = P(0.04, 0.1), Corner = 0.3, ZIndex = z + 1 })
+		r.pump = Paint.blob(area, T.Trim, { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.74, 0.46), Size = P(0.16, 0.035), Corner = 0.4, ZIndex = z + 2 })
+	elseif stationKey == "CupSealer" then
+		Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.08), Size = P(0.6, 0.22), Corner = 0.2, ZIndex = z + 1 })
+		for _, x in { 0.24, 0.76 } do
+			Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 0), Position = P(x, 0.2), Size = P(0.1, 0.72), Corner = 0.3, ZIndex = z + 1 })
+		end
+		r.press = Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.28), Size = P(0.34, 0.08), Corner = 0.3, ZIndex = z + 3 })
 	elseif stationKey == "BrewBarrel" then
 		for _, y in { 0.4, 0.72 } do
 			Paint.blob(area, "#6a4a36", { Position = P(0.5, y), Size = P(0.54, 0.04), Corner = 0.4, ZIndex = z + 5 })
@@ -1500,8 +1555,8 @@ local function scene(area, stationKey, color, extra)
 			end
 		end
 		if r.pump then
-			FX.tween(r.pump, 0.08, { Position = P(0.74, 0.43) }).Completed:Connect(function()
-				FX.tween(r.pump, 0.15, { Position = P(0.74, 0.39) })
+			FX.tween(r.pump, 0.08, { Position = P(0.74, 0.5) }).Completed:Connect(function()
+				FX.tween(r.pump, 0.15, { Position = P(0.74, 0.46) })
 			end)
 		end
 	end
@@ -1862,11 +1917,39 @@ function Games.Cook(panel, action, ctx)
 			rig.flow = 0
 			api.finish(zoneScore(p, a, b))
 		end)
+		-- the food visibly cooks: raw (pale) -> done (its colour) -> overdone (dark, smoking)
+		local raw = ctx.color:Lerp(Color3.new(1, 1, 1), 0.45)
+		local burnt = ctx.color:Lerp(Color3.fromHex("#3a2418"), 0.75)
+		local tint, frameN = nil, 0
 		api.on(RunService.Heartbeat, function(dt)
 			p += dt / duration
 			handPivot.Rotation = math.min(p, 1.3) * 360
 			rig.set(p)
 			rig.tick(dt)
+			frameN += 1
+			local target = rig.liquid and rig.liquid.Visible and rig.liquid or rig.surface
+			if target and frameN % 5 == 0 then
+				local c = if p <= b then raw:Lerp(ctx.color, math.clamp(p / math.max(b, 0.01), 0, 1)) else ctx.color:Lerp(burnt, math.clamp((p - b) / 0.3, 0, 1))
+				if c ~= tint then
+					tint = c
+					Paint.shade(target, c, 0)
+				end
+			end
+			-- sizzle: the pot/cup jitters a little while it's in the gold zone
+			if rig.vessel and p >= a and p <= b then
+				rig.vessel.Rotation = math.sin(os.clock() * 60) * 1.2
+			elseif rig.vessel then
+				rig.vessel.Rotation = 0
+			end
+			-- overcooking: grey smoke billows up
+			if p > b and rng:NextNumber() < dt * 10 then
+				local sm = Paint.blob(L.art, "#6b6470", { Position = P(0.5 + rng:NextNumber(-0.15, 0.15), (rig.vtop or 0.5)), Size = P(0.1, 0.1), ZIndex = L.art.ZIndex + 12, Blotch = false })
+				sm.BackgroundTransparency = 0.3
+				FX.tween(sm, 1.2, { Position = sm.Position - P(0, 0.3), Size = P(0.22, 0.22), BackgroundTransparency = 1 })
+				task.delay(1.25, function()
+					sm:Destroy()
+				end)
+			end
 			if not dinged and p >= a then
 				dinged = true
 				FX.sound("Order")
@@ -1963,29 +2046,51 @@ function Games.Stack(panel, action, ctx)
 			else
 				Paint.blob(ic, v, { Size = P(0.9, 0.9) })
 			end
-			api.on(b.Activated, function()
+			-- drag each ingredient into the cup (a tap also drops it in)
+			UI.draggable(panel, b, api.on, function(pos, held)
 				if not api.alive() then
-					return
+					held:Destroy()
+					return true
 				end
-				if layers[nextI] == v then
-					local band = Paint.new("Frame", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 1 - (nextI - 1) * layerH), Size = P(1, layerH + 0.004),
-						ZIndex = vessel.ZIndex + 1, Parent = vessel })
-					Paint.shade(band, colorOf(v), 0)
-					FX.drop(band, 0.6)
-					Paint.shade(steps[nextI], T.Good, 60, true)
-					FX.bounce(steps[nextI], 0.3)
-					FX.sound("Pick")
-					nextI += 1
-					if nextI > n then
-						timer.stop()
-						api.finish(n / (n + mistakes * 0.6) * speedScore(timer.elapsed(), n * 1.1, limit))
-					end
-				else
+				if pos and not UI.inside(L.art, pos) then
+					return false -- dropped outside the cup: floats back
+				end
+				if layers[nextI] ~= v then
 					mistakes += 1
 					FX.sound("Wrong")
-					FX.wobble(b, 10, 0.3)
+					FX.wobble(held, 16, 0.3)
 					FX.floatText(panel, "Wrong order!", T.Bad, P(0.3, 0.3), P(0.4, 0.08))
+					return false
 				end
+				-- it tips into the cup, then a new layer rises with a little splash
+				local top = vessel.AbsolutePosition + Vector2.new(vessel.AbsoluteSize.X / 2, 0) - panel.AbsolutePosition
+				FX.tween(held, 0.25, { Position = UDim2.fromOffset(top.X, top.Y), Rotation = 60, Size = UDim2.fromOffset(20, 20) }, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+				local idx = nextI
+				task.delay(0.26, function()
+					held:Destroy()
+					if not vessel.Parent then
+						return
+					end
+					local band = Paint.new("Frame", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 1 - (idx - 1) * layerH), Size = P(1, 0),
+						ZIndex = vessel.ZIndex + 1, Parent = vessel })
+					Paint.shade(band, colorOf(v), 0)
+					FX.tween(band, 0.35, { Size = P(1, layerH + 0.004) }, Enum.EasingStyle.Back)
+					for _ = 1, 4 do
+						local drop = Paint.blob(vessel, colorOf(v), { Position = P(0.5 + rng:NextNumber(-0.25, 0.25), 1 - idx * layerH), Size = P(0.08, 0.06), ZIndex = vessel.ZIndex + 3, Blotch = false })
+						FX.tween(drop, 0.35, { Position = drop.Position - P(0, 0.08), BackgroundTransparency = 1 })
+					end
+					FX.sound("Pour")
+				end)
+				Paint.shade(steps[nextI], T.Good, 60, true)
+				FX.bounce(steps[nextI], 0.3)
+				nextI += 1
+				if nextI > n then
+					timer.stop()
+					task.delay(0.6, function()
+						api.finish(n / (n + mistakes * 0.6) * speedScore(timer.elapsed(), n * 1.3, limit))
+					end)
+				end
+				return true
 			end)
 		end
 		api.on(RunService.Heartbeat, function()
@@ -3162,9 +3267,11 @@ put("ModuleScript", "Storage", pkg, [========[
 -- AuraFizz2D · Storage — the 2D shelf screen for your storage stations
 -- (Cup Rack, Pantry Shelf, Fridge, Freezer, Syrup Shelf).
 -- Shows every item kept there (DrinkCatalog.Items / Cups) with YOUR pictures;
--- tap the ones the recipe needs. Wrong picks cost a little score.
+-- pick up the ones the recipe needs and drag them into the prep tray (a quick tap works too).
+-- Wrong ones bounce back out and cost a little score.
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 
 local Config = require(script.Parent.Config)
 local Paint = require(script.Parent.Paint)
@@ -3223,7 +3330,7 @@ function Storage.play(panel, stationKey, needed, opts)
 
 	-- the shelf: a scrolling grid of every item in this storage
 	local shelf = Paint.new("ScrollingFrame", {
-		Name = "Shelf", BackgroundTransparency = 1, Position = P(0.03, 0.29), Size = P(0.94, 0.69), ZIndex = z + 1,
+		Name = "Shelf", BackgroundTransparency = 1, Position = P(0.03, 0.29), Size = P(0.94, 0.5), ZIndex = z + 1,
 		ScrollBarThickness = 6, ScrollBarImageColor3 = Paint.C(T.TextSoft), CanvasSize = UDim2.new(),
 		AutomaticCanvasSize = Enum.AutomaticSize.Y, ScrollingDirection = Enum.ScrollingDirection.Y, Parent = panel,
 	})
@@ -3237,10 +3344,21 @@ function Storage.play(panel, stationKey, needed, opts)
 	resize()
 	local shelfColor = SHELF_COLOR[stationKey] or T.Wood
 
+	-- the prep tray: drag ingredients here (black tray with a gold rim, like your stations)
+	local tray = Paint.new("Frame", { Name = "Tray", AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.81), Size = P(0.7, 0.16), ZIndex = z + 2, Parent = panel })
+	Paint.round(tray, UDim.new(0.3, 0))
+	Paint.shade(tray, T.Appliance, 90, true)
+	local rim = Paint.new("Frame", { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0), Size = P(0.96, 0.08), ZIndex = z + 3, Parent = tray })
+	Paint.round(rim, 0.5)
+	Paint.shade(rim, T.Trim, 90, true)
+	local trayHint = Paint.text(tray, "Drag ingredients here", { Color = T.TextSoft, Position = P(0.1, 0.3), Size = P(0.8, 0.4), ZIndex = z + 3 })
+	local traySlots = 0
+
 	return (function()
 		local done = Instance.new("BindableEvent")
 		local conns, finished = {}, false
 		local mistakes, lastAction = 0, os.clock()
+		local dragging = nil
 		local cells = {}
 		table.insert(conns, shelf:GetPropertyChangedSignal("AbsoluteSize"):Connect(resize))
 
@@ -3275,56 +3393,114 @@ function Storage.play(panel, stationKey, needed, opts)
 			Bridge.icon(ic, kind, id, { Behind = T.Panel })
 			Paint.text(cell, Bridge.itemName(id), { Color = T.TextSoft, Position = P(0.02, 0.85), Size = P(0.96, 0.14), ZIndex = z + 3, MaxSize = 16 })
 			cells[id] = cell
-			table.insert(conns, cell.Activated:Connect(function()
-				if finished or cell:GetAttribute("Taken") then
+			ic:SetAttribute("Id", id)
+			table.insert(conns, cell.InputBegan:Connect(function(input)
+				if finished or dragging or cell:GetAttribute("Taken") or not UI.isPress(input) then
 					return
 				end
 				lastAction = os.clock()
-				if want[id] then
-					cell:SetAttribute("Taken", true)
-					FX.sound("Pick")
-					FX.bounce(ic, 0.3)
-					-- fly a copy up toward the checklist chip
-					local chip = chipOf[id]
-					local fly = ic:Clone()
-					fly.Parent = panel
-					fly.ZIndex = z + 40
-					for _, d in fly:GetDescendants() do
-						if d:IsA("GuiObject") then
-							d.ZIndex += 40
-						end
+				-- pick up: the ingredient lifts off the shelf, grows a little and tilts
+				local held = ic:Clone()
+				for _, d in held:GetDescendants() do
+					if d:IsA("GuiObject") then
+						d.ZIndex += 60
 					end
-					fly.AnchorPoint = Vector2.new(0.5, 0.5)
-					local pa, ps = panel.AbsolutePosition, panel.AbsoluteSize
-					local from = ic.AbsolutePosition + ic.AbsoluteSize / 2 - pa
-					local to = chip.AbsolutePosition + chip.AbsoluteSize / 2 - pa
-					fly.Position = P(from.X / ps.X, from.Y / ps.Y)
-					fly.Size = UDim2.fromOffset(ic.AbsoluteSize.X, ic.AbsoluteSize.Y)
-					FX.tween(fly, 0.45, { Position = P(to.X / ps.X, to.Y / ps.Y), Size = UDim2.fromOffset(20, 20) }, Enum.EasingStyle.Back, Enum.EasingDirection.In)
-					task.delay(0.46, function()
-						fly:Destroy()
-						if chip.Parent then
-							Paint.shade(chip, T.Good, 60, true)
-							FX.bounce(chip, 0.3)
-							FX.sparkle(panel, P(to.X / ps.X, to.Y / ps.Y), T.Gold, 5)
-						end
-					end)
-					ic.Visible = false
-					if opts.onPick then
-						task.spawn(opts.onPick, id)
-					end
-					remaining -= 1
-					if remaining <= 0 then
-						finish(math.clamp(total / (total + mistakes * 0.6), 0, 1))
-					end
-				else
-					mistakes += 1
-					FX.sound("Wrong")
-					FX.wobble(cell, 10, 0.35)
-					FX.floatText(panel, "Not in this drink!", T.Bad, P(0.5, 0.27), P(0.45, 0.06))
 				end
+				held.ZIndex = z + 60
+				held.AnchorPoint = Vector2.new(0.5, 0.5)
+				held.Size = UDim2.fromOffset(ic.AbsoluteSize.X, ic.AbsoluteSize.Y)
+				local p0 = UI.pointer(input) - panel.AbsolutePosition
+				held.Position = UDim2.fromOffset(p0.X, p0.Y)
+				held.Parent = panel
+				ic.Visible = false
+				FX.tween(held, 0.12, { Size = UDim2.fromOffset(ic.AbsoluteSize.X * 1.18, ic.AbsoluteSize.Y * 1.18), Rotation = -8 }, Enum.EasingStyle.Back)
+				FX.sound("Pick")
+				dragging = { id = id, held = held, ic = ic, cell = cell, start = UI.pointer(input), last = UI.pointer(input) }
 			end))
 		end
+
+		local function inTray(pos)
+			local a, sz = tray.AbsolutePosition, tray.AbsoluteSize
+			return pos.X >= a.X - 20 and pos.X <= a.X + sz.X + 20 and pos.Y >= a.Y - 30 and pos.Y <= a.Y + sz.Y + 20
+		end
+		-- the held ingredient follows the finger and tilts with the movement
+		table.insert(conns, UserInputService.InputChanged:Connect(function(input)
+			if not dragging then
+				return
+			end
+			if input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch then
+				return
+			end
+			local pos = UI.pointer(input)
+			local rel = pos - panel.AbsolutePosition
+			dragging.held.Position = UDim2.fromOffset(rel.X, rel.Y)
+			dragging.held.Rotation = math.clamp((pos.X - dragging.last.X) * 1.2, -22, 22)
+			dragging.last = pos
+			rim.BackgroundColor3 = if inTray(pos) then Paint.C(T.Gold) else Color3.new(1, 1, 1)
+		end))
+		table.insert(conns, UserInputService.InputEnded:Connect(function(input)
+			if not (dragging and UI.isPress(input)) then
+				return
+			end
+			local d = dragging
+			dragging = nil
+			rim.BackgroundColor3 = Color3.new(1, 1, 1)
+			local pos = UI.pointer(input)
+			local tapped = (pos - d.start).Magnitude < 10 -- a quick tap still works (it hops into the tray)
+			local function back()
+				local home = d.ic.AbsolutePosition + d.ic.AbsoluteSize / 2 - panel.AbsolutePosition
+				FX.tween(d.held, 0.35, { Position = UDim2.fromOffset(home.X, home.Y), Rotation = 0,
+					Size = UDim2.fromOffset(d.ic.AbsoluteSize.X, d.ic.AbsoluteSize.Y) }, Enum.EasingStyle.Back)
+				task.delay(0.36, function()
+					d.held:Destroy()
+					d.ic.Visible = true
+					FX.bounce(d.ic, 0.2)
+				end)
+			end
+			if not (tapped or inTray(pos)) then
+				back() -- dropped somewhere else: floats back to its shelf spot
+				return
+			end
+			if want[d.id] then
+				-- lands in the tray with a squash, stays there
+				d.cell:SetAttribute("Taken", true)
+				traySlots += 1
+				trayHint.Visible = false
+				local slotX = 0.12 + (traySlots - 1) * 0.16
+				local target = tray.AbsolutePosition + Vector2.new(tray.AbsoluteSize.X * slotX, tray.AbsoluteSize.Y * 0.55) - panel.AbsolutePosition
+				local sz = tray.AbsoluteSize.Y * 0.95
+				FX.tween(d.held, 0.28, { Position = UDim2.fromOffset(target.X, target.Y), Rotation = 0, Size = UDim2.fromOffset(sz, sz) }, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+				task.delay(0.29, function()
+					if not d.held.Parent then
+						return
+					end
+					FX.squash(d.held, 0.2)
+					FX.sparkle(panel, UDim2.fromOffset(target.X, target.Y), T.Gold, 5)
+					FX.sound("Pick")
+					local chip = chipOf[d.id]
+					if chip and chip.Parent then
+						Paint.shade(chip, T.Good, 60, true)
+						FX.bounce(chip, 0.3)
+					end
+				end)
+				if opts.onPick then
+					task.spawn(opts.onPick, d.id)
+				end
+				remaining -= 1
+				if remaining <= 0 then
+					task.delay(0.35, function()
+						finish(math.clamp(total / (total + mistakes * 0.6), 0, 1))
+					end)
+				end
+			else
+				-- wrong ingredient: it bounces out of the tray and hops home
+				mistakes += 1
+				FX.sound("Wrong")
+				FX.wobble(d.held, 16, 0.3)
+				FX.floatText(panel, "Not in this drink!", T.Bad, P(0.5, 0.74), P(0.45, 0.06))
+				task.delay(0.3, back)
+			end
+		end))
 
 		-- gentle hint: pulse the next needed item after a while idle
 		table.insert(conns, RunService.Heartbeat:Connect(function()
@@ -3556,6 +3732,73 @@ end
 
 function UI.isPress(input)
 	return input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch
+end
+
+-- Makes `source` draggable: press to pick up a copy (it lifts, grows, tilts with the
+-- movement and follows the finger), release to drop. onDrop(screenPos, held) returns
+-- true to keep it (you animate/destroy `held`), false to float it back home.
+-- `on` is api.on from a mini-game (so connections are cleaned up). Tap = drop at start.
+function UI.draggable(panel, source, on, onDrop)
+	local drag
+	on(source.InputBegan, function(input)
+		if drag or not UI.isPress(input) then
+			return
+		end
+		local held = source:Clone()
+		for _, d in held:GetDescendants() do
+			if d:IsA("GuiObject") then
+				d.ZIndex += 60
+			end
+			if d:IsA("UIGridLayout") or d:IsA("UIListLayout") then
+				d:Destroy()
+			end
+		end
+		held.ZIndex += 60
+		held.AnchorPoint = Vector2.new(0.5, 0.5)
+		held.Size = UDim2.fromOffset(source.AbsoluteSize.X, source.AbsoluteSize.Y)
+		local p0 = UI.pointer(input) - panel.AbsolutePosition
+		held.Position = UDim2.fromOffset(p0.X, p0.Y)
+		held.Parent = panel
+		FX.tween(held, 0.12, { Size = UDim2.fromOffset(source.AbsoluteSize.X * 1.15, source.AbsoluteSize.Y * 1.15), Rotation = -8 }, Enum.EasingStyle.Back)
+		FX.sound("Pick")
+		drag = { held = held, start = UI.pointer(input), last = UI.pointer(input) }
+	end)
+	on(UserInputService.InputChanged, function(input)
+		if not drag then
+			return
+		end
+		if input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch then
+			return
+		end
+		local pos = UI.pointer(input)
+		local rel = pos - panel.AbsolutePosition
+		drag.held.Position = UDim2.fromOffset(rel.X, rel.Y)
+		drag.held.Rotation = math.clamp((pos.X - drag.last.X) * 1.2, -22, 22)
+		drag.last = pos
+	end)
+	on(UserInputService.InputEnded, function(input)
+		if not (drag and UI.isPress(input)) then
+			return
+		end
+		local d = drag
+		drag = nil
+		local pos = UI.pointer(input)
+		local tapped = (pos - d.start).Magnitude < 10
+		if onDrop(if tapped then nil else pos, d.held) then
+			return
+		end
+		local home = source.AbsolutePosition + source.AbsoluteSize / 2 - panel.AbsolutePosition
+		FX.tween(d.held, 0.3, { Position = UDim2.fromOffset(home.X, home.Y), Rotation = 0,
+			Size = UDim2.fromOffset(source.AbsoluteSize.X, source.AbsoluteSize.Y) }, Enum.EasingStyle.Back)
+		task.delay(0.31, function()
+			d.held:Destroy()
+		end)
+	end)
+end
+
+function UI.inside(frame, pos)
+	local a, sz = frame.AbsolutePosition, frame.AbsoluteSize
+	return pos.X >= a.X and pos.X <= a.X + sz.X and pos.Y >= a.Y and pos.Y <= a.Y + sz.Y
 end
 
 -- Cute painted customer. mood: "happy" | "ok" | "sad"
