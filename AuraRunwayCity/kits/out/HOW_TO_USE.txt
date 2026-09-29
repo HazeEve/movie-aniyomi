@@ -1,0 +1,23 @@
+AURA MUSIC KIT + RUNWAY STAGE
+=============================
+
+HOW TO ADD TO ANY ROBLOX GAME (Studio):
+Drag each .rbxm file from your folder INTO the Studio window, then move it:
+
+1_ReplicatedStorage_Shared.rbxm             -> drag "Shared" into ReplicatedStorage
+2_ServerScriptService_AuraMusicServer.rbxm  -> drag "AuraMusicServer" into ServerScriptService
+3_StarterPlayerScripts_AuraMusicClient.rbxm -> drag "AuraMusicClient" into StarterPlayer > StarterPlayerScripts
+AuraRunwayStage.rbxm                        -> stays in Workspace (the stage, no chairs)
+
+(Tip: if the game already has a folder called "Shared" in ReplicatedStorage,
+ don't use the kit in that game — it's already the full Aura Runway game.)
+
+Then: Home > Game Settings > Security > turn ON "Enable Studio Access to API Services" > Save.
+Press Play: a gold "🎸 Music" button appears on the left.
+
+SOUND FILES:
+- AuraSoundPack.ogg = every instrument (piano, guitar, electric, violin, drums).
+  Already set in Shared > Config: Config.SoundPackId. If you re-upload it, paste the new id there.
+- AuraMusic.ogg = the 2 original background tracks (café + runway), license-free.
+
+All scripts, sounds and the stage were made for you: you own them.
