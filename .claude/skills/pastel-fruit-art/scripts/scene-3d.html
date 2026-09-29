@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pastel Painted 3D</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #232b3d; overflow: hidden; }
+  canvas { display: block; }
+</style>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js" } }
+</script>
+</head>
+<body>
+<script type="module">
+// ?set=fruit | food | materials   ?bg=%23hex   ?static (no turntable wobble)
+import { stage } from './painted3d.js';
+const q = new URLSearchParams(location.search);
+const set = q.get('set') || 'fruit';
+const { build } = await import(`./sets/${set}.js`);
+const { place, run } = stage({ bg: q.get('bg') || '#232b3d' });
+build(place);
+run(!q.has('static'));
+</script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Pastel Fruit Concept Sheet</title>
+<style>
+  html, body { margin: 0; background: #232b3d; }
+  canvas { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1440" height="810"></canvas>
+<script type="module">
+import { P, BG, paintShape, smoothPath, ellipsePath, boxOf, profileOutline, leaf, stem,
+         citrusSlice, kiwiSlice, melonWedge, pomeCut, seed, withAlpha } from './paint.js';
+import { PROFILES } from './profiles.js';
+
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+ctx.fillStyle = BG;
+ctx.fillRect(0, 0, cv.width, cv.height);
+
+// Whole lathe fruit drawn from the SAME profile the 3D lathe uses.
+function wholeFromProfile(name, c, cx, baseY, s, opts = {}) {
+  const out = profileOutline(PROFILES[name], cx, baseY, s);
+  paintShape(ctx, smoothPath(out), c, boxOf(out), opts);
+  return out;
+}
+
+// --- Row 1: apple, apple half, pear, pear half, peach half
+{
+  const out = wholeFromProfile('apple', P.apple, 120, 230, 120);
+  stem(ctx, 120, 230 - 0.86 * 120, 128, 230 - 1.1 * 120, 7);
+  leaf(ctx, 128, 230 - 1.05 * 120, 55, 18, -0.4);
+}
+pomeCut(ctx, profileOutline(PROFILES.apple, 280, 230, 120), P.apple, P.appleFlesh);
+stem(ctx, 280, 230 - 0.86 * 120, 286, 230 - 1.08 * 120, 7);
+{
+  wholeFromProfile('pear', P.pear, 440, 240, 110);
+  stem(ctx, 440, 240 - 1.18 * 110, 452, 240 - 1.38 * 110, 7);
+  leaf(ctx, 450, 240 - 1.3 * 110, 45, 15, -0.2);
+}
+pomeCut(ctx, profileOutline(PROFILES.pear, 590, 240, 110), P.pear, P.pearFlesh);
+pomeCut(ctx, profileOutline(PROFILES.peach, 740, 230, 120), P.peach, P.peachFlesh, { core: 'pit' });
+
+// --- Row 1 right: watermelon wedges
+melonWedge(ctx, 900, 250, 150);
+melonWedge(ctx, 1040, 250, 130, 0.45);
+
+// --- Row 1 far right: strawberry + half
+{
+  const out = wholeFromProfile('strawberry', P.strawberry, 1200, 250, 110);
+  for (let i = 0; i < 14; i++) {
+    const t = 0.15 + (i % 5) * 0.16, side = ((i * 7) % 11) / 11 - 0.5;
+    seed(ctx, 1200 + side * 80 * (1 - t * 0.5), 250 - t * 110, 7, 0, P.paleSeed);
+  }
+  for (let i = 0; i < 6; i++) leaf(ctx, 1200, 250 - 1.04 * 110, 34, 11, -Math.PI / 2 + (i - 2.5) * 0.5);
+}
+pomeCut(ctx, profileOutline(PROFILES.strawberry, 1340, 250, 110), P.strawberry, P.berryFlesh, { core: 'berry' });
+
+// --- Row 2: orange, orange slice, lemon, lemon slice
+{
+  const o = ellipsePath(120, 440, 80, 74);
+  paintShape(ctx, o, P.orange, { x: 40, y: 366, w: 160, h: 148 });
+  stem(ctx, 120, 370, 126, 352, 8);
+  leaf(ctx, 126, 356, 55, 18, -0.35);
+}
+citrusSlice(ctx, 300, 440, 80, P.orange, P.orangeFlesh);
+{
+  const pts = [[430, 440], [470, 395], [530, 385], [585, 400], [620, 440], [585, 480], [530, 495], [470, 485]];
+  paintShape(ctx, smoothPath(pts), P.lemon, boxOf(pts));
+  leaf(ctx, 615, 440, 40, 14, -0.9);
+}
+citrusSlice(ctx, 720, 440, 70, P.lemon, P.lemonFlesh, { segments: 9, seedCount: 3 });
+
+// --- Row 2 right: cherries, blueberries, banana
+{
+  stem(ctx, 870, 460, 915, 360, 5, P.leaf);
+  stem(ctx, 960, 470, 915, 360, 5, P.leaf);
+  leaf(ctx, 915, 362, 45, 15, -0.6);
+  for (const [x, y] of [[870, 475], [960, 485]]) {
+    paintShape(ctx, ellipsePath(x, y, 38, 34), P.cherry, { x: x - 38, y: y - 34, w: 76, h: 68 });
+  }
+}
+for (const [x, y, r] of [[1050, 470, 32], [1100, 485, 30], [1075, 440, 29]]) {
+  paintShape(ctx, ellipsePath(x, y, r, r * 0.92), P.blueberry, { x: x - r, y: y - r, w: 2 * r, h: 2 * r });
+  const cr = r * 0.28;
+  paintShape(ctx, ellipsePath(x + r * 0.1, y - r * 0.2, cr, cr * 0.7), { base: P.blueberry.shade, shade: '#262b6a', light: P.blueberry.base },
+    { x: x - cr, y: y - r * 0.2 - cr, w: 2 * cr, h: 2 * cr }, { blotches: 2 });
+}
+{
+  const pts = [];
+  for (let i = 0; i <= 20; i++) { const t = i / 20; pts.push([1170 + t * 230, 400 + Math.sin(t * Math.PI) * 70 + t * 10 - Math.sin(t * Math.PI) * 18 * (1 - t)]); }
+  for (let i = 20; i >= 0; i--) { const t = i / 20; const w = 52 * Math.sin(Math.min(1, t * 1.15 + 0.08) * Math.PI) + 4; pts.push([1170 + t * 230, 400 + Math.sin(t * Math.PI) * 70 + t * 10 + w]); }
+  paintShape(ctx, smoothPath(pts), P.banana, boxOf(pts));
+  paintShape(ctx, ellipsePath(1172, 404, 8, 7), P.stem, { x: 1164, y: 396, w: 16, h: 14 }, { blotches: 0 });
+}
+
+// --- Row 3: kiwi, kiwi half, grapes
+{
+  paintShape(ctx, ellipsePath(120, 660, 85, 75), P.kiwiSkin, { x: 35, y: 585, w: 170, h: 150 }, { blotches: 40 });
+}
+kiwiSlice(ctx, 300, 660, 80);
+{
+  const r = 24, grapes = [];
+  for (let row = 0; row < 5; row++) {
+    const n = 4 - Math.floor(row * 0.7);
+    for (let i = 0; i < n; i++) grapes.push([480 + (i - (n - 1) / 2) * r * 1.7, 600 + row * r * 1.45]);
+  }
+  stem(ctx, 480, 585, 490, 560, 6);
+  leaf(ctx, 488, 568, 50, 18, -0.2);
+  for (const [x, y] of grapes) paintShape(ctx, ellipsePath(x, y, r, r), P.grape, { x: x - r, y: y - r, w: 2 * r, h: 2 * r }, { blotches: 5, seed: Math.round(x + y) });
+}
+
+// Caption strip
+ctx.fillStyle = withAlpha('#ffffff', 0.35);
+ctx.font = '600 20px system-ui, sans-serif';
+ctx.fillText('pastel-fruit-art · 2D concept sheet (Canvas 2D, paint.js)', 640, 780);
+document.title = 'Pastel Fruit Concept Sheet';
+window.__done = true;
+</script>
+</body>
+</html>
