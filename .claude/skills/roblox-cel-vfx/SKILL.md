@@ -1,6 +1,6 @@
 ---
 name: roblox-cel-vfx
-description: Make cel-shaded anime-style VFX for Roblox, meaning flipbook sprite sheets (hard-edged flat tones, white-hot core, no gradients) plus a ParticleEmitter module that assembles them into auras, bursts and ability effects and recolours them per item. Use when the user wants Roblox VFX, auras, flipbooks, particle effects, "stylized/anime/toon VFX", effects for eating/drinking/abilities, or recoloured variants of effects without extra uploads.
+description: Make clean, shiny, cel-shaded anime-style VFX for Roblox, meaning flipbook sprite sheets (hard-edged tones, white-hot core, glow halo), beam rings plus a ParticleEmitter module that assembles them into auras, bursts and ability effects and recolours them per item. Use when the user wants Roblox VFX, auras, flipbooks, particle effects, "stylized/anime/toon VFX", effects for eating/drinking/abilities, or recoloured variants of effects without extra uploads.
 ---
 
 # Roblox cel-style VFX: flipbooks + auras
@@ -8,18 +8,19 @@ description: Make cel-shaded anime-style VFX for Roblox, meaning flipbook sprite
 Produces stylized (toon / anime) effects the way Roblox VFX artists build them: a few **flipbook sprite sheets**, and many effects built from them as layered ParticleEmitters. Colour comes from `ParticleEmitter.Color`, so variants cost **no extra uploads**.
 
 ## The look (hard rules)
-- **Cel tones, not gradients.** Every design uses 3 flat tones with hard edges: outer 0.50 grey, mid 0.76, core 1.0 white. There is no soft blur.
-- **Draw in grayscale and tint in Roblox.** White becomes the tint colour. Use `LightEmission` 0.6–1 and `Brightness` 1.5–4 so the core blows out toward white-hot.
-- **Break-up and flicks.** Shapes are distorted by loopable noise, and detached blobs appear toward the tips (see `flame()`).
-- **Top-left light** on solid shapes like puffs, the same as the pastel painted style.
-- **Structure from layers:** a base shape (flame, rings, bubbles), plus accents (wisps, sparkles), plus a one-shot burst (shockwave, puffs).
+- **Shiny comes from additive light, not the texture.** Textures are white/grey: core 1.0, mid 0.62, outer 0.34, plus a **soft glow halo** (a blurred alpha at about 40%). In Roblox set `LightEmission = 1`, `LightInfluence = 0`, `Brightness` 2–4 and tint with `Color`. The core then blows out to white-hot and the rim and halo glow in colour. A Bloom effect in Lighting pushes it further.
+- **Clean strokes:** render at 4× and downsample (LANCZOS). Use tapered brush streaks (thick head, long thin tail) with a **white highlight line** inside.
+- **Cel shapes:** 3 hard-edged tones with loopable-noise breakup, and detached flicks toward the tips.
+- **Rings are Beams, not particles.** Use 4 quarter-circle Beams per ring (Bezier handles = 0.5523·r), `FaceCamera`, and a horizontally wrapping streak texture scrolled with `TextureSpeed`. Leave gaps between streaks so the ring reads brushy, not solid. Stack rings at different heights, sizes, tilts and spin directions for the tornado look (no centre orb unless asked).
+- **Structure from layers:** a glow orb behind, then the base (fire, rings, bubbles), then accents (wisps, sparkles), then a one-shot burst (impact ring with speed spikes).
+- **Always preview additively:** composite with add + bloom + a soft tone-map. An alpha-over preview looks flat and is not what Roblox shows.
 
 ## Files
 | File | Role |
 |---|---|
-| `scripts/make_flipbooks.py` | Draws 1024² sheets of 4×4 frames (`FlipbookLayout = Grid4x4`) with numpy. The designs are Flame, Swirl (top-view brush rings), Wisp, Sparkle, Bolt, Shockwave, Bubbles and Puff. Loop designs use integer time speeds so they tile perfectly. |
-| `scripts/preview_auras.py` | 2D particle sim that uses the real sheets and the same layer settings, and writes a GIF preview before anything is uploaded. |
-| `scripts/AuraVFX_template.luau` | Roblox module: layer defs → ParticleEmitters (flipbook mode, flat rings via `VelocityPerpendicular`, bursts via `:Emit`), presets, tier extras, palette-from-any-colour, `Play` / `Stop`. |
+| `scripts/make_flipbooks.py` | Draws 1024² sheets of 4×4 frames (`FlipbookLayout = Grid4x4`) with numpy. The designs are Flame, Swirl, Wisp, Sparkle, Bolt, Impact, Bubbles, Puff and Glow, plus the `Streak` beam texture. Every shape gets the glow halo, and loop designs use integer time speeds so they tile perfectly. |
+| `scripts/preview_auras.py` | Additive 2D sim with bloom, using the real sheets and the same layer settings, and beam rings drawn in 3D (back half behind the player). It writes a GIF before anything is uploaded. |
+| `scripts/AuraVFX_template.luau` | Roblox module: layer defs → additive ParticleEmitters (flipbooks, bursts via `:Emit`) and beam rings, plus presets, tier extras, palette-from-any-colour, `Play` / `Stop`. |
 
 ## Workflow
 1. **Pick the structures** from the user's references (e.g. rings with no centre orb, a fire aura, or a burst) and list the designs they need. Reuse the 8 designs where you can.
