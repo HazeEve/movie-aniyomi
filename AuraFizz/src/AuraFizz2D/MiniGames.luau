@@ -19,6 +19,7 @@ local Paint = require(script.Parent.Paint)
 local FX = require(script.Parent.FX)
 local UI = require(script.Parent.UI)
 local Bridge = require(script.Parent.Bridge)
+local Stations = require(script.Parent.Stations)
 
 local MiniGames = {}
 local T = Config.Theme
@@ -70,13 +71,42 @@ local function scene(area, stationKey, color, extra)
 	local cfg = SCENES[stationKey] or { vessel = { 0.5, 0.84, 0.36, 0.44, "glass", 0.2 }, fx = { swirl = true } }
 	local z = area.ZIndex
 	local r = { p = 0, flow = 0, spin = 0, fx = cfg.fx }
-	-- your stations' matte black counter with a gold edge
-	Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.9), Size = P(1.02, 0.12), Corner = 0.08, ZIndex = z, Blotch = false })
-	Paint.blob(area, T.Trim, { Position = P(0.5, 0.9), Size = P(1.02, 0.012), Corner = 0.4, ZIndex = z + 1, Blotch = false })
-	Paint.shadow(area, { Position = P(0.5, 0.9), Size = P(0.8, 0.04), ZIndex = z + 1 })
+	-- your real 3D station model as the backdrop; drawn furniture only if it isn't found
+	local real = Stations.view(area, stationKey, Bridge.station(stationKey).name)
+	r.real = real
+	if not real then
+		-- your stations' matte black counter with a gold edge
+		Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.9), Size = P(1.02, 0.12), Corner = 0.08, ZIndex = z, Blotch = false })
+		Paint.blob(area, T.Trim, { Position = P(0.5, 0.9), Size = P(1.02, 0.012), Corner = 0.4, ZIndex = z + 1, Blotch = false })
+		Paint.shadow(area, { Position = P(0.5, 0.9), Size = P(0.8, 0.04), ZIndex = z + 1 })
+	end
 
 	-- station furniture behind the vessel
-	if stationKey == "CoffeeMachine" then
+	if real then
+		-- only the food and moving bits go over your model
+		if stationKey == "CoffeeMachine" or stationKey == "Juicer" then
+			r.spout = 0.6
+		elseif stationKey == "SodaFountain" then
+			r.spout = 0.44
+		end
+		if stationKey == "Stove" then
+			r.flames = {}
+			for i, x in { 0.38, 0.5, 0.62 } do
+				local f = Paint.blob(area, if i == 2 then "#f7c95b" else "#f5a86b", { AnchorPoint = Vector2.new(0.5, 1), Position = P(x, 0.8), Size = P(0.08, 0.1), ZIndex = z + 3, Blotch = false })
+				table.insert(r.flames, f)
+			end
+		elseif stationKey == "Juicer" then
+			local fruit = Paint.new("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.5, 0.46), Size = P(0.28, 0.28), ZIndex = z + 3, Parent = area })
+			Paint.art(fruit, { Shape = "slice", Color = extra.fruitColor or "#f6d33f" })
+			r.fruit = fruit
+		elseif stationKey == "CuttingBoard" then
+			local whole = Paint.new("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.5, 0.64), Size = P(0.36, 0.36), ZIndex = z + 3, Parent = area })
+			Paint.art(whole, { Shape = extra.fruitShape or "fruit", Color = extra.fruitColor or "#dc4a3c" })
+			r.whole = whole
+			r.knife = Paint.blob(area, "#efdca6", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.72, 0.5), Size = P(0.06, 0.34), Corner = 0.45, Rotation = 18, ZIndex = z + 5 })
+			r.pieces = {}
+		end
+	elseif stationKey == "CoffeeMachine" then
 		Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.1), Size = P(0.72, 0.46), Corner = 0.14, ZIndex = z + 1 })
 		Paint.blob(area, T.Trim, { Position = P(0.5, 0.47), Size = P(0.72, 0.025), Corner = 0.4, ZIndex = z + 2, Blotch = false })
 		Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 0.92), Size = P(0.72, 0.06), Corner = 0.4, ZIndex = z + 1 })
@@ -227,6 +257,8 @@ local function scene(area, stationKey, color, extra)
 		end
 		if r.press and stationKey == "Juicer" then
 			r.press.Position = P(0.5, 0.36 + 0.08 * math.min(p, 1))
+		end
+		if r.fruit then
 			r.fruit.Size = P(0.28, 0.28 * (1 - 0.35 * math.min(p, 1)))
 		end
 		if r.press and stationKey == "CupSealer" then

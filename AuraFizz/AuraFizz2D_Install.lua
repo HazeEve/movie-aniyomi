@@ -454,9 +454,9 @@ local function ensureWindow()
 	local pg = Players.LocalPlayer:WaitForChild("PlayerGui")
 	gui = Paint.new("ScreenGui", { Name = "AuraFizz2D", ResetOnSpawn = false, IgnoreGuiInset = true, DisplayOrder = 30,
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling, Enabled = false, Parent = pg })
-	Paint.new("Frame", { Name = "Dim", Size = P(1, 1), BackgroundColor3 = Paint.C("#050406"), BackgroundTransparency = 0.35, Parent = gui })
+	Paint.new("Frame", { Name = "Dim", Size = P(1, 1), BackgroundColor3 = Paint.C("#050406"), BackgroundTransparency = 0.88, Parent = gui })
 	stage = Paint.new("Frame", { Name = "Stage", AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.5, 0.5), Size = P(0.96, 0.94),
-		BackgroundColor3 = Paint.C(T.Ground), ZIndex = 2, Parent = gui })
+		BackgroundColor3 = Paint.C(T.Ground), BackgroundTransparency = Config.WindowTransparency or 0, ZIndex = 2, Parent = gui })
 	Paint.new("UIAspectRatioConstraint", { AspectRatio = 16 / 9, Parent = stage })
 	Paint.round(stage, UDim.new(0, 26))
 	stage.ClipsDescendants = true
@@ -475,7 +475,8 @@ local function ensureWindow()
 	end)
 
 	left = UI.card(stage, T.Paper, { Name = "Order", Position = P(0.015, 0.18), Size = P(0.3, 0.8), Radius = 24, ZIndex = 10 })
-	main = UI.card(stage, T.Panel, { Name = "Main", Position = P(0.33, 0.18), Size = P(0.655, 0.8), Radius = 24, ZIndex = 10 })
+	main = UI.card(stage, T.Panel, { Name = "Main", Position = P(0.33, 0.18), Size = P(0.655, 0.8), Radius = 24, ZIndex = 10,
+		Transparency = Config.PanelTransparency })
 end
 
 local function setTips(v)
@@ -1004,6 +1005,20 @@ Config.TierColor = {
 }
 Config.TierOrder = { "Tasty", "Delish", "Mouthwatering", "Scrumptious", "Toothsome", "Luscious", "Delectable", "Ambrosial" }
 
+-- Your real 3D stations shown inside the 2D screens (instead of drawn shapes).
+-- Models are found by name anywhere in Workspace ("ToppingStation", "Topping Station", ...).
+-- If a model has another name, point to it here, e.g.
+--   Config.StationModels = { ToppingStation = "Workspace.Kitchen.Toppings", Stove = "Workspace.Cafe.Oven" }
+-- StationView lets you turn/tilt/zoom a shot: { ToppingStation = { yaw = 180, pitch = 20, zoom = 0.9 } }
+Config.UseStationModels = true
+Config.StationModels = {}
+Config.StationModelsFolder = nil -- e.g. "ReplicatedStorage.StationModels" to look there first
+Config.StationView = {}
+
+-- See-through window so you keep seeing the game behind it (0 = solid, 1 = invisible).
+Config.WindowTransparency = 0.55 -- the big window behind everything
+Config.PanelTransparency = 0.35  -- the station panel (keeps text readable)
+
 -- Mini-game difficulty (1 = as tuned in DrinkCatalog; lower = more forgiving time limits)
 Config.TimeLimitScale = 1
 
@@ -1311,6 +1326,7 @@ local Paint = require(script.Parent.Paint)
 local FX = require(script.Parent.FX)
 local UI = require(script.Parent.UI)
 local Bridge = require(script.Parent.Bridge)
+local Stations = require(script.Parent.Stations)
 
 local MiniGames = {}
 local T = Config.Theme
@@ -1362,13 +1378,42 @@ local function scene(area, stationKey, color, extra)
 	local cfg = SCENES[stationKey] or { vessel = { 0.5, 0.84, 0.36, 0.44, "glass", 0.2 }, fx = { swirl = true } }
 	local z = area.ZIndex
 	local r = { p = 0, flow = 0, spin = 0, fx = cfg.fx }
-	-- your stations' matte black counter with a gold edge
-	Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.9), Size = P(1.02, 0.12), Corner = 0.08, ZIndex = z, Blotch = false })
-	Paint.blob(area, T.Trim, { Position = P(0.5, 0.9), Size = P(1.02, 0.012), Corner = 0.4, ZIndex = z + 1, Blotch = false })
-	Paint.shadow(area, { Position = P(0.5, 0.9), Size = P(0.8, 0.04), ZIndex = z + 1 })
+	-- your real 3D station model as the backdrop; drawn furniture only if it isn't found
+	local real = Stations.view(area, stationKey, Bridge.station(stationKey).name)
+	r.real = real
+	if not real then
+		-- your stations' matte black counter with a gold edge
+		Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.9), Size = P(1.02, 0.12), Corner = 0.08, ZIndex = z, Blotch = false })
+		Paint.blob(area, T.Trim, { Position = P(0.5, 0.9), Size = P(1.02, 0.012), Corner = 0.4, ZIndex = z + 1, Blotch = false })
+		Paint.shadow(area, { Position = P(0.5, 0.9), Size = P(0.8, 0.04), ZIndex = z + 1 })
+	end
 
 	-- station furniture behind the vessel
-	if stationKey == "CoffeeMachine" then
+	if real then
+		-- only the food and moving bits go over your model
+		if stationKey == "CoffeeMachine" or stationKey == "Juicer" then
+			r.spout = 0.6
+		elseif stationKey == "SodaFountain" then
+			r.spout = 0.44
+		end
+		if stationKey == "Stove" then
+			r.flames = {}
+			for i, x in { 0.38, 0.5, 0.62 } do
+				local f = Paint.blob(area, if i == 2 then "#f7c95b" else "#f5a86b", { AnchorPoint = Vector2.new(0.5, 1), Position = P(x, 0.8), Size = P(0.08, 0.1), ZIndex = z + 3, Blotch = false })
+				table.insert(r.flames, f)
+			end
+		elseif stationKey == "Juicer" then
+			local fruit = Paint.new("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.5, 0.46), Size = P(0.28, 0.28), ZIndex = z + 3, Parent = area })
+			Paint.art(fruit, { Shape = "slice", Color = extra.fruitColor or "#f6d33f" })
+			r.fruit = fruit
+		elseif stationKey == "CuttingBoard" then
+			local whole = Paint.new("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.5, 0.64), Size = P(0.36, 0.36), ZIndex = z + 3, Parent = area })
+			Paint.art(whole, { Shape = extra.fruitShape or "fruit", Color = extra.fruitColor or "#dc4a3c" })
+			r.whole = whole
+			r.knife = Paint.blob(area, "#efdca6", { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.72, 0.5), Size = P(0.06, 0.34), Corner = 0.45, Rotation = 18, ZIndex = z + 5 })
+			r.pieces = {}
+		end
+	elseif stationKey == "CoffeeMachine" then
 		Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 0), Position = P(0.5, 0.1), Size = P(0.72, 0.46), Corner = 0.14, ZIndex = z + 1 })
 		Paint.blob(area, T.Trim, { Position = P(0.5, 0.47), Size = P(0.72, 0.025), Corner = 0.4, ZIndex = z + 2, Blotch = false })
 		Paint.blob(area, T.Appliance, { AnchorPoint = Vector2.new(0.5, 1), Position = P(0.5, 0.92), Size = P(0.72, 0.06), Corner = 0.4, ZIndex = z + 1 })
@@ -1519,6 +1564,8 @@ local function scene(area, stationKey, color, extra)
 		end
 		if r.press and stationKey == "Juicer" then
 			r.press.Position = P(0.5, 0.36 + 0.08 * math.min(p, 1))
+		end
+		if r.fruit then
 			r.fruit.Size = P(0.28, 0.28 * (1 - 0.35 * math.min(p, 1)))
 		end
 		if r.press and stationKey == "CupSealer" then
@@ -3261,6 +3308,167 @@ function Paint.shadow(parent, opts)
 end
 
 return Paint
+]========])
+put("ModuleScript", "Stations", pkg, [========[
+--!nonstrict
+-- AuraFizz2D · Stations — shows YOUR real 3D station models inside the 2D screens
+-- (a ViewportFrame "camera shot" of the model), so the art is your own black & gold stations.
+-- It finds each station model by name (e.g. a Model called "ToppingStation" or "Topping Station"
+-- anywhere in Workspace, or in Config.StationModelsFolder). Set exact models in Config.StationModels
+-- if the names differ. A station that isn't found falls back to the drawn scene.
+local Players = game:GetService("Players")
+
+local Config = require(script.Parent.Config)
+
+local Stations = {}
+local P = UDim2.fromScale
+
+local SKIP = { "Script", "LocalScript", "ModuleScript", "Sound", "ProximityPrompt", "ClickDetector", "BillboardGui",
+	"ParticleEmitter", "Beam", "Trail", "Fire", "Smoke", "Sparkles", "Attachment", "Weld", "WeldConstraint", "Motor6D",
+	"Humanoid", "AnimationController" }
+
+local function norm(s)
+	return string.lower((string.gsub(s, "[^%w]", "")))
+end
+
+local function root()
+	local ch = Players.LocalPlayer and Players.LocalPlayer.Character
+	return ch and ch:FindFirstChild("HumanoidRootPart")
+end
+
+local function resolve(path)
+	local node = game
+	for part in string.gmatch(path, "[^%.]+") do
+		if node == game then
+			local ok, svc = pcall(game.GetService, game, part)
+			node = (ok and svc) or game:FindFirstChild(part)
+		else
+			node = node:FindFirstChild(part)
+		end
+		if not node then
+			return nil
+		end
+	end
+	return node
+end
+
+-- The Model for a station key, or nil.
+function Stations.find(stationKey, stationName)
+	local fixed = Config.StationModels and Config.StationModels[stationKey]
+	if typeof(fixed) == "Instance" then
+		return fixed
+	elseif type(fixed) == "string" then
+		return resolve(fixed)
+	end
+	local want = { [norm(stationKey)] = true }
+	if stationName then
+		want[norm(stationName)] = true
+	end
+	local places = {}
+	if Config.StationModelsFolder then
+		local f = resolve(Config.StationModelsFolder)
+		if f then
+			table.insert(places, f)
+		end
+	end
+	table.insert(places, workspace)
+	local hrp = root()
+	for _, place in places do
+		local best, bestD = nil, math.huge
+		for _, m in place:GetDescendants() do
+			if m:IsA("Model") and want[norm(m.Name)] then
+				local d = if hrp then (m:GetPivot().Position - hrp.Position).Magnitude else 0
+				if d < bestD then
+					best, bestD = m, d
+				end
+			end
+		end
+		if best then
+			return best
+		end
+	end
+	return nil
+end
+
+local function copyOf(model)
+	local was = model.Archivable
+	model.Archivable = true
+	local ok, c = pcall(model.Clone, model)
+	model.Archivable = was
+	if not ok or not c then
+		return nil
+	end
+	for _, d in c:GetDescendants() do
+		for _, cls in SKIP do
+			if d:IsA(cls) then
+				d:Destroy()
+				break
+			end
+		end
+	end
+	for _, d in c:GetDescendants() do
+		if d:IsA("BasePart") then
+			d.Anchored = true
+		end
+	end
+	return c
+end
+
+-- Puts a camera shot of the station into `area` (behind everything else in it).
+-- Returns the ViewportFrame, or nil when the station model isn't found.
+function Stations.view(area, stationKey, stationName)
+	if Config.UseStationModels == false then
+		return nil
+	end
+	local model = Stations.find(stationKey, stationName)
+	if not model then
+		return nil
+	end
+	local copy = copyOf(model)
+	if not copy then
+		return nil
+	end
+	local vp = Instance.new("ViewportFrame")
+	vp.Name = "Station3D"
+	vp.BackgroundTransparency = 1
+	vp.Size = P(1, 1)
+	vp.ZIndex = area.ZIndex
+	vp.Ambient = Color3.fromRGB(170, 165, 175)
+	vp.LightColor = Color3.fromRGB(255, 244, 225)
+	vp.LightDirection = Vector3.new(-0.4, -1, -0.6)
+	local cam = Instance.new("Camera")
+	cam.FieldOfView = 35
+	cam.Parent = vp
+	vp.CurrentCamera = cam
+	copy.Parent = vp
+
+	-- frame it from the side the player stands on (they're at the station in 3D), a little from above
+	local cf, size = copy:GetBoundingBox()
+	local view = Config.StationView and Config.StationView[stationKey] or {}
+	local centre = cf.Position
+	local hrp = root()
+	local dir
+	local orig = model:GetPivot().Position
+	if hrp and (hrp.Position - orig).Magnitude < 60 then
+		dir = hrp.Position - orig
+	else
+		dir = model:GetPivot().LookVector
+	end
+	dir = Vector3.new(dir.X, 0, dir.Z)
+	dir = if dir.Magnitude > 0.01 then dir.Unit else Vector3.new(0, 0, -1)
+	if view.yaw then
+		dir = CFrame.Angles(0, math.rad(view.yaw), 0):VectorToWorldSpace(dir)
+	end
+	local pitch = math.rad(view.pitch or 14)
+	local radius = size.Magnitude / 2
+	local dist = radius / math.tan(math.rad(cam.FieldOfView / 2)) * (view.zoom or 1)
+	local eye = centre + (dir * math.cos(pitch) + Vector3.new(0, math.sin(pitch), 0)) * dist
+	cam.CFrame = CFrame.lookAt(eye, centre)
+	vp.Parent = area
+	return vp
+end
+
+return Stations
 ]========])
 put("ModuleScript", "Storage", pkg, [========[
 --!nonstrict

@@ -26,7 +26,7 @@ def main():
         print("Could not find DrinkRecipes + DrinkCatalog in", sys.argv[1])
         return 1
     pkg = os.path.join(ROOT, "src", "AuraFizz2D")
-    ours = {n: open(os.path.join(pkg, n + ".luau"), encoding="utf-8").read() for n in ["Config", "Paint", "Bridge", "FX", "UI", "MiniGames"]}
+    ours = {n: open(os.path.join(pkg, n + ".luau"), encoding="utf-8").read() for n in ["Config", "Paint", "Bridge", "FX", "UI", "Stations", "MiniGames"]}
     body = HEAD + "local SOURCES = {\n"
     for n, s in list(mods.items()) + list(ours.items()):
         body += '  ["%s"] = %s,\n' % (n, lit(s))

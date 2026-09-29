@@ -24,6 +24,20 @@ Config.TierColor = {
 }
 Config.TierOrder = { "Tasty", "Delish", "Mouthwatering", "Scrumptious", "Toothsome", "Luscious", "Delectable", "Ambrosial" }
 
+-- Your real 3D stations shown inside the 2D screens (instead of drawn shapes).
+-- Models are found by name anywhere in Workspace ("ToppingStation", "Topping Station", ...).
+-- If a model has another name, point to it here, e.g.
+--   Config.StationModels = { ToppingStation = "Workspace.Kitchen.Toppings", Stove = "Workspace.Cafe.Oven" }
+-- StationView lets you turn/tilt/zoom a shot: { ToppingStation = { yaw = 180, pitch = 20, zoom = 0.9 } }
+Config.UseStationModels = true
+Config.StationModels = {}
+Config.StationModelsFolder = nil -- e.g. "ReplicatedStorage.StationModels" to look there first
+Config.StationView = {}
+
+-- See-through window so you keep seeing the game behind it (0 = solid, 1 = invisible).
+Config.WindowTransparency = 0.55 -- the big window behind everything
+Config.PanelTransparency = 0.35  -- the station panel (keeps text readable)
+
 -- Mini-game difficulty (1 = as tuned in DrinkCatalog; lower = more forgiving time limits)
 Config.TimeLimitScale = 1
 

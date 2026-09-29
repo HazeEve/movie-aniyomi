@@ -54,9 +54,9 @@ local function ensureWindow()
 	local pg = Players.LocalPlayer:WaitForChild("PlayerGui")
 	gui = Paint.new("ScreenGui", { Name = "AuraFizz2D", ResetOnSpawn = false, IgnoreGuiInset = true, DisplayOrder = 30,
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling, Enabled = false, Parent = pg })
-	Paint.new("Frame", { Name = "Dim", Size = P(1, 1), BackgroundColor3 = Paint.C("#050406"), BackgroundTransparency = 0.35, Parent = gui })
+	Paint.new("Frame", { Name = "Dim", Size = P(1, 1), BackgroundColor3 = Paint.C("#050406"), BackgroundTransparency = 0.88, Parent = gui })
 	stage = Paint.new("Frame", { Name = "Stage", AnchorPoint = Vector2.new(0.5, 0.5), Position = P(0.5, 0.5), Size = P(0.96, 0.94),
-		BackgroundColor3 = Paint.C(T.Ground), ZIndex = 2, Parent = gui })
+		BackgroundColor3 = Paint.C(T.Ground), BackgroundTransparency = Config.WindowTransparency or 0, ZIndex = 2, Parent = gui })
 	Paint.new("UIAspectRatioConstraint", { AspectRatio = 16 / 9, Parent = stage })
 	Paint.round(stage, UDim.new(0, 26))
 	stage.ClipsDescendants = true
@@ -75,7 +75,8 @@ local function ensureWindow()
 	end)
 
 	left = UI.card(stage, T.Paper, { Name = "Order", Position = P(0.015, 0.18), Size = P(0.3, 0.8), Radius = 24, ZIndex = 10 })
-	main = UI.card(stage, T.Panel, { Name = "Main", Position = P(0.33, 0.18), Size = P(0.655, 0.8), Radius = 24, ZIndex = 10 })
+	main = UI.card(stage, T.Panel, { Name = "Main", Position = P(0.33, 0.18), Size = P(0.655, 0.8), Radius = 24, ZIndex = 10,
+		Transparency = Config.PanelTransparency })
 end
 
 local function setTips(v)
