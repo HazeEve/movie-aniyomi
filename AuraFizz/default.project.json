@@ -1,0 +1,23 @@
+{
+  "name": "AuraFizz2D",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "AuraFizz2D": {
+        "$path": "src/AuraFizz2D"
+      }
+    },
+    "ServerScriptService": {
+      "AuraFizz2DServer": {
+        "$path": "src/server/AuraFizz2D.server.luau"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "AuraFizz2DClient": {
+          "$path": "src/client/AuraFizz2D.client.luau"
+        }
+      }
+    }
+  }
+}
