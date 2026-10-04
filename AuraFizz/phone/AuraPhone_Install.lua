@@ -50,6 +50,7 @@ local function remote(class: string, name: string): Instance
 end
 local Fn = remote("RemoteFunction", "Fn") :: RemoteFunction
 local Event = remote("RemoteEvent", "Event") :: RemoteEvent
+print("[AuraPhone] server started")
 
 -- ===== saved data =====
 local okStore, store = pcall(function()
@@ -392,13 +393,19 @@ local UserInputService = game:GetService("UserInputService")
 local SoundService = game:GetService("SoundService")
 
 local player = Players.LocalPlayer
-local remotes = ReplicatedStorage:WaitForChild("AuraPhoneRemotes")
+print("[AuraPhone] phone script started")
+local remotes = ReplicatedStorage:WaitForChild("AuraPhoneRemotes", 15)
+if not remotes then
+	warn("[AuraPhone] Can't find the server part. Put the AuraPhoneServer Script in ServerScriptService (a Script, not a LocalScript).")
+	remotes = ReplicatedStorage:WaitForChild("AuraPhoneRemotes")
+end
 local Fn = remotes:WaitForChild("Fn") :: RemoteFunction
 local Event = remotes:WaitForChild("Event") :: RemoteEvent
 
 -- ================= settings you can change =================
 local OPEN_KEY = Enum.KeyCode.P
 local SHOW_SHOUTOUTS = true -- little popup for everyone when someone sends Robux
+local BUTTON_POSITION = UDim2.new(1, -12, 0.27, 0) -- where the 📱 button sits (right edge, between your top and side buttons)
 local W, H = 390, 820 -- phone screen design size (scaled to fit the player's screen)
 
 local WALLPAPERS = {
@@ -595,7 +602,7 @@ local gui = new("ScreenGui", { Name = "AuraPhone", ResetOnSpawn = false, IgnoreG
 	ZIndexBehavior = Enum.ZIndexBehavior.Sibling, Parent = player:WaitForChild("PlayerGui") })
 
 -- phone button on the right edge
-local toggle = button(gui, { Name = "PhoneButton", AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -12, 0.5, 0),
+local toggle = button(gui, { Name = "PhoneButton", AnchorPoint = Vector2.new(1, 0.5), Position = BUTTON_POSITION,
 	Size = UDim2.fromOffset(58, 58), BackgroundColor3 = C("#ffffff"), BackgroundTransparency = 0.1 })
 round(toggle)
 stroke(toggle, C("#ffffff"), 2, 0.3)
@@ -804,8 +811,8 @@ local bannerBusy = false
 local isOpen = false
 local unread = 0
 
-local toastHolder = frame(gui, { Name = "Toasts", AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -82, 0.5, -40), Size = UDim2.fromOffset(300, 300) })
-new("UIListLayout", { VerticalAlignment = Enum.VerticalAlignment.Bottom, HorizontalAlignment = Enum.HorizontalAlignment.Right, Padding = UDim.new(0, 8), Parent = toastHolder })
+local toastHolder = frame(gui, { Name = "Toasts", AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -82, 0.27, -29), Size = UDim2.fromOffset(300, 300) })
+new("UIListLayout", { VerticalAlignment = Enum.VerticalAlignment.Top, HorizontalAlignment = Enum.HorizontalAlignment.Right, Padding = UDim.new(0, 8), Parent = toastHolder })
 
 local function toast(userId, title, body, accent)
 	local t = frame(toastHolder, { Size = UDim2.fromOffset(290, 64), BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 0.06 })
@@ -1623,6 +1630,7 @@ chatGift.Activated:Connect(function()
 	end
 end)
 
+print("[AuraPhone] ready — tap the 📱 button or press " .. OPEN_KEY.Name)
 -- ================= start =================
 setWallpaper(1)
 current = "lock"

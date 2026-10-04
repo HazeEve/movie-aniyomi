@@ -31,6 +31,7 @@ local function remote(class: string, name: string): Instance
 end
 local Fn = remote("RemoteFunction", "Fn") :: RemoteFunction
 local Event = remote("RemoteEvent", "Event") :: RemoteEvent
+print("[AuraPhone] server started")
 
 -- ===== saved data =====
 local okStore, store = pcall(function()
