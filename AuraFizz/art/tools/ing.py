@@ -81,3 +81,51 @@ def pack(variants, w, h, d, seed, scale=1.0, rot=360, jitter=.25, ox=10, oy=10, 
             x += d
         y += d*0.82; row += 1
     return ''.join(out)
+
+_cid = [0]
+def container(x, y, w, h, variants, d, seed, scale=1.0, rot=360, jitter=.25, label=None, top=34, fill=.97, base="#e9d6b4", scoop=False):
+    """clear square acrylic topping container (gelato-pan style), 3/4 view"""
+    _cid[0] += 1; k = _cid[0]
+    fy = y + top + h*(1-fill)            # contents level on the front face
+    inset = 10
+    topPoly = f"{x+inset},{y} {x+w-inset},{y} {x+w},{y+top} {x},{y+top}"
+    s = f'<g filter="url(#shadow)">'
+    s += f'<clipPath id="cf{k}"><rect x="{x}" y="{fy}" width="{w}" height="{y+top+h-fy}" rx="8"/></clipPath>'
+    s += f'<clipPath id="ct{k}"><polygon points="{topPoly}"/></clipPath>'
+    # back wall + top opening
+    s += f'<polygon points="{topPoly}" fill="{base}" stroke="#4a2410" stroke-width="3"/>'
+    s += f'<g clip-path="url(#ct{k})"><g transform="translate(0,{y}) scale(1,.55) translate(0,{-y})">{pack(variants, w, top/.55+10, d, seed+500, scale, rot=rot, jitter=jitter, ox=x, oy=y-6)}</g>'
+    s += f'<polygon points="{topPoly}" fill="#000" opacity=".08"/></g>'
+    # front face with contents
+    s += f'<rect x="{x}" y="{y+top}" width="{w}" height="{h}" rx="8" fill="#eef8ff" fill-opacity=".35"/>'
+    s += f'<g clip-path="url(#cf{k})"><rect x="{x}" y="{fy}" width="{w}" height="{h}" fill="{base}"/>{pack(variants, w, y+top+h-fy, d, seed, scale, rot=rot, jitter=jitter, ox=x, oy=fy)}</g>'
+    s += f'<rect x="{x}" y="{y+top}" width="{w}" height="{h}" rx="8" fill="url(#acryl)" stroke="#4a2410" stroke-width="4"/>'
+    s += f'<path d="M{x+10} {y+top+10} v{h-24}" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".75"/>'
+    s += f'<path d="M{x+22} {y+top+10} v{h*0.4:.0f}" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".55"/>'
+    # rim
+    s += f'<polygon points="{topPoly}" fill="none" stroke="#4a2410" stroke-width="4" stroke-linejoin="round"/>'
+    s += f'<path d="M{x} {y+top} h{w}" stroke="#fff" stroke-width="3" opacity=".8"/>'
+    if scoop:
+        s += f'<g transform="translate({x+w*0.68},{y+top-6}) rotate(-35)"><rect x="-4" y="-56" width="8" height="50" rx="4" fill="url(#chromeI)" stroke="#4a2410" stroke-width="2.5"/><ellipse cx="0" cy="0" rx="14" ry="9" fill="url(#chromeI)" stroke="#4a2410" stroke-width="2.5"/></g>'
+    if label:
+        s += f'<rect x="{x+w/2-50}" y="{y+top+h-14}" width="100" height="24" rx="12" fill="#1d1a1f" stroke="url(#goldR)" stroke-width="3"/><text x="{x+w/2}" y="{y+top+h+3}" text-anchor="middle" font-family="DejaVu Sans, sans-serif" font-weight="700" font-size="10.5" fill="#f2d27a">{label}</text>'
+    return s + '</g>'
+
+EXTRA_DEFS = '''<linearGradient id="acryl" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".25" stop-color="#fff" stop-opacity=".06"/><stop offset=".8" stop-color="#dff2ff" stop-opacity=".08"/><stop offset="1" stop-color="#cfe8f7" stop-opacity=".3"/></linearGradient>
+<linearGradient id="chromeI" x1="0" x2="1"><stop offset="0" stop-color="#8a929e"/><stop offset=".35" stop-color="#f4f7fb"/><stop offset="1" stop-color="#8a929e"/></linearGradient>
+<linearGradient id="alu" x1="0" x2="1"><stop offset="0" stop-color="#7f8894"/><stop offset=".2" stop-color="#f6f8fb"/><stop offset=".45" stop-color="#c3cad3"/><stop offset=".75" stop-color="#eef1f5"/><stop offset="1" stop-color="#7a828e"/></linearGradient>
+<g id="whipper">
+ <rect x="-36" y="-240" width="72" height="236" rx="16" fill="url(#alu)" stroke="#4a2410" stroke-width="4"/>
+ <path d="M-36 -20 h72" stroke="#4a2410" stroke-width="2" opacity=".4"/>
+ <path d="M-22 -226 v200" stroke="#fff" stroke-width="8" stroke-linecap="round" opacity=".85"/>
+ <rect x="-30" y="-150" width="60" height="44" rx="6" fill="#1d1a1f" stroke="#4a2410" stroke-width="3"/>
+ <text x="0" y="-131" text-anchor="middle" font-family="DejaVu Sans, sans-serif" font-weight="700" font-size="10" fill="#f2d27a">WHIPPED</text>
+ <text x="0" y="-117" text-anchor="middle" font-family="DejaVu Sans, sans-serif" font-weight="700" font-size="10" fill="#f2d27a">CREAM</text>
+ <path d="M-40 -244 h80 v-18 a10 10 0 0 0 -10 -10 h-60 a10 10 0 0 0 -10 10z" fill="#2b2026" stroke="#4a2410" stroke-width="4"/>
+ <path d="M-40 -252 h80" stroke="url(#goldR)" stroke-width="5"/>
+ <path d="M-8 -272 v-20 h16 v20" fill="url(#alu)" stroke="#4a2410" stroke-width="3"/>
+ <path d="M-10 -292 l4 -24 h12 l4 24z" fill="url(#alu)" stroke="#4a2410" stroke-width="3" stroke-linejoin="round"/>
+ <path d="M-4 -312 v12 M0 -314 v14 M4 -312 v12" stroke="#4a2410" stroke-width="1.5"/>
+ <path d="M14 -274 q34 -6 46 -34 l-8 -6 q-12 22 -40 26z" fill="#2b2026" stroke="#4a2410" stroke-width="3" stroke-linejoin="round"/>
+ <rect x="-52" y="-262" width="14" height="30" rx="5" fill="url(#goldR)" stroke="#4a2410" stroke-width="3"/>
+</g>'''
