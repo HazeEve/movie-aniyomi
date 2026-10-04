@@ -1,0 +1,7 @@
+# Canva master prompt (matches coffee_front_final.png)
+Use Dream Lab, style reference = coffee_front_final.png, 16:9. Only replace the [STATION] part.
+
+Cute cartoon 2D mobile cooking game art, clean warm-brown outlines, simple soft cel shading, warm cozy lamp light, straight-on front view, camera close so the counter and station are large in the lower two thirds. Background softly blurred: warm peach wooden plank wall; dark red velvet curtains with gold tassel tie-backs at the far left and far right edges; two black dome pendant lamps hanging at upper left and upper right with bright warm glowing bulbs; string of round fairy lights across the very top; at upper left two black wall shelves with glass jars and white cups, and below them a small grey toaster oven and glass jars on a back counter; a black chalkboard menu at top center; a hanging green pothos plant in a terracotta pot right of the chalkboard; on the right a gold-framed arched window with a rainy night street outside, raindrops and soft yellow bokeh lights. Foreground: long cream marble counter top, black cabinets with gold trim and gold knobs along the bottom edge. [STATION]. No text, no people.
+
+## [STATION] examples
+- Freezer: In the center on the counter, a matte black chest freezer with thin gold trim and a round gold snowflake emblem on the front, a sliding glass lid on top showing tubs of vanilla ice cream, chocolate ice cream and ice cubes with frosty mist, a silver scoop on top. On the left of the counter clear square containers of ice cubes; on the right a stack of waffle cones.
