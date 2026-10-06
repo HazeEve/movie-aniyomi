@@ -1,0 +1,271 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+<defs>
+  <!-- textures -->
+  <filter id="grain" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.6  0 0 0 0 0.5  0 0 0 0 0.4  0 0 0 0.07 0" result="g"/>
+    <feComposite in="g" in2="SourceGraphic" operator="in" result="g2"/>
+    <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="g2"/></feMerge>
+  </filter>
+  <filter id="blotch" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.011 0.018" numOctaves="3" seed="11"/>
+    <feColorMatrix type="matrix" values="0 0 0 0 0.55  0 0 0 0 0.38  0 0 0 0 0.25  0 0 0 0.9 -0.35"/>
+  </filter>
+  <filter id="wobble" x="-2%" y="-2%" width="104%" height="104%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="5" result="w"/>
+    <feDisplacementMap in="SourceGraphic" in2="w" scale="3" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+  <filter id="b1" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1.6"/></filter>
+  <filter id="b3" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4"/></filter>
+  <filter id="b8" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="9"/></filter>
+  <filter id="b20" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="22"/></filter>
+  <filter id="b40" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="40"/></filter>
+
+  <!-- environment -->
+  <linearGradient id="wall" x1="0" y1="0" x2="0.3" y2="1">
+    <stop offset="0" stop-color="#e8b38c"/><stop offset="0.55" stop-color="#dc9f78"/><stop offset="1" stop-color="#c98663"/>
+  </linearGradient>
+  <linearGradient id="marble" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f7ead3"/><stop offset="0.6" stop-color="#eedcc0"/><stop offset="1" stop-color="#dcc5a5"/>
+  </linearGradient>
+  <linearGradient id="cab" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#2b211d"/><stop offset="1" stop-color="#1a1411"/>
+  </linearGradient>
+  <radialGradient id="lamp" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0" stop-color="#fff0c8" stop-opacity="0.75"/><stop offset="0.45" stop-color="#ffd58f" stop-opacity="0.3"/><stop offset="1" stop-color="#ffc77a" stop-opacity="0"/>
+  </radialGradient>
+
+  <!-- warm black body material -->
+  <linearGradient id="body" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#433630"/><stop offset="0.2" stop-color="#2f2622"/>
+    <stop offset="0.6" stop-color="#241c19"/><stop offset="1" stop-color="#140f0d"/>
+  </linearGradient>
+  <linearGradient id="bodyTop" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#53443b"/><stop offset="0.5" stop-color="#30261f"/><stop offset="1" stop-color="#1e1714"/>
+  </linearGradient>
+  <linearGradient id="ao" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#120c0a" stop-opacity="0"/><stop offset="1" stop-color="#120c0a" stop-opacity="0.6"/>
+  </linearGradient>
+  <linearGradient id="recess" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#0f0b09"/><stop offset="0.7" stop-color="#1d1613"/><stop offset="1" stop-color="#2b211c"/>
+  </linearGradient>
+
+  <!-- gold: warm, with dark reflected band, not just yellow -->
+  <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f9dc93"/><stop offset="0.28" stop-color="#e3ad52"/><stop offset="0.5" stop-color="#b9792d"/>
+    <stop offset="0.68" stop-color="#8d561f"/><stop offset="0.85" stop-color="#b37a35"/><stop offset="1" stop-color="#d9a35a"/>
+  </linearGradient>
+  <linearGradient id="goldH" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#9a6224"/><stop offset="0.3" stop-color="#f3cf7c"/><stop offset="0.55" stop-color="#c88a39"/><stop offset="1" stop-color="#7d4b1a"/>
+  </linearGradient>
+  <radialGradient id="goldDome" cx="0.35" cy="0.3" r="0.75">
+    <stop offset="0" stop-color="#fff0bd"/><stop offset="0.3" stop-color="#e7b45a"/><stop offset="0.75" stop-color="#a86d27"/><stop offset="1" stop-color="#7a4718"/>
+  </radialGradient>
+
+  <!-- brushed steel: dark reflections + narrow warm highlight -->
+  <linearGradient id="steel" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#5d5550"/><stop offset="0.18" stop-color="#cfc6bb"/><stop offset="0.3" stop-color="#8f857d"/>
+    <stop offset="0.55" stop-color="#4a423d"/><stop offset="0.8" stop-color="#a39888"/><stop offset="1" stop-color="#5a514b"/>
+  </linearGradient>
+
+  <!-- film roll: glossy cylinder -->
+  <linearGradient id="film" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#e9ddd0"/><stop offset="0.18" stop-color="#fffaf2"/><stop offset="0.38" stop-color="#f6ece0"/>
+    <stop offset="0.75" stop-color="#d6c6b4"/><stop offset="1" stop-color="#b8a690"/>
+  </linearGradient>
+  <radialGradient id="ball" cx="0.35" cy="0.3" r="0.8">
+    <stop offset="0" stop-color="#6f5a4d"/><stop offset="0.45" stop-color="#33261f"/><stop offset="1" stop-color="#140e0b"/>
+  </radialGradient>
+  <radialGradient id="amber" cx="0.4" cy="0.35" r="0.8">
+    <stop offset="0" stop-color="#ffe6a6"/><stop offset="0.5" stop-color="#f6ad4c"/><stop offset="1" stop-color="#b9611c"/>
+  </radialGradient>
+
+  <clipPath id="bodyClip"><path id="bodyPath" d="M298 430 C298 382 322 362 366 360 L660 358 C706 359 728 384 728 430 L730 790 L296 792 Z"/></clipPath>
+  <clipPath id="topClip"><path d="M338 362 L340 300 C341 276 356 266 380 266 L646 267 C672 268 686 280 686 304 L688 362 Z"/></clipPath>
+  <clipPath id="baseClip"><path d="M244 786 C238 772 248 766 268 766 L758 768 C778 768 788 776 782 790 L776 846 C774 856 764 860 750 860 L272 860 C258 860 250 856 248 846 Z"/></clipPath>
+</defs>
+
+<!-- 1. background wall (soft, low contrast) -->
+<rect width="1024" height="1024" fill="url(#wall)"/>
+<g opacity="0.22" filter="url(#b3)" stroke="#a8684a" stroke-width="3">
+  <path d="M0 140 H1024 M0 300 H1024 M0 460 H1024 M0 620 H1024"/>
+</g>
+<rect width="1024" height="1024" fill="url(#blotch)" opacity="0.25" filter="url(#blotch)"/>
+<!-- 2. environmental light: lamp glow upper left + bokeh -->
+<circle cx="190" cy="60" r="420" fill="url(#lamp)"/>
+<g filter="url(#b8)" opacity="0.55">
+  <circle cx="880" cy="120" r="22" fill="#fff0c4"/><circle cx="960" cy="240" r="16" fill="#ffe2a0"/><circle cx="90" cy="420" r="14" fill="#ffe8b8"/>
+</g>
+<!-- 3. distant: blurred shelf with cups (atmospheric, low detail) -->
+<g filter="url(#b8)" opacity="0.5">
+  <rect x="770" y="420" width="250" height="16" fill="#2c211c"/>
+  <path d="M800 420 q2 -46 26 -46 h20 q24 0 26 46z M890 420 q2 -40 24 -40 h18 q22 0 24 40z" fill="#f4e9da"/>
+</g>
+
+<!-- 4. counter -->
+<rect x="0" y="812" width="1024" height="70" fill="url(#marble)"/>
+<g opacity="0.25" filter="url(#b1)" stroke="#b49a7e" stroke-width="1.6" fill="none">
+  <path d="M40 830 C180 840 260 822 420 846 S700 836 860 852"/><path d="M520 818 C600 828 680 820 780 838"/>
+</g>
+<rect x="0" y="878" width="1024" height="8" fill="#c48f42"/>
+<rect x="0" y="879" width="1024" height="2" fill="#f1cf86" opacity="0.8"/>
+<rect x="0" y="886" width="1024" height="138" fill="url(#cab)"/>
+<rect x="60" y="912" width="420" height="112" rx="6" fill="none" stroke="#b07a33" stroke-width="3" opacity="0.6"/>
+<rect x="544" y="912" width="420" height="112" rx="6" fill="none" stroke="#b07a33" stroke-width="3" opacity="0.6"/>
+
+<!-- 5. shadows on the counter: environmental (wide), cast (to lower right), contact (tight) -->
+<ellipse cx="540" cy="850" rx="330" ry="34" fill="#5a3420" opacity="0.28" filter="url(#b20)"/>
+<path d="M700 846 L860 862 L900 852 L760 836 Z" fill="#5a3420" opacity="0.22" filter="url(#b8)"/>
+<ellipse cx="300" cy="858" rx="42" ry="7" fill="#2a170c" opacity="0.7" filter="url(#b3)"/>
+<ellipse cx="724" cy="858" rx="42" ry="7" fill="#2a170c" opacity="0.7" filter="url(#b3)"/>
+
+<g id="cup_sealer" filter="url(#grain)">
+  <!-- LEVER (behind body) -->
+  <g id="lever">
+    <path d="M760 476 C790 420 822 360 846 304" fill="none" stroke="#3a2412" stroke-width="27" stroke-linecap="round"/>
+    <path d="M760 476 C790 420 822 360 846 304" fill="none" stroke="url(#goldH)" stroke-width="20" stroke-linecap="round"/>
+    <path d="M756 466 C784 414 812 362 836 308" fill="none" stroke="#ffe7a8" stroke-width="4" stroke-linecap="round" opacity="0.75" filter="url(#b1)"/>
+    <circle cx="858" cy="282" r="41" fill="url(#ball)"/>
+    <path d="M832 270 C834 252 848 244 862 244" fill="none" stroke="#c9a585" stroke-width="7" stroke-linecap="round" opacity="0.6" filter="url(#b1)"/>
+    <path d="M884 300 C878 314 866 320 852 321" fill="none" stroke="#b07a3a" stroke-width="5" stroke-linecap="round" opacity="0.45" filter="url(#b1)"/>
+    <path d="M818 284 A41 41 0 0 0 896 296" fill="none" stroke="#1a0f08" stroke-width="4" opacity="0.6"/>
+  </g>
+
+  <!-- BASE plinth -->
+  <g clip-path="url(#baseClip)">
+    <rect x="230" y="760" width="570" height="110" fill="url(#body)"/>
+    <rect x="230" y="760" width="570" height="22" fill="#5b4a40" opacity="0.7" filter="url(#b3)"/>
+    <rect x="230" y="820" width="570" height="50" fill="url(#ao)"/>
+    <rect x="230" y="760" width="570" height="110" fill="url(#blotch)" filter="url(#blotch)" opacity="0.12"/>
+    <ellipse cx="300" cy="800" rx="44" ry="10" fill="#c49a76" opacity="0.18" filter="url(#b3)"/>
+  </g>
+  <path d="M244 786 C238 772 248 766 268 766 L758 768 C778 768 788 776 782 790 L776 846 C774 856 764 860 750 860 L272 860 C258 860 250 856 248 846 Z" fill="none" stroke="#24140b" stroke-width="3.5" opacity="0.85"/>
+  <path d="M782 790 L776 846 C774 856 764 860 750 860 L272 860" fill="none" stroke="#1a0d06" stroke-width="5"/>
+  <rect x="262" y="778" width="500" height="6" rx="3" fill="url(#goldH)" opacity="0.9"/>
+  <!-- gold feet -->
+  <path d="M272 858 h56 l-4 14 c-1 4 -4 6 -8 6 h-32 c-4 0 -7 -2 -8 -6z" fill="url(#gold)"/>
+  <path d="M696 858 h56 l-4 14 c-1 4 -4 6 -8 6 h-32 c-4 0 -7 -2 -8 -6z" fill="url(#gold)"/>
+
+  <!-- MAIN BODY -->
+  <g clip-path="url(#bodyClip)">
+    <rect x="290" y="350" width="450" height="450" fill="url(#body)"/>
+    <!-- broad form shadow on right plane (soft edge) -->
+    <path d="M640 350 C660 500 650 650 680 800 L740 800 L740 350 Z" fill="#120c09" opacity="0.45" filter="url(#b20)"/>
+    <!-- warm reflected bounce light from counter, lower left -->
+    <ellipse cx="330" cy="760" rx="70" ry="120" fill="#b07548" opacity="0.22" filter="url(#b20)"/>
+    <!-- lamp light on the upper-left shoulder -->
+    <ellipse cx="350" cy="400" rx="90" ry="60" fill="#e8b98c" opacity="0.22" filter="url(#b20)"/>
+    <!-- painted tonal variation -->
+    <rect x="290" y="350" width="450" height="450" fill="url(#blotch)" filter="url(#blotch)" opacity="0.14"/>
+    <!-- ambient occlusion at the bottom -->
+    <rect x="290" y="700" width="450" height="100" fill="url(#ao)"/>
+  </g>
+  <!-- left rim light (broken, soft) -->
+  <path d="M312 440 C312 400 326 382 356 376" fill="none" stroke="#c7a283" stroke-width="5" stroke-linecap="round" opacity="0.55" filter="url(#b1)"/>
+  <path d="M312 480 L312 600" stroke="#a88466" stroke-width="3" opacity="0.3" filter="url(#b1)"/>
+  <!-- silhouette edge: thin on the lit side, heavier in shadow -->
+  <path d="M298 430 C298 382 322 362 366 360 L660 358" fill="none" stroke="#2a170b" stroke-width="3" opacity="0.7"/>
+  <path d="M660 358 C706 359 728 384 728 430 L730 790" fill="none" stroke="#1a0d06" stroke-width="5.5"/>
+  <path d="M298 430 L296 792" fill="none" stroke="#2a170b" stroke-width="3" opacity="0.55"/>
+
+  <!-- gold trim frame on the body (no outline, defined by tone) -->
+  <path d="M322 438 C322 400 340 386 372 385 L654 384 C688 385 704 402 704 438 L705 770" fill="none" stroke="url(#goldH)" stroke-width="6" stroke-linecap="round"/>
+  <path d="M322 438 L321 770" fill="none" stroke="#d9a659" stroke-width="5" stroke-linecap="round" opacity="0.85"/>
+  <path d="M330 432 C332 406 346 394 372 392" fill="none" stroke="#fff0bf" stroke-width="2" opacity="0.8" filter="url(#b1)"/>
+
+  <!-- CONTROL PANEL with glowing display -->
+  <rect x="378" y="404" width="268" height="64" rx="20" fill="#1c1411"/>
+  <rect x="378" y="404" width="268" height="64" rx="20" fill="none" stroke="#5a4538" stroke-width="2" opacity="0.6"/>
+  <rect x="378" y="452" width="268" height="16" rx="8" fill="#0d0907" opacity="0.5" filter="url(#b3)"/>
+  <ellipse cx="451" cy="436" rx="80" ry="34" fill="#ffb455" opacity="0.28" filter="url(#b8)"/>
+  <rect x="398" y="417" width="106" height="38" rx="11" fill="url(#amber)"/>
+  <path d="M408 425 h58" stroke="#fff6d6" stroke-width="4" stroke-linecap="round" opacity="0.75" filter="url(#b1)"/>
+  <rect x="398" y="417" width="106" height="38" rx="11" fill="none" stroke="#6b3a12" stroke-width="2" opacity="0.6"/>
+  <circle cx="556" cy="436" r="17" fill="url(#goldDome)"/>
+  <circle cx="606" cy="436" r="17" fill="url(#goldDome)"/>
+  <circle cx="556" cy="452" r="15" fill="#0d0907" opacity="0.35" filter="url(#b3)"/>
+  <circle cx="606" cy="452" r="15" fill="#0d0907" opacity="0.35" filter="url(#b3)"/>
+  <circle cx="556" cy="436" r="17" fill="url(#goldDome)"/>
+  <circle cx="606" cy="436" r="17" fill="url(#goldDome)"/>
+  <path d="M547 429 a9 9 0 0 1 8 -5" stroke="#fffbe6" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M597 429 a9 9 0 0 1 8 -5" stroke="#fffbe6" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <!-- SEALING CHAMBER (recess with AO and warm bounce) -->
+  <path d="M376 772 L376 566 C376 516 404 490 452 490 L572 490 C620 490 648 516 648 566 L648 772 Z" fill="url(#recess)"/>
+  <path d="M376 566 C376 516 404 490 452 490 L572 490 C620 490 648 516 648 566" fill="none" stroke="#0a0605" stroke-width="10" opacity="0.6" filter="url(#b3)"/>
+  <ellipse cx="512" cy="740" rx="120" ry="40" fill="#8a5a33" opacity="0.18" filter="url(#b8)"/>
+  <path d="M392 568 C392 528 414 508 450 506" fill="none" stroke="#6a5446" stroke-width="3" opacity="0.5" filter="url(#b1)"/>
+
+  <!-- PRESS HEAD: steel rod + plate -->
+  <g id="press">
+    <rect x="494" y="488" width="36" height="36" fill="url(#steel)"/>
+    <rect x="494" y="488" width="36" height="10" fill="#0a0605" opacity="0.5" filter="url(#b1)"/>
+    <path d="M444 520 C444 512 450 508 458 508 L566 508 C574 508 580 512 580 520 L580 532 L444 532 Z" fill="#2a201b"/>
+    <path d="M452 514 h80" stroke="#7d685b" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+    <ellipse cx="512" cy="548" rx="92" ry="22" fill="url(#steel)"/>
+    <ellipse cx="512" cy="548" rx="92" ry="22" fill="none" stroke="#1c120c" stroke-width="2.5" opacity="0.7"/>
+    <path d="M436 544 C460 534 486 532 510 532" stroke="#f7efe4" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.7" filter="url(#b1)"/>
+    <ellipse cx="512" cy="566" rx="86" ry="10" fill="#000" opacity="0.35" filter="url(#b3)"/>
+  </g>
+
+  <!-- CUP HOLDER: gold ring, empty -->
+  <ellipse cx="512" cy="756" rx="112" ry="26" fill="#000" opacity="0.4" filter="url(#b8)"/>
+  <ellipse cx="512" cy="742" rx="104" ry="25" fill="#22180f"/>
+  <ellipse cx="512" cy="746" rx="84" ry="16" fill="#0b0705"/>
+  <path d="M408 742 C408 756 454 768 512 768 C570 768 616 756 616 742 L616 754 C616 768 570 780 512 780 C454 780 408 768 408 754 Z" fill="url(#gold)"/>
+  <ellipse cx="512" cy="742" rx="104" ry="25" fill="none" stroke="url(#goldH)" stroke-width="8"/>
+  <path d="M430 734 C450 724 480 720 512 720" fill="none" stroke="#fff0bf" stroke-width="3" stroke-linecap="round" opacity="0.7" filter="url(#b1)"/>
+
+  <!-- LEVER PIVOT (on top of body edge) -->
+  <circle cx="760" cy="476" r="35" fill="#000" opacity="0.35" filter="url(#b3)" transform="translate(4 6)"/>
+  <circle cx="760" cy="476" r="34" fill="url(#goldDome)"/>
+  <circle cx="760" cy="476" r="34" fill="none" stroke="#5a3210" stroke-width="2.5" opacity="0.7"/>
+  <circle cx="760" cy="476" r="13" fill="#6b3d14"/>
+  <circle cx="757" cy="472" r="5" fill="#d29a4c"/>
+  <path d="M738 462 a26 26 0 0 1 20 -14" fill="none" stroke="#fff4c8" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
+
+  <!-- TOP HOUSING -->
+  <g clip-path="url(#topClip)">
+    <rect x="330" y="260" width="370" height="110" fill="url(#bodyTop)"/>
+    <path d="M610 260 C630 300 640 330 690 370 L700 370 L700 260 Z" fill="#100a08" opacity="0.4" filter="url(#b8)"/>
+    <ellipse cx="400" cy="282" rx="80" ry="16" fill="#c9a07c" opacity="0.25" filter="url(#b8)"/>
+    <rect x="330" y="260" width="370" height="110" fill="url(#blotch)" filter="url(#blotch)" opacity="0.12"/>
+  </g>
+  <path d="M338 362 L340 300 C341 276 356 266 380 266 L646 267" fill="none" stroke="#2a170b" stroke-width="3" opacity="0.65"/>
+  <path d="M646 267 C672 268 686 280 686 304 L688 362" fill="none" stroke="#1a0d06" stroke-width="5"/>
+  <rect x="334" y="352" width="358" height="12" rx="5" fill="url(#gold)"/>
+  <rect x="334" y="364" width="358" height="10" fill="#0a0605" opacity="0.5" filter="url(#b3)"/>
+
+  <!-- FILM ROLL -->
+  <g id="film_roll">
+    <rect x="374" y="210" width="24" height="70" rx="8" fill="url(#goldH)"/>
+    <rect x="626" y="210" width="24" height="70" rx="8" fill="url(#goldH)"/>
+    <ellipse cx="512" cy="262" rx="120" ry="10" fill="#000" opacity="0.4" filter="url(#b3)"/>
+    <rect x="402" y="170" width="220" height="90" rx="20" fill="url(#film)"/>
+    <g opacity="0.75">
+      <circle cx="438" cy="196" r="8" fill="#f2a0b4"/><circle cx="478" cy="228" r="7" fill="#f7c66b"/>
+      <circle cx="520" cy="198" r="8" fill="#f2a0b4"/><circle cx="560" cy="230" r="7" fill="#f7c66b"/>
+      <circle cx="596" cy="200" r="6" fill="#f2a0b4"/><circle cx="452" cy="244" r="5" fill="#c6a2e2"/>
+      <circle cx="540" cy="246" r="5" fill="#c6a2e2"/><circle cx="500" cy="214" r="4" fill="#9fd3c4"/>
+    </g>
+    <rect x="402" y="226" width="220" height="34" rx="16" fill="#7a5a3e" opacity="0.18"/>
+    <path d="M418 186 C470 180 560 180 608 186" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" opacity="0.8" filter="url(#b1)"/>
+    <path d="M402 190 C402 178 410 170 422 170 L602 170 C614 170 622 178 622 190" fill="none" stroke="#3a2416" stroke-width="2.5" opacity="0.5"/>
+    <path d="M622 190 L622 240 C622 252 614 260 602 260 L422 260" fill="none" stroke="#2a170b" stroke-width="4" opacity="0.75"/>
+    <ellipse cx="404" cy="215" rx="19" ry="47" fill="url(#ball)"/>
+    <ellipse cx="620" cy="215" rx="19" ry="47" fill="url(#ball)"/>
+    <circle cx="404" cy="215" r="9" fill="url(#goldDome)"/>
+    <circle cx="620" cy="215" r="9" fill="url(#goldDome)"/>
+    <!-- film feeding into the head -->
+    <path d="M500 258 L500 292 L526 292 L526 258 Z" fill="#efe3d4"/>
+    <path d="M500 292 L526 292" stroke="#5a4030" stroke-width="2" opacity="0.6"/>
+  </g>
+</g>
+
+<!-- 6. atmospheric unification: warm light wash + gentle vignette -->
+<rect width="1024" height="1024" fill="#ffcf8a" opacity="0.06"/>
+<radialGradient id="vig" cx="0.5" cy="0.45" r="0.75">
+  <stop offset="0.6" stop-color="#3a1f10" stop-opacity="0"/><stop offset="1" stop-color="#3a1f10" stop-opacity="0.35"/>
+</radialGradient>
+<rect width="1024" height="1024" fill="url(#vig)"/>
+</svg>
