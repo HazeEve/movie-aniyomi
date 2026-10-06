@@ -1,0 +1,33 @@
+<!-- Reusable <defs> for painted-looking SVG. Copy what you need into the artwork's <defs>.
+     Every effect is subtle on purpose: stack several, never rely on one. -->
+<defs>
+  <!-- soft painterly grain, clipped to the shape it is applied to (use as filter on a group) -->
+  <filter id="pk-grain" x="-5%" y="-5%" width="110%" height="110%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.55  0 0 0 0 0.45  0 0 0 0 0.35  0 0 0 0.06 0" result="g"/>
+    <feComposite in="g" in2="SourceGraphic" operator="in" result="g2"/>
+    <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="g2"/></feMerge>
+  </filter>
+  <!-- brush-like tonal variation: large low-frequency blotches (multiply over a fill at 0.15-0.3 opacity) -->
+  <filter id="pk-blotch">
+    <feTurbulence type="fractalNoise" baseFrequency="0.012 0.02" numOctaves="3" seed="11"/>
+    <feColorMatrix type="matrix" values="0 0 0 0 0.3  0 0 0 0 0.2  0 0 0 0 0.12  0 0 0 0.5 -0.1"/>
+  </filter>
+  <!-- slightly wobbly, hand-drawn edge for silhouettes (apply to a group; keep scale 1.5-3) -->
+  <filter id="pk-wobble">
+    <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="5" result="w"/>
+    <feDisplacementMap in="SourceGraphic" in2="w" scale="2.5" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+  <!-- softness levels for shadows and light: contact (tight), form (medium), environment (wide) -->
+  <filter id="pk-soft-s" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2"/></filter>
+  <filter id="pk-soft-m" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="8"/></filter>
+  <filter id="pk-soft-l" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="24"/></filter>
+  <!-- warm lamp glow / light spill -->
+  <radialGradient id="pk-lamp" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0" stop-color="#ffe2a8" stop-opacity="0.55"/><stop offset="1" stop-color="#ffcf87" stop-opacity="0"/>
+  </radialGradient>
+  <!-- contact / environment shadow (warm, never black) -->
+  <radialGradient id="pk-shadow" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0" stop-color="#4a2c18" stop-opacity="0.45"/><stop offset="1" stop-color="#4a2c18" stop-opacity="0"/>
+  </radialGradient>
+</defs>

@@ -1,6 +1,6 @@
 ---
 name: aurafizz-art
-description: Make 2D game art for the Aura Fizz Roblox cooking game in its one approved style (the cozy hand-painted cel look of reference/style_reference.png, like Good Coffee Great Coffee): station scenes, station parts, cups, bottles, pumps, tools, ingredients, cut pieces and liquids. Use whenever the user asks for Aura Fizz images, assets, sprites, sheets, prompts, cut-outs, or "this style"; also to cut, name, colour-match or check generated images. Never answer such a request with code-drawn shapes.
+description: Make 2D game art for the Aura Fizz Roblox cooking game in its one approved style (the cozy hand-painted cel look of reference/style_reference.png, like Good Coffee Great Coffee): station scenes, station parts, cups, bottles, pumps, tools, ingredients, cut pieces and liquids. Use whenever the user asks for Aura Fizz images, assets, sprites, sheets, prompts, cut-outs, or "this style"; also to cut, name, colour-match or check generated images. When no image generator is available, draw it with the painted-2d-illustration skill, never with plain flat shapes.
 ---
 
 # Aura Fizz art
@@ -116,7 +116,7 @@ trainer). Once trained, put the LoRA in the Colab notebook and say so here.
 
 ## 6. Things that failed (do not repeat)
 
-- Code-drawn art (SVG, Blender toon renders): "sticks and shapes", rejected every time.
+- Flat code-drawn art (plain SVG shapes, Blender toon renders): "sticks and shapes", rejected. Code drawing is only acceptable when it follows `.claude/skills/painted-2d-illustration`.
 - Pastel redesigns, side views, sticker sheets with faces.
 - One prompt with a station AND its parts: the generator drew extra whole furniture.
 - Long many-object prompts in Canva: it invents shelves, walls and text.
