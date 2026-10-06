@@ -1,4 +1,8 @@
-import json, html
+import json, html, re
+def short(o):
+    return (f"{o}, one single object alone in the center, cute cozy 2D game art like Good Coffee Great Coffee, "
+            "bold dark brown outlines, soft cel shading, warm colours, front view, isolated on a plain cream background, "
+            "no shelf, no wall, no table, no text")
 d = json.load(open('batches.json'))
 B = d['batches']
 secs = []
@@ -15,11 +19,17 @@ for i, (name, bs) in enumerate(secs):
     for b in bs:
         k += 1
         chips = "".join(f'<code>{html.escape(c)}</code>' for c in b['codes'])
+        objs = re.split(r"; \(\d+\) ", b['prompt'].split("overlapping: (1) ", 1)[1].split(". Art style")[0])
+        singles = "".join(
+            f'<li><code>{html.escape(c)}</code><span class="sp" id="q{k}_{j}">{html.escape(short(o))}</span>'
+            f'<button class="copy sm" type="button" data-t="q{k}_{j}">Copy</button></li>'
+            for j, (c, o) in enumerate(zip(b['codes'], objs)))
         body.append(f'''<article class="batch" id="b{k}" data-id="b{k}">
 <header><label class="done"><input type="checkbox" id="chk{k}" aria-label="Mark batch {k} done"><span class="num">{k:02d}</span></label>
 <h3>{html.escape(b['title'])}</h3><span class="count">{len(b['codes'])} objects</span>
 <button class="copy" type="button" data-k="{k}">Copy prompt</button></header>
-<pre id="p{k}">{html.escape(b['prompt'])}</pre>
+<pre id="p{k}" class="full">{html.escape(b['prompt'])}</pre>
+<ul class="singles">{singles}</ul>
 <details><summary>Object codes, in order</summary><div class="chips">{chips}</div></details>
 </article>''')
     body.append('</section>')
@@ -76,6 +86,17 @@ pre {{ margin:0; background:var(--prompt); color:var(--prompt-ink); border-radiu
 details summary {{ cursor:pointer; color:var(--muted); font-size:14px }}
 .chips {{ display:flex; flex-wrap:wrap; gap:6px; padding-top:8px }}
 .chips code {{ font:12px/1 var(--mono); background:var(--gold-soft); color:var(--ink); border-radius:6px; padding:5px 7px }}
+.mode {{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding-block:4px 14px; font-size:14px; color:var(--muted) }}
+.mb {{ font:700 14px/1.2 var(--body); background:var(--panel); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:9px 12px; cursor:pointer }}
+.mb[aria-pressed="true"] {{ background:var(--gold); border-color:var(--gold); color:#1a130e }}
+.mb:focus-visible {{ outline:2px solid var(--gold); outline-offset:2px }}
+.singles {{ list-style:none; margin:0; padding:0; display:grid; gap:8px }}
+.singles li {{ display:grid; grid-template-columns:1fr auto; gap:6px 10px; align-items:start; border-top:1px solid var(--line); padding-top:8px }}
+.singles code {{ grid-column:1 / -1; font:600 12px/1 var(--mono); color:var(--gold) }}
+.sp {{ font:13px/1.5 var(--mono); min-width:0; word-break:break-word }}
+.copy.sm {{ padding:8px 12px; font-size:13px }}
+body.m-batch .singles {{ display:none }}
+body.m-single pre.full, body.m-single header .copy, body.m-single details {{ display:none }}
 @media (prefers-reduced-motion: reduce) {{ html {{ scroll-behavior:auto }} }}
 html {{ scroll-behavior:smooth }}
 </style>
@@ -89,6 +110,11 @@ html {{ scroll-behavior:smooth }}
 <li><b>3 · Send</b>Send me the image. I cut out every object and name it with the batch's codes.</li>
 <li><b>4 · Tick</b>Tick the box so you know where you stopped. <span class="progress" id="prog"></span></li>
 </ul>
+</div>
+<div class="mode" role="group" aria-label="Generator">
+<span>I'm using:</span>
+<button type="button" class="mb" data-m="batch" id="m-batch">Tripo / Gemini / ChatGPT (whole batch)</button>
+<button type="button" class="mb" data-m="single" id="m-single">Canva (one object at a time)</button>
 </div>
 <nav class="bar" aria-label="Steps">{nav}</nav>
 {''.join(body)}
@@ -106,12 +132,20 @@ function paint(){{
 boxes.forEach(b=>b.addEventListener('change',()=>{{const id=b.closest('.batch').dataset.id;if(b.checked)done[id]=1;else delete done[id];
   try{{localStorage.setItem(KEY,JSON.stringify(done))}}catch(e){{}} paint();}}));
 paint();
+function setMode(m){{
+  document.body.classList.remove('m-batch','m-single'); document.body.classList.add('m-'+m);
+  document.querySelectorAll('.mb').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.m===m)));
+  try{{localStorage.setItem(KEY+'-mode',m)}}catch(e){{}}
+}}
+let mode='batch'; try{{mode=localStorage.getItem(KEY+'-mode')||'batch'}}catch(e){{}}
+setMode(mode);
+document.querySelectorAll('.mb').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.m)));
 document.addEventListener('click',async e=>{{
   const btn=e.target.closest('.copy'); if(!btn) return;
-  const pre=document.getElementById('p'+btn.dataset.k);
+  const pre=document.getElementById(btn.dataset.t||('p'+btn.dataset.k));
   try {{ await navigator.clipboard.writeText(pre.textContent); btn.textContent='Copied'; btn.classList.add('ok'); }}
   catch(err) {{ const r=document.createRange(); r.selectNodeContents(pre); const s=getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent='Selected, press Ctrl+C'; }}
-  setTimeout(()=>{{btn.textContent='Copy prompt';btn.classList.remove('ok')}},1800);
+  const label=btn.dataset.t?'Copy':'Copy prompt'; setTimeout(()=>{{btn.textContent=label;btn.classList.remove('ok')}},1800);
 }});
 </script>
 '''
