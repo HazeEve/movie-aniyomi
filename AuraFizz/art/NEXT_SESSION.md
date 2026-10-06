@@ -17,3 +17,10 @@ Plan: generate one station (Coffee Machine) first for approval, then the rest in
 Cup Rack, Fridge, Freezer, Pantry, Syrup Shelf, Cutting Board, Juicer, Blender, Coffee Machine, Stove,
 Tea & Boba, Mixing Station, Soda Fountain, Topping Station, Cup Sealer, Infusion Barrel.
 Then cut into sprites (background removal Space), and wire them into AuraFizz/src/AuraFizz2D (ImageLabels).
+
+## Qwen sheet pipeline (2026-10-06)
+- Generator: Qwen_Image MCP `gr5_qwen_edit_image_api_predict` (kulkas2pintu/QWEN_EDIT_IMAGE), image = raw GitHub URL of generated/coffee_front_final.png, preserve_identity=false, output_size=1536, guidance_scale=2.5, steps=8.
+- Jobs: tools/jobs.json (SHEET_Tools_01-05, Cups, Fridge, Pantry, two *_Base bottles, Toppings). Done: SHEET_Cups_01, SHEET_Scoops.
+- After each call: `python3 tools/take.py <SHEET_NAME> <tool-result png>` -> sheets/ + cut/<group>/ (tools/cut.py flood-fill cutter, clean edges, handle holes removed).
+- Station moving parts (tools/scene_parts.json) get cut from each finished station scene, not drawn on sheets, so they match.
+- Free ZeroGPU quota ran out after 4 images; PRO = 40 min/day.

@@ -1,108 +1,59 @@
 [
  {
-  "name": "SHEET_Pieces_01",
+  "name": "SHEET_Tools_01",
   "codes": [
-   "ANM_CupRack_Drawer",
-   "ANM_Fridge_Door",
-   "ANM_Freezer_Lid",
-   "ANM_Freezer_Scoop",
-   "ANM_Freezer_IceScoop",
-   "ANM_Pantry_JarLid"
-  ],
-  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a matte black drawer front with a gold handle; (2) a tall glass fridge door with a black frame and a gold handle; (3) a sliding glass freezer lid with a black frame; (4) a silver ice cream scoop; (5) a small silver ice scoop; (6) a glass jar lid with a gold rim. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
- },
- {
-  "name": "SHEET_Pieces_02",
-  "codes": [
-   "ANM_Pantry_Drawer",
-   "ANM_SyrupShelf_Cap",
    "ANM_Board_Knife",
    "ANM_Board_Peeler",
    "ANM_Board_Spoon",
-   "ANM_Board_RollingPin"
-  ],
-  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a black drawer front with a gold handle; (2) a small gold bottle cap; (3) a chef knife with a black handle; (4) a silver vegetable peeler; (5) a silver spoon; (6) a wooden rolling pin. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
- },
- {
-  "name": "SHEET_Pieces_03",
-  "codes": [
-   "ANM_Juicer_Pusher",
-   "ANM_Juicer_Jug",
-   "ANM_Blender_Lid",
-   "ANM_Blender_Jar",
-   "ANM_Blender_Dial",
-   "ANM_Coffee_Portafilter"
-  ],
-  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a black juicer pusher; (2) an empty clear juice jug with a handle; (3) a black blender lid; (4) an empty clear blender jar with steel blades; (5) a silver blender dial; (6) an espresso portafilter with a black handle and a steel basket. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
- },
- {
-  "name": "SHEET_Pieces_04",
-  "codes": [
-   "ANM_Coffee_Knob",
-   "ANM_Coffee_GaugeNeedle",
-   "ANM_Coffee_SteamWand",
-   "ANM_Coffee_GrinderJar",
+   "ANM_Board_RollingPin",
    "ANM_Coffee_MilkPitcher",
-   "ANM_Stove_Knob"
+   "ANM_Stove_Cezve"
   ],
-  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) one round gold espresso machine knob; (2) a thin red gauge needle; (3) a silver espresso steam wand; (4) a glass coffee grinder jar with a black lid; (5) an empty steel milk pitcher; (6) a round gold stove knob. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a chef knife with a black handle; (2) a silver vegetable peeler; (3) a silver spoon; (4) a wooden rolling pin; (5) an empty steel milk pitcher; (6) a gold Turkish cezve coffee pot with a long handle. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
  },
  {
-  "name": "SHEET_Pieces_05",
+  "name": "SHEET_Tools_02",
   "codes": [
-   "ANM_Stove_Cezve",
    "ANM_Stove_Saucepan",
    "ANM_Stove_Spoon",
-   "ANM_Tea_CanisterLid",
    "ANM_Tea_Pot",
-   "ANM_Boba_Pot"
+   "ANM_Boba_Pot",
+   "ANM_Boba_Strainer",
+   "ANM_Mix_Shaker"
   ],
-  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a gold Turkish cezve coffee pot with a long handle; (2) a small empty steel saucepan with a handle; (3) a wooden spoon; (4) a black tea canister lid with a gold rim; (5) an empty glass tea pot; (6) a steel pot of boiling water. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a small empty steel saucepan with a handle; (2) a wooden spoon; (3) an empty glass tea pot; (4) a steel pot of boiling water; (5) a strainer ladle; (6) a closed silver cocktail shaker. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
  },
  {
-  "name": "SHEET_Pieces_06",
+  "name": "SHEET_Tools_03",
   "codes": [
-   "ANM_Boba_Strainer",
-   "ANM_Mix_Shaker",
    "ANM_Mix_ShakerCap",
    "ANM_Mix_Muddler",
    "ANM_Mix_Whisk",
-   "ANM_Mix_BarSpoon"
-  ],
-  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a strainer ladle; (2) a closed silver cocktail shaker; (3) a silver cocktail shaker cap; (4) a wooden muddler; (5) a silver hand whisk; (6) a long gold bar spoon. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
- },
- {
-  "name": "SHEET_Pieces_07",
-  "codes": [
+   "ANM_Mix_BarSpoon",
    "ANM_Mix_Strainer",
-   "ANM_Mix_Jigger",
-   "ANM_Soda_Lever",
-   "ANM_Top_PumpHead",
-   "ANM_Top_Scoop",
-   "ANM_Top_WhipDispenser"
+   "ANM_Mix_Jigger"
   ],
-  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a silver cocktail strainer; (2) a small gold jigger; (3) a black soda dispenser lever; (4) a gold syrup pump head; (5) a small silver topping scoop; (6) a silver whipped cream dispenser bottle. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a silver cocktail shaker cap; (2) a wooden muddler; (3) a silver hand whisk; (4) a long gold bar spoon; (5) a silver cocktail strainer; (6) a small gold jigger. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
  },
  {
-  "name": "SHEET_Pieces_08",
+  "name": "SHEET_Tools_04",
   "codes": [
+   "ANM_Top_Scoop",
+   "ANM_Top_WhipDispenser",
    "ANM_Top_PipingBag",
    "ANM_Top_Torch",
    "ANM_Top_Shaker",
-   "ANM_Top_SauceBottle",
-   "ANM_Sealer_Lever",
-   "ANM_Sealer_Press"
+   "ANM_Top_SauceBottle"
   ],
-  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a white piping bag with a star tip; (2) a small kitchen torch; (3) a small glass topping shaker with a gold lid; (4) a squeeze sauce bottle; (5) a gold pull lever; (6) a black cup sealing press head. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a small silver topping scoop; (2) a silver whipped cream dispenser bottle; (3) a white piping bag with a star tip; (4) a small kitchen torch; (5) a small glass topping shaker with a gold lid; (6) a squeeze sauce bottle. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
  },
  {
-  "name": "SHEET_Pieces_09",
+  "name": "SHEET_Tools_05",
   "codes": [
-   "ANM_Sealer_Film",
-   "ANM_Barrel_Tap",
-   "ANM_Serve_Bell"
+   "ANM_Serve_Bell",
+   "ANM_SyrupShelf_Cap"
   ],
-  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 3 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a round printed boba cup seal film; (2) a gold barrel tap; (3) a small gold service bell. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 2 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a small gold service bell; (2) a small gold bottle cap. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
  },
  {
   "name": "SHEET_Cups_01",
@@ -734,5 +685,17 @@
    "TOP_CheeseFoam"
   ],
   "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a small glass shaker with a gold lid filled with edible gold flakes; (2) a small glass shaker with a gold lid filled with edible silver shimmer; (3) a small glass shaker with a gold lid filled with gold sprinkles; (4) a swirl of white whipped cream; (5) a soft white cream foam layer; (6) a thick pale cheese foam layer. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Scoops",
+  "codes": [
+   "X1",
+   "X2",
+   "X3",
+   "ANM_Freezer_Scoop",
+   "ANM_Freezer_IceScoop",
+   "X6"
+  ],
+  "prompt": ""
  }
 ]
