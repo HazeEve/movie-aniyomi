@@ -1,0 +1,738 @@
+[
+ {
+  "name": "SHEET_Pieces_01",
+  "codes": [
+   "ANM_CupRack_Drawer",
+   "ANM_Fridge_Door",
+   "ANM_Freezer_Lid",
+   "ANM_Freezer_Scoop",
+   "ANM_Freezer_IceScoop",
+   "ANM_Pantry_JarLid"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a matte black drawer front with a gold handle; (2) a tall glass fridge door with a black frame and a gold handle; (3) a sliding glass freezer lid with a black frame; (4) a silver ice cream scoop; (5) a small silver ice scoop; (6) a glass jar lid with a gold rim. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pieces_02",
+  "codes": [
+   "ANM_Pantry_Drawer",
+   "ANM_SyrupShelf_Cap",
+   "ANM_Board_Knife",
+   "ANM_Board_Peeler",
+   "ANM_Board_Spoon",
+   "ANM_Board_RollingPin"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a black drawer front with a gold handle; (2) a small gold bottle cap; (3) a chef knife with a black handle; (4) a silver vegetable peeler; (5) a silver spoon; (6) a wooden rolling pin. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pieces_03",
+  "codes": [
+   "ANM_Juicer_Pusher",
+   "ANM_Juicer_Jug",
+   "ANM_Blender_Lid",
+   "ANM_Blender_Jar",
+   "ANM_Blender_Dial",
+   "ANM_Coffee_Portafilter"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a black juicer pusher; (2) an empty clear juice jug with a handle; (3) a black blender lid; (4) an empty clear blender jar with steel blades; (5) a silver blender dial; (6) an espresso portafilter with a black handle and a steel basket. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pieces_04",
+  "codes": [
+   "ANM_Coffee_Knob",
+   "ANM_Coffee_GaugeNeedle",
+   "ANM_Coffee_SteamWand",
+   "ANM_Coffee_GrinderJar",
+   "ANM_Coffee_MilkPitcher",
+   "ANM_Stove_Knob"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) one round gold espresso machine knob; (2) a thin red gauge needle; (3) a silver espresso steam wand; (4) a glass coffee grinder jar with a black lid; (5) an empty steel milk pitcher; (6) a round gold stove knob. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pieces_05",
+  "codes": [
+   "ANM_Stove_Cezve",
+   "ANM_Stove_Saucepan",
+   "ANM_Stove_Spoon",
+   "ANM_Tea_CanisterLid",
+   "ANM_Tea_Pot",
+   "ANM_Boba_Pot"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a gold Turkish cezve coffee pot with a long handle; (2) a small empty steel saucepan with a handle; (3) a wooden spoon; (4) a black tea canister lid with a gold rim; (5) an empty glass tea pot; (6) a steel pot of boiling water. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pieces_06",
+  "codes": [
+   "ANM_Boba_Strainer",
+   "ANM_Mix_Shaker",
+   "ANM_Mix_ShakerCap",
+   "ANM_Mix_Muddler",
+   "ANM_Mix_Whisk",
+   "ANM_Mix_BarSpoon"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a strainer ladle; (2) a closed silver cocktail shaker; (3) a silver cocktail shaker cap; (4) a wooden muddler; (5) a silver hand whisk; (6) a long gold bar spoon. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pieces_07",
+  "codes": [
+   "ANM_Mix_Strainer",
+   "ANM_Mix_Jigger",
+   "ANM_Soda_Lever",
+   "ANM_Top_PumpHead",
+   "ANM_Top_Scoop",
+   "ANM_Top_WhipDispenser"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a silver cocktail strainer; (2) a small gold jigger; (3) a black soda dispenser lever; (4) a gold syrup pump head; (5) a small silver topping scoop; (6) a silver whipped cream dispenser bottle. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pieces_08",
+  "codes": [
+   "ANM_Top_PipingBag",
+   "ANM_Top_Torch",
+   "ANM_Top_Shaker",
+   "ANM_Top_SauceBottle",
+   "ANM_Sealer_Lever",
+   "ANM_Sealer_Press"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a white piping bag with a star tip; (2) a small kitchen torch; (3) a small glass topping shaker with a gold lid; (4) a squeeze sauce bottle; (5) a gold pull lever; (6) a black cup sealing press head. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pieces_09",
+  "codes": [
+   "ANM_Sealer_Film",
+   "ANM_Barrel_Tap",
+   "ANM_Serve_Bell"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 3 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a round printed boba cup seal film; (2) a gold barrel tap; (3) a small gold service bell. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Cups_01",
+  "codes": [
+   "CUP_EspressoCup",
+   "CUP_CoffeeMug",
+   "CUP_GlassMug",
+   "CUP_TallGlass",
+   "CUP_FrappeCup",
+   "CUP_DessertGlass"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: EMPTY, no drink inside: (1) an empty small white espresso cup with a gold rim on a saucer; (2) an empty white coffee mug with a gold rim; (3) an empty clear glass mug with a gold rim; (4) an empty tall clear glass with a gold rim; (5) an empty clear frappe cup with a dome lid; (6) an empty short stemmed dessert glass. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Cups_02",
+  "codes": [
+   "CUP_SmoothieGlass",
+   "CUP_MilkshakeGlass",
+   "CUP_SodaGlass",
+   "CUP_FloatMug",
+   "CUP_BobaCup",
+   "CUP_JuiceGlass"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: EMPTY, no drink inside: (1) an empty curvy smoothie glass with a gold rim; (2) an empty tall fluted milkshake glass; (3) an empty clear soda glass with a gold rim; (4) an empty glass float mug with a handle; (5) an empty clear boba cup; (6) an empty short clear juice glass with a gold rim. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Cups_03",
+  "codes": [
+   "CUP_MilkBottle",
+   "CUP_HighballGlass",
+   "CUP_HurricaneGlass"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 3 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: EMPTY, no drink inside: (1) an empty small glass milk bottle with a gold cap; (2) an empty tall slim highball glass; (3) an empty curvy hurricane glass. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_01",
+  "codes": [
+   "ING_AlmondMilk",
+   "ING_Apple",
+   "ING_Apple_Chopped",
+   "ING_AppleJuice",
+   "ING_Avocado",
+   "ING_Avocado_Halved"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a cream carton with an almond on the label; (2) a shiny red apple with a leaf; (3) small apple cubes with pale insides (apple); (4) a glass bottle of golden apple juice; (5) a whole dark green avocado; (6) two halves, one with the round pit (avocado). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_02",
+  "codes": [
+   "ING_Avocado_Chopped",
+   "ING_Banana",
+   "ING_Banana_Peeled",
+   "ING_Banana_Sliced",
+   "ING_Beetroot",
+   "ING_Beetroot_Peeled"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) pale green cubes (avocado); (2) a yellow banana; (3) a peeled banana (banana); (4) round banana coins (banana); (5) a deep red beetroot with green leaves; (6) a smooth magenta beetroot (beetroot). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_03",
+  "codes": [
+   "ING_BlackGrapes",
+   "ING_Blackcurrant",
+   "ING_Blackcurrant_Indrink",
+   "ING_Blueberries",
+   "ING_Blueberries_Indrink",
+   "ING_Calamansi"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a bunch of black grapes; (2) a small sprig of glossy blackcurrants; (3) a few berries (blackcurrant); (4) a little pile of blueberries; (5) a few blueberries (blueberries); (6) a small round green-orange calamansi. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_04",
+  "codes": [
+   "ING_Calamansi_Halved",
+   "ING_Calamansi_Squeezed",
+   "ING_Carrot",
+   "ING_Carrot_Peeled",
+   "ING_Cherry",
+   "ING_Cherry_Garnish"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) two halves with orange flesh (calamansi); (2) a flattened squeezed half (calamansi); (3) an orange carrot with leafy top; (4) a smooth peeled carrot with peel curls (carrot); (5) one red cherry with a stem; (6) a cherry sitting on a cream top (cherry). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_05",
+  "codes": [
+   "ING_ChilledWater",
+   "ING_ChocolateMilk",
+   "ING_Coconut",
+   "ING_Coconut_Cracked",
+   "ING_Coconut_Scraped",
+   "ING_CoconutWater"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a glass bottle of cold water with droplets; (2) a glass bottle of chocolate milk; (3) a brown hairy coconut; (4) an open half with white meat (coconut); (5) thin white coconut strips (coconut); (6) a clear bottle of coconut water. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_06",
+  "codes": [
+   "ING_CranberryJuice",
+   "ING_Cream",
+   "ING_Cream_Float",
+   "ING_Cream_Whisked",
+   "ING_CreamCheese",
+   "ING_CreamCheese_Whisked"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a bottle of deep red cranberry juice; (2) a small cream carton; (3) a thick white cream layer (cream); (4) a bowl of soft white foam (cream); (5) a foil-wrapped cream cheese block; (6) a bowl of thick pale cheese foam (cream cheese). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_07",
+  "codes": [
+   "ING_CreamCheeseFrosting",
+   "ING_CreamCheeseFrosting_Piped",
+   "ING_Cucumber",
+   "ING_Cucumber_Sliced",
+   "ING_CulturedMilk",
+   "ING_CustardCream"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a tub of white frosting; (2) a neat white piped swirl (cream cheese frosting); (3) a green cucumber; (4) round cucumber wheels (cucumber); (5) a small cultured milk bottle with a red cap; (6) a tub of pale yellow custard. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_08",
+  "codes": [
+   "ING_CustardCream_Spooned",
+   "ING_DarkGrapes",
+   "ING_DragonFruit",
+   "ING_DragonFruit_Halved",
+   "ING_DragonFruit_Chopped",
+   "ING_EggPudding"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a yellow custard dollop (custard cream); (2) a bunch of dark red-purple grapes; (3) a pink dragon fruit with green tips; (4) white flesh with black seeds (dragon fruit); (5) white seeded cubes (dragon fruit); (6) a small cup of caramel egg pudding. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_09",
+  "codes": [
+   "ING_EggPudding_Indrink",
+   "ING_EggWhite",
+   "ING_EggWhite_Cracked",
+   "ING_EggWhite_Shaken",
+   "ING_Ginger",
+   "ING_Ginger_Sliced"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) pudding cubes (egg pudding); (2) a white egg; (3) egg white in a small bowl (egg white); (4) thick white foam (egg white); (5) a knob of ginger root; (6) thin pale yellow coins (ginger). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_10",
+  "codes": [
+   "ING_Ginger_Muddled",
+   "ING_Grapes",
+   "ING_Guava",
+   "ING_Guava_Halved",
+   "ING_Guava_Chopped",
+   "ING_Guyabano"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) mashed ginger with sugar (ginger); (2) a bunch of green grapes; (3) a green guava; (4) pink flesh with seeds (guava); (5) pink cubes (guava); (6) a spiky green soursop. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_11",
+  "codes": [
+   "ING_Guyabano_Opened",
+   "ING_Guyabano_Chopped",
+   "ING_Kiwi",
+   "ING_Kiwi_Peeled",
+   "ING_Kiwi_Sliced",
+   "ING_Lemon"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) white fibrous flesh with black seeds (guyabano); (2) white chunks (guyabano); (3) a fuzzy brown kiwi; (4) a bright green kiwi (kiwi); (5) kiwi wheels with seed ring (kiwi); (6) a yellow lemon with a leaf. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_12",
+  "codes": [
+   "ING_Lemon_Wheel",
+   "ING_Lemon_Wedge",
+   "ING_Lemon_Halved",
+   "ING_Lemon_Squeezed",
+   "ING_Lemonade",
+   "ING_Lime"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a round lemon slice (lemon); (2) a lemon wedge (lemon); (3) a cut lemon half (lemon); (4) a flattened squeezed half (lemon); (5) a bottle of cloudy lemonade; (6) a green lime. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_13",
+  "codes": [
+   "ING_Lime_Wedge",
+   "ING_Lime_Wheel",
+   "ING_Lime_Squeezed",
+   "ING_Lime_Muddled",
+   "ING_Mango",
+   "ING_Mango_Chopped"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a lime wedge (lime); (2) a round lime slice (lime); (3) a squeezed half (lime); (4) mashed lime with mint leaves (lime); (5) a ripe yellow-red mango; (6) golden mango cubes (mango). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_14",
+  "codes": [
+   "ING_Mango_Puree",
+   "ING_Melon",
+   "ING_Melon_Wedge",
+   "ING_Melon_Chopped",
+   "ING_Milk",
+   "ING_Milk_Steamed"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) thick golden pur\u00e9e (mango); (2) a pale green honeydew melon; (3) a melon wedge (melon); (4) pale green cubes (melon); (5) a glass milk bottle with a gold cap; (6) a pitcher of glossy milk foam (milk). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_15",
+  "codes": [
+   "ING_Milk_Warm",
+   "ING_Mint",
+   "ING_Mint_Garnish",
+   "ING_Mint_Muddled",
+   "ING_MixedBerries",
+   "ING_MixedBerries_Indrink"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a saucepan of steaming milk (milk); (2) a fresh mint sprig; (3) a small mint sprig (mint); (4) crushed mint leaves (mint); (5) a bowl of strawberries, blueberries and raspberries; (6) a mix of berries (mixed berries). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_16",
+  "codes": [
+   "ING_MuscatGrapes",
+   "ING_Orange",
+   "ING_Orange_Peeled",
+   "ING_Orange_Wheel",
+   "ING_Orange_Peeltwist",
+   "ING_Orange_Squeezed"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a bunch of pale gold muscat grapes; (2) an orange with a leaf; (3) a peeled orange (orange); (4) an orange slice (orange); (5) a curled orange peel (orange); (6) a squeezed half (orange). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_17",
+  "codes": [
+   "ING_Papaya",
+   "ING_Papaya_Halved",
+   "ING_Papaya_Chopped",
+   "ING_PassionFruit",
+   "ING_PassionFruit_Halved",
+   "ING_Peach"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) an orange-green papaya; (2) orange flesh with black seeds (papaya); (3) orange cubes (papaya); (4) a wrinkly purple passion fruit; (5) yellow seeded pulp (passion fruit); (6) a pink-orange peach. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_18",
+  "codes": [
+   "ING_Peach_Sliced",
+   "ING_Peach_Puree",
+   "ING_Pineapple",
+   "ING_Pineapple_Chopped",
+   "ING_Pineapple_Ring",
+   "ING_Pomegranate"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) peach slices (peach); (2) soft peach pur\u00e9e (peach); (3) a pineapple with a green crown; (4) yellow chunks (pineapple); (5) a pineapple ring (pineapple); (6) a red pomegranate. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_19",
+  "codes": [
+   "ING_Pomegranate_Opened",
+   "ING_Pomegranate_Seeds",
+   "ING_RareGoldenGrapes",
+   "ING_Raspberries",
+   "ING_Raspberries_Indrink",
+   "ING_RedGrapes"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a split half full of red seeds (pomegranate); (2) a pile of ruby seeds (pomegranate); (3) a sparkling gold grape bunch with tiny glints; (4) a little pile of raspberries; (5) a few raspberries (raspberries); (6) a bunch of red grapes. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_20",
+  "codes": [
+   "ING_RedVelvetCake",
+   "ING_RedVelvetCake_Chopped",
+   "ING_RiceMilk",
+   "ING_SourCherries",
+   "ING_SourCherries_Indrink",
+   "ING_SoyMilk"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a slice of red velvet cake with white frosting; (2) small red cake cubes (red velvet cake); (3) a carton of rice milk; (4) a small bowl of dark sour cherries; (5) a few cherries (sour cherries); (6) a carton of soy milk. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_21",
+  "codes": [
+   "ING_Strawberries",
+   "ING_Strawberries_Sliced",
+   "ING_SweetCream",
+   "ING_SweetCream_Float",
+   "ING_Tomato",
+   "ING_Tomato_Chopped"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a red strawberry with green leaves; (2) strawberry halves and slices (strawberries); (3) a small bottle of sweet cream; (4) a smooth white layer (sweet cream); (5) a red tomato; (6) red tomato chunks (tomato). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_22",
+  "codes": [
+   "ING_VanillaSweetCream",
+   "ING_VanillaSweetCream_Float",
+   "ING_Watermelon",
+   "ING_Watermelon_Chopped",
+   "ING_WhiteGrapes",
+   "ING_WhitePeach"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a small bottle of cream with a vanilla flower label; (2) a cream layer with tiny vanilla specks (vanilla sweet cream); (3) a watermelon wedge; (4) pink cubes (watermelon); (5) a bunch of pale green-white grapes; (6) a pale pink-white peach. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_23",
+  "codes": [
+   "ING_WhitePeach_Sliced",
+   "ING_Yogurt",
+   "ING_Yogurt_Spooned",
+   "ING_ChocolateIceCream",
+   "ING_ChocolateIceCream_Scoop",
+   "ING_IceCubes"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) pale peach slices (white peach); (2) a tub of white yogurt; (3) a white yogurt dollop (yogurt); (4) a tub of chocolate ice cream; (5) a round chocolate scoop (chocolate ice cream); (6) a tub of clear ice cubes. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Fridge_24",
+  "codes": [
+   "ING_IceCubes_Cubes",
+   "ING_IceCubes_Crushed",
+   "ING_VanillaIceCream",
+   "ING_VanillaIceCream_Scoop"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 4 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a few clear cubes (ice cubes); (2) a pile of crushed ice (ice cubes); (3) a tub of vanilla ice cream; (4) a round vanilla scoop with specks (vanilla ice cream). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_01",
+  "codes": [
+   "ING_BarakoCoffeeBeans",
+   "ING_BarakoCoffeeBeans_Beans",
+   "ING_BarakoCoffeeBeans_Ground",
+   "ING_BarleyMalt",
+   "ING_BarleyMalt_Syrup",
+   "ING_BlackTeaLeaves"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a burlap pouch of dark Barako beans; (2) a handful of dark beans (barako coffee beans); (3) dark grounds in the portafilter (barako coffee beans); (4) a jar of amber barley malt; (5) amber malt syrup in the saucepan (barley malt); (6) a black tin with gold lid. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_02",
+  "codes": [
+   "ING_BlackTeaLeaves_Leaves",
+   "ING_BlackTeaLeaves_Brewed",
+   "ING_BrownSugar",
+   "ING_BrownSugar_Spoon",
+   "ING_BrownSugar_Syrup",
+   "ING_Brownie"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) dark loose leaves (black tea leaves); (2) dark amber tea (black tea leaves); (3) a jar of brown sugar; (4) a spoonful (brown sugar); (5) glossy brown sugar syrup (brown sugar); (6) a square chocolate brownie. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_03",
+  "codes": [
+   "ING_Brownie_Chopped",
+   "ING_Brownie_Crushed",
+   "ING_Cardamom",
+   "ING_Cardamom_Pods",
+   "ING_Chocolate",
+   "ING_Chocolate_Melted"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) brownie cubes (brownie); (2) brownie crumbs (brownie); (3) a small jar of green cardamom pods; (4) three pods (cardamom); (5) a milk chocolate bar; (6) smooth brown melted chocolate (chocolate). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_04",
+  "codes": [
+   "ING_ChocolateChips",
+   "ING_ChocolateChips_Chips",
+   "ING_ChocolateCookies",
+   "ING_ChocolateCookies_Crushed",
+   "ING_ChocolateMalt",
+   "ING_ChocolateMalt_Syrup"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a bag of chocolate chips; (2) a small pile (shown in a clear square container) (chocolate chips); (3) chocolate cookies; (4) dark cookie crumbs (chocolate cookies); (5) a jar of chocolate malt; (6) dark malt syrup (chocolate malt). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_05",
+  "codes": [
+   "ING_ChocolateHazelnutSpread",
+   "ING_ChocolateHazelnutSpread_Spoon",
+   "ING_Cinnamon",
+   "ING_Cinnamon_Sprinkle",
+   "ING_CocoaPowder",
+   "ING_CocoaPowder_Dust"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a jar of chocolate-hazelnut spread; (2) a glossy spoonful (chocolate-hazelnut spread); (3) a jar of cinnamon sticks and powder; (4) a dusting of cinnamon (cinnamon); (5) a tin of cocoa powder; (6) a cocoa powder dusting (cocoa powder). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_06",
+  "codes": [
+   "ING_CoconutCream",
+   "ING_CoconutCream_Float",
+   "ING_CoconutMilk",
+   "ING_CoffeeBeans",
+   "ING_CoffeeBeans_Beans",
+   "ING_CoffeeBeans_Ground"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a can of coconut cream; (2) a thick white layer (coconut cream); (3) a can of coconut milk; (4) a jar of glossy coffee beans; (5) a handful (coffee beans); (6) grounds in the portafilter (coffee beans). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_07",
+  "codes": [
+   "ING_CondensedMilk",
+   "ING_Cookies",
+   "ING_Cookies_Crushed",
+   "ING_CorianderSeeds",
+   "ING_CorianderSeeds_Seeds",
+   "ING_Creamer"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a can of sweetened condensed milk; (2) golden butter cookies; (3) golden crumbs (cookies); (4) a jar of coriander seeds; (5) a small pile (coriander seeds); (6) a jar of powdered creamer. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_08",
+  "codes": [
+   "ING_Creamer_Spoon",
+   "ING_DarkChocolate",
+   "ING_DarkChocolate_Melted",
+   "ING_DriedLavender",
+   "ING_DriedLavender_Buds",
+   "ING_DryTapiocaPearls"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a spoonful of white powder (creamer); (2) a dark chocolate bar; (3) dark glossy melted chocolate (dark chocolate); (4) a bundle of dried lavender; (5) a pinch of purple buds (dried lavender); (6) a bag of pale dry tapioca pearls. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_09",
+  "codes": [
+   "ING_DryTapiocaPearls_Dry",
+   "ING_DryTapiocaPearls_Cooked",
+   "ING_EvaporatedMilk",
+   "ING_GingerBug",
+   "ING_GrahamCrackers",
+   "ING_GrahamCrackers_Crushed"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) pale pearls (dry tapioca pearls); (2) glossy black boba (dry tapioca pearls); (3) a can of evaporated milk; (4) a jar of fizzy cloudy ginger starter; (5) graham crackers; (6) golden crumbs (graham crackers). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_10",
+  "codes": [
+   "ING_GreenTeaLeaves",
+   "ING_GreenTeaLeaves_Leaves",
+   "ING_GreenTeaLeaves_Brewed",
+   "ING_Hazelnuts",
+   "ING_Hazelnuts_Crushed",
+   "ING_Honey"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a green tin with gold lid; (2) green leaves (green tea leaves); (3) pale green tea (green tea leaves); (4) a jar of hazelnuts; (5) hazelnut crumble (hazelnuts); (6) a honey jar with a wooden dipper. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_11",
+  "codes": [
+   "ING_Honey_Drizzle",
+   "ING_InstantCoffee",
+   "ING_InstantCoffee_Dissolved",
+   "ING_JasmineTeaLeaves",
+   "ING_JasmineTeaLeaves_Brewed",
+   "ING_KombuchaCulture"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a golden honey ribbon (honey); (2) a jar of instant coffee; (3) dark coffee (instant coffee); (4) a white tin with jasmine flowers; (5) pale gold tea (jasmine tea leaves); (6) a jar of kombucha culture. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_12",
+  "codes": [
+   "ING_Lemongrass",
+   "ING_Lemongrass_Boiled",
+   "ING_MaltPowder",
+   "ING_MaltPowder_Spoon",
+   "ING_MaltedBarley",
+   "ING_MaltedBarley_Grains"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) lemongrass stalks; (2) lemongrass in syrup (lemongrass); (3) a jar of malt powder; (4) a spoonful (malt powder); (5) a small sack of malted barley; (6) a handful (malted barley). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_13",
+  "codes": [
+   "ING_MaltedChocolatePowder",
+   "ING_MaltedChocolatePowder_Spoon",
+   "ING_MaltedGrain",
+   "ING_MaltedGrain_Mashed",
+   "ING_Marshmallows",
+   "ING_Marshmallows_Torched"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a tin of malted chocolate powder; (2) a spoonful (malted chocolate powder); (3) a sack of malted grain; (4) a pot of grain mash (malted grain); (5) a bag of marshmallows; (6) toasted golden marshmallows (marshmallows). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_14",
+  "codes": [
+   "ING_MatchaPowder",
+   "ING_MatchaPowder_Whisked",
+   "ING_Oats",
+   "ING_Oats_Oats",
+   "ING_PeanutButter",
+   "ING_PeanutButter_Spoon"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a green matcha tin; (2) frothy bright green matcha (matcha powder); (3) a jar of rolled oats; (4) a spoonful (oats); (5) a jar of peanut butter; (6) a spoonful (peanut butter). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_15",
+  "codes": [
+   "ING_RoastedBarley",
+   "ING_RoastedBarley_Grains",
+   "ING_RoastedMalt",
+   "ING_RoastedMalt_Syrup",
+   "ING_Salt",
+   "ING_Salt_Pinch"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a jar of roasted barley; (2) a handful (roasted barley); (3) a small sack of roasted malt; (4) dark malt syrup (roasted malt); (5) a salt shaker; (6) a few crystals (salt). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_16",
+  "codes": [
+   "ING_SandwichCookies",
+   "ING_SandwichCookies_Crushed",
+   "ING_SeaSalt",
+   "ING_SeaSalt_Sprinkle",
+   "ING_SeaSalt_Foam",
+   "ING_SodaStarter"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) chocolate sandwich cookies with cream; (2) dark crumbs with white bits (sandwich cookies); (3) a jar of flaky sea salt; (4) salt flakes (sea salt); (5) sea salt foam (sea salt); (6) a jar of soda starter. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_17",
+  "codes": [
+   "ING_Sugar",
+   "ING_Sugar_Cubes",
+   "ING_Sugar_Spoon",
+   "ING_TamarindPulp",
+   "ING_TamarindPulp_Blended",
+   "ING_TaroPowder"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) sugar cubes in a clear square acrylic container; (2) two cubes (sugar); (3) granulated sugar (sugar); (4) a block of brown tamarind pulp; (5) brown tamarind blend (tamarind pulp); (6) a purple taro powder tin. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_18",
+  "codes": [
+   "ING_TaroPowder_Mixed",
+   "ING_ThaiTeaLeaves",
+   "ING_ThaiTeaLeaves_Brewed",
+   "ING_Turmeric",
+   "ING_Turmeric_Pinch",
+   "ING_UbeHalaya"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) pastel purple drink (taro powder); (2) an orange Thai tea tin; (3) bright orange tea (thai tea leaves); (4) a jar of golden turmeric powder; (5) golden powder (turmeric); (6) a jar of purple ube jam. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_19",
+  "codes": [
+   "ING_UbeHalaya_Spoon",
+   "ING_VanillaBean",
+   "ING_VanillaBean_Scraped",
+   "ING_VanillaExtract",
+   "ING_VanillaExtract_Drops",
+   "ING_Wheat"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a purple spoonful (ube halaya); (2) a dark vanilla pod; (3) a split pod with black seeds (vanilla bean); (4) a small brown vanilla extract bottle; (5) a few amber drops (vanilla extract); (6) a small wheat bundle. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_20",
+  "codes": [
+   "ING_Wheat_Grains",
+   "ING_WheatMalt",
+   "ING_WheatMalt_Syrup",
+   "ING_WhiteChocolate",
+   "ING_WhiteChocolate_Melted",
+   "ING_WhiteChocolate_Shavings"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a handful (wheat); (2) a small sack of wheat malt; (3) pale malt syrup (wheat malt); (4) a white chocolate bar; (5) ivory melted chocolate (white chocolate); (6) white curls (white chocolate). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Pantry_21",
+  "codes": [
+   "ING_WildflowerHoney",
+   "ING_WildflowerHoney_Drizzle",
+   "ING_Yeast",
+   "ING_Yeast_Granules"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 4 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a jar of wildflower honey with a flower label; (2) an amber honey ribbon (wildflower honey); (3) a small packet of yeast; (4) a pinch (yeast). No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "ING_SyrupBottle_Base",
+  "codes": [
+   "ING_SyrupBottle_Base"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left. ONE single object alone, centered, large, on a plain flat cream background: a tall clear glass syrup bottle with a gold cap and a small blank cream label, filled with amber syrup. No counter, no wall, no other objects, no text."
+ },
+ {
+  "name": "TOP_PumpBottle_Base",
+  "codes": [
+   "TOP_PumpBottle_Base"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left. ONE single object alone, centered, large, on a plain flat cream background: a clear glass pump bottle with a gold pump head and a small blank cream label, filled with amber syrup. No counter, no wall, no other objects, no text."
+ },
+ {
+  "name": "SHEET_Toppings_01",
+  "codes": [
+   "TOP_PoppingPearls",
+   "TOP_CoconutJellyCubes",
+   "TOP_CrystalBoba",
+   "TOP_RoseJelly",
+   "TOP_NataDeCoco",
+   "TOP_SagoPearls"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a clear square acrylic container full of popping pearls; (2) a clear square acrylic container full of coconut jelly cubes; (3) a clear square acrylic container full of crystal boba; (4) a clear square acrylic container full of rose jelly; (5) a clear square acrylic container full of nata de coco; (6) a clear square acrylic container full of sago pearls. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Toppings_02",
+  "codes": [
+   "TOP_BasilSeeds",
+   "TOP_ChoppedPistachio",
+   "TOP_CrushedHazelnuts",
+   "TOP_HazelnutCrumble",
+   "TOP_DarkChocolateShavings",
+   "TOP_WhiteChocolateShavings"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a clear square acrylic container full of basil seeds; (2) a clear square acrylic container full of chopped pistachio; (3) a clear square acrylic container full of crushed hazelnuts; (4) a clear square acrylic container full of hazelnut crumble; (5) a clear square acrylic container full of dark chocolate shavings; (6) a clear square acrylic container full of white chocolate shavings. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Toppings_03",
+  "codes": [
+   "TOP_Sauce_Caramel",
+   "TOP_Sauce_Chocolate",
+   "TOP_Sauce_Strawberry",
+   "TOP_Sprinkle_Cinnamon",
+   "TOP_Sprinkle_SeaSalt",
+   "TOP_Sprinkle_EdibleGlitter"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a squeeze bottle of caramel sauce; (2) a squeeze bottle of chocolate sauce; (3) a squeeze bottle of strawberry sauce; (4) a small glass shaker with a gold lid filled with cinnamon; (5) a small glass shaker with a gold lid filled with sea salt; (6) a small glass shaker with a gold lid filled with edible glitter. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ },
+ {
+  "name": "SHEET_Toppings_04",
+  "codes": [
+   "TOP_Sprinkle_EdibleGoldFlakes",
+   "TOP_Sprinkle_EdibleSilverShimmer",
+   "TOP_Sprinkle_GoldSprinkles",
+   "TOP_WhippedCream",
+   "TOP_CreamFoam",
+   "TOP_CheeseFoam"
+  ],
+  "prompt": "Replace the whole picture with a new image drawn in exactly the same art style as the coffee machine scene: dark warm-brown outlines, soft cel shading, small soft white highlights, light from the upper left, true natural colours. A clean game asset sheet on a plain flat cream background, nothing else. Exactly 6 separate objects in a neat grid with lots of space between them, front view, each complete, not touching: (1) a small glass shaker with a gold lid filled with edible gold flakes; (2) a small glass shaker with a gold lid filled with edible silver shimmer; (3) a small glass shaker with a gold lid filled with gold sprinkles; (4) a swirl of white whipped cream; (5) a soft white cream foam layer; (6) a thick pale cheese foam layer. No counter, no wall, no shelves, no machine, no faces, no labels, no text."
+ }
+]
