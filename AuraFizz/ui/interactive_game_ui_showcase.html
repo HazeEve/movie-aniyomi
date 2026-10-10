@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barista Studio Ultra-Sleek Glassmorphic Overlay Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        blackGold: '#141210',
+                        blackGoldAlt: '#1F1B16',
+                        goldAmber: '#D4AF37',
+                        goldBright: '#FFD700',
+                        caramelDark: '#A0522D',
+                        caramel: '#C87D32',
+                        caramelLight: '#D9822B',
+                        richBrown: '#4A2C11',
+                        creamWhite: '#FFF8EE',
+                        creamSoft: '#F5EBE1',
+                        perfectGreen: '#2ECC71',
+                        dangerRed: '#E74C3C'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap');
+
+        html, body {
+            background: transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            overflow-x: hidden;
+            background: transparent;
+        }
+
+        /* Glassmorphism Styles */
+        .glass-panel {
+            background: rgba(20, 18, 16, 0.55);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 248, 238, 0.15);
+        }
+
+        .glass-card {
+            background: rgba(31, 27, 22, 0.6);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .glass-button {
+            background: linear-gradient(135deg, rgba(200, 125, 50, 0.3) 0%, rgba(212, 175, 55, 0.2) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-button:hover {
+            background: linear-gradient(135deg, rgba(200, 125, 50, 0.5) 0%, rgba(212, 175, 55, 0.4) 100%);
+            border-color: rgba(255, 215, 0, 0.6);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .glass-button:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        /* Gold and Caramel Gradients */
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #FFF8EE 0%, #FFD700 40%, #D4AF37 70%, #C87D32 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gold-border-glow {
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3), inset 0 0 15px rgba(212, 175, 55, 0.15);
+        }
+
+        /* Gauge bar container */
+        .gauge-container {
+            background: rgba(10, 8, 6, 0.7);
+            border: 1.5px solid rgba(212, 175, 55, 0.4);
+            border-radius: 9999px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Feedback floating popups */
+        @keyframes floatUpGlass {
+            0% { opacity: 0; transform: translate(-50%, 0) scale(0.7); }
+            30% { opacity: 1; transform: translate(-50%, -15px) scale(1.1); }
+            70% { opacity: 1; transform: translate(-50%, -30px) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50px) scale(0.9); }
+        }
+
+        .glass-feedback {
+            position: absolute;
+            left: 50%;
+            top: 25%;
+            pointer-events: none;
+            animation: floatUpGlass 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            z-index: 100;
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(20, 18, 16, 0.2);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(212, 175, 55, 0.4);
+            border-radius: 9999px;
+        }
+
+        /* Optional Mock Gameplay Canvas Background for testing overlay transparency */
+        body.mock-game-bg {
+            background: radial-gradient(circle at 50% 50%, #2a1f18 0%, #141210 100%);
+            background-image: 
+                radial-gradient(rgba(212, 175, 55, 0.08) 1px, transparent 1px),
+                radial-gradient(rgba(200, 125, 50, 0.08) 1px, transparent 1px);
+            background-size: 24px 24px;
+            background-position: 0 0, 12px 12px;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-creamWhite flex flex-col justify-between relative overflow-hidden">
+
+    <!-- Top HUD Navigation Bar (Transparent Glass Overlay) -->
+    <header class="w-full p-3 sm:p-4 z-40">
+        <div class="max-w-7xl mx-auto glass-panel rounded-2xl px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-goldAmber via-caramel to-richBrown p-[1px] shadow-lg">
+                    <div class="w-full h-full bg-blackGold rounded-[11px] flex items-center justify-center text-goldBright text-lg font-bold">
+                        ☕
+                    </div>
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-lg font-bold font-serif gold-gradient-text tracking-wide leading-none">BARISTA HUD OVERLAY</h1>
+                    <p class="text-[10px] sm:text-xs text-creamSoft/60 font-medium">Ultra-Sleek Side Game Controls</p>
+                </div>
+            </div>
+
+            <!-- Controls: Dock Position & Bg Mode Toggle -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Sound Toggle -->
+                <button id="soundToggleBtn" class="px-2.5 py-1.5 glass-card hover:bg-blackGoldAlt/80 rounded-xl text-xs font-semibold text-creamSoft flex items-center gap-1.5 transition">
+                    <i id="soundIcon" class="fa-solid fa-volume-high text-goldAmber"></i>
+                    <span class="hidden sm:inline text-[11px]">SFX</span>
+                </button>
+
+                <!-- Side Position Selector -->
+                <div class="glass-card p-1 rounded-xl flex items-center text-xs text-creamSoft/70">
+                    <button id="dockLeftBtn" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold transition bg-caramel/40 text-goldBright">Left</button>
+                    <button id="dockRightBtn" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold transition hover:text-goldBright">Right</button>
+                </div>
+
+                <!-- HUD Transparency Toggle -->
+                <button id="bgToggleBtn" class="px-3 py-1.5 glass-button rounded-xl text-xs font-semibold text-goldBright flex items-center gap-1.5">
+                    <i class="fa-solid fa-eye text-xs"></i>
+                    <span class="hidden sm:inline text-[11px]">Mock Game BG</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Floating Overlay Shell (Overlayed over potential game canvas) -->
+    <main id="overlayContainer" class="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-4 pb-4 flex flex-col md:flex-row gap-4 relative z-30 justify-between items-stretch">
+
+        <!-- STATION SELECTOR SIDEBAR (FLUID SIDE DRAWER) -->
+        <aside id="sideDrawer" class="w-full md:w-80 glass-panel rounded-2xl p-3 flex flex-col gap-2 shrink-0 max-h-[160px] md:max-h-[calc(100vh-140px)] transition-all duration-300">
+            <div class="flex items-center justify-between px-2 py-1 border-b border-goldAmber/20 pb-2">
+                <span class="text-xs uppercase tracking-wider font-bold text-goldAmber flex items-center gap-1.5">
+                    <i class="fa-solid fa-kitchen-set"></i> Mini-Game Controls (14)
+                </span>
+                <span class="text-[10px] text-creamSoft/50 font-mono">SIDE HUD</span>
+            </div>
+
+            <!-- Scrollable list of stations -->
+            <div id="stationNavList" class="flex md:flex-col gap-1.5 overflow-x-auto md:overflow-y-auto pr-1">
+                <!-- Dynamically generated station drawer items -->
+            </div>
+        </aside>
+
+        <!-- ACTIVE MINI-GAME WIDGET OVERLAY CANVAS -->
+        <section class="flex-1 glass-panel rounded-2xl p-4 sm:p-6 flex flex-col justify-between items-center min-h-[460px] relative overflow-hidden transition-all duration-300">
+
+            <!-- Floating Feedback Toast Container -->
+            <div id="glassFeedbackContainer" class="absolute inset-0 pointer-events-none z-50"></div>
+
+            <!-- Header Info for Active Station -->
+            <div class="w-full flex items-center justify-between border-b border-goldAmber/20 pb-3">
+                <div class="flex items-center gap-3">
+                    <div id="stationIconBadge" class="w-10 h-10 rounded-xl glass-card border border-goldAmber/40 flex items-center justify-center text-goldAmber text-lg shadow-inner">
+                        <i class="fa-solid fa-glass-water"></i>
+                    </div>
+                    <div>
+                        <span id="stationCategoryBadge" class="text-[10px] font-bold uppercase tracking-widest text-caramelLight block">STATION 01 / 14</span>
+                        <h2 id="stationTitle" class="text-xl sm:text-2xl font-serif font-bold text-creamWhite gold-gradient-text">Freezer Station</h2>
+                    </div>
+                </div>
+
+                <div class="text-right">
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-card border border-goldAmber/30 text-[11px] font-medium text-goldBright">
+                        <span class="w-2 h-2 rounded-full bg-perfectGreen animate-ping"></span>
+                        <span id="gesturePromptText">Tap / Drag Circles</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Interactive Mini-Game Display Area -->
+            <div id="activeWidgetCanvas" class="w-full flex-1 flex flex-col items-center justify-center relative my-3 py-2">
+                <!-- Active Station Widget Injected Dynamically -->
+            </div>
+
+            <!-- Footer Objective / Interactive Bar -->
+            <div class="w-full glass-card rounded-xl px-4 py-2.5 border border-goldAmber/20 flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-bullseye text-goldAmber"></i>
+                    <span id="stationObjectiveText" class="text-creamSoft/90 font-medium">Scoop ice cream to match the perfect target mark.</span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button id="resetWidgetBtn" class="px-3 py-1.5 glass-button rounded-lg text-creamWhite text-[11px] font-semibold flex items-center gap-1">
+                        <i class="fa-solid fa-rotate-left text-goldAmber"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Web Audio API Sound Synthesizer for tactile feedback
+        let audioCtx = null;
+        let sfxEnabled = true;
+
+        function playSfx(type = 'pop') {
+            if (!sfxEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'perfect') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.1); // E5
+                    osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.2); // G5
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'tap') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.exponentialRampToValueAtTime(150, now + 0.05);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                } else if (type === 'bad') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(180, now);
+                    osc.frequency.exponentialRampToValueAtTime(110, now + 0.2);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                }
+            } catch (e) {
+                // Audio fallback silence
+            }
+        }
+
+        // Sound toggle button listener
+        document.getElementById('soundToggleBtn').onclick = () => {
+            sfxEnabled = !sfxEnabled;
+            const icon = document.getElementById('soundIcon');
+            icon.className = sfxEnabled ? "fa-solid fa-volume-high text-goldAmber" : "fa-solid fa-volume-xmark text-creamSoft/40";
+        };
+
+        // Glass Overlay Position Swapper (Left / Right Side HUD)
+        const sideDrawer = document.getElementById('sideDrawer');
+        const overlayContainer = document.getElementById('overlayContainer');
+        const dockLeftBtn = document.getElementById('dockLeftBtn');
+        const dockRightBtn = document.getElementById('dockRightBtn');
+
+        dockLeftBtn.onclick = () => {
+            overlayContainer.classList.remove('md:flex-row-reverse');
+            dockLeftBtn.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold transition bg-caramel/40 text-goldBright";
+            dockRightBtn.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold transition hover:text-goldBright";
+        };
+
+        dockRightBtn.onclick = () => {
+            overlayContainer.classList.add('md:flex-row-reverse');
+            dockRightBtn.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold transition bg-caramel/40 text-goldBright";
+            dockLeftBtn.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold transition hover:text-goldBright";
+        };
+
+        // Mock Game Background Toggle
+        let isMockBgVisible = false;
+        document.getElementById('bgToggleBtn').onclick = () => {
+            isMockBgVisible = !isMockBgVisible;
+            document.body.className = isMockBgVisible ? "min-h-screen mock-game-bg text-creamWhite flex flex-col justify-between relative overflow-hidden" : "min-h-screen text-creamWhite flex flex-col justify-between relative overflow-hidden";
+        };
+
+        // Universal Floating Feedback Generator
+        function triggerGlassFeedback(text, type = 'perfect') {
+            playSfx(type === 'bad' ? 'bad' : (type === 'perfect' ? 'perfect' : 'tap'));
+            const container = document.getElementById('glassFeedbackContainer');
+            const pop = document.createElement('div');
+            pop.className = 'glass-feedback px-4 py-2 glass-panel rounded-xl flex items-center gap-2 border border-goldBright/50 shadow-2xl';
+            
+            let color = 'text-goldBright';
+            let icon = '✨';
+
+            if (type === 'perfect') {
+                color = 'text-goldBright font-serif font-bold drop-shadow-[0_0_10px_rgba(255,215,0,0.8)]';
+                icon = '🌟';
+            } else if (type === 'good') {
+                color = 'text-perfectGreen font-bold';
+                icon = '🎯';
+            } else if (type === 'bad') {
+                color = 'text-dangerRed font-bold';
+                icon = '⚠️';
+            }
+
+            pop.innerHTML = `<span class="text-base">${icon}</span> <span class="${color} text-sm uppercase tracking-wider">${text}</span>`;
+            container.appendChild(pop);
+
+            setTimeout(() => {
+                if (pop.parentNode) pop.parentNode.removeChild(pop);
+            }, 900);
+        }
+
+        // Active intervals and animation frames trackers
+        let activeIntervals = [];
+        let activeAnimFrames = [];
+
+        function clearTrackers() {
+            activeIntervals.forEach(clearInterval);
+            activeIntervals = [];
+            activeAnimFrames.forEach(cancelAnimationFrame);
+            activeAnimFrames = [];
+        }
+
+        // STATIONS DATA SOURCE
+        const STATIONS = [
+            {
+                id: 'freezer',
+                name: 'Freezer',
+                icon: 'fa-ice-cream',
+                prompt: 'Tap Scoop / Circular Drag',
+                objective: 'Scoop ice cream to match the line or roll in smooth circles.',
+                render: renderFreezer
+            },
+            {
+                id: 'pantry',
+                name: 'Pantry',
+                icon: 'fa-jar',
+                prompt: 'Hold to Pour / Release',
+                objective: 'Hold pour into the measuring glass and release inside target mark.',
+                render: renderPantry
+            },
+            {
+                id: 'syrup',
+                name: 'Syrup Shelf',
+                icon: 'fa-bottle-droplet',
+                prompt: 'Hold Precision Pour',
+                objective: 'Fill caramel syrup until indicator aligns on "PERFECT".',
+                render: renderSyrup
+            },
+            {
+                id: 'cutting',
+                name: 'Cutting Board',
+                icon: 'fa-knife-kitchen',
+                prompt: 'Timing Chop / Swipe / Ring Taps',
+                objective: 'Slice on green line, swipe to peel, or tap ring layers to crush.',
+                render: renderCuttingBoard
+            },
+            {
+                id: 'juicer',
+                name: 'Juicer',
+                icon: 'fa-lemon',
+                prompt: 'Hold Lever Press',
+                objective: 'Hold juicer press lever and release at target green gauge.',
+                render: renderJuicer
+            },
+            {
+                id: 'blender',
+                name: 'Blender',
+                icon: 'fa-blender',
+                prompt: 'Hold Blend Meter',
+                objective: 'Blend until texture gauge reads perfectly smooth.',
+                render: renderBlender
+            },
+            {
+                id: 'coffee',
+                name: 'Coffee Machine',
+                icon: 'fa-mug-hot',
+                prompt: 'Grind / Tap Pour / Steam',
+                objective: 'Circle grind, time espresso stop tap, & steam milk foam.',
+                render: renderCoffeeMachine
+            },
+            {
+                id: 'stove',
+                name: 'Stove',
+                icon: 'fa-fire-burner',
+                prompt: 'Timing Heat Off / Circle Stir',
+                objective: 'Remove off heat in time & drag in circles to stir sauce.',
+                render: renderStove
+            },
+            {
+                id: 'tea',
+                name: 'Tea & Boba',
+                icon: 'fa-glass-water',
+                prompt: 'Lift Bag / Tap Boba Pearls',
+                objective: 'Lift tea bag at peak steep time & tap floating pearls.',
+                render: renderTeaBoba
+            },
+            {
+                id: 'mixing',
+                name: 'Mixing Station',
+                icon: 'fa-whiskey-glass',
+                prompt: 'Swipe Shake / Circle / Muddle',
+                objective: 'Shake up/down, stir in circles, or tap to muddle herbs.',
+                render: renderMixingStation
+            },
+            {
+                id: 'soda',
+                name: 'Soda Fountain',
+                icon: 'fa-faucet-drip',
+                prompt: 'Hold Pour Carbonation',
+                objective: 'Hold to pour soda and let go right before overflow.',
+                render: renderSodaFountain
+            },
+            {
+                id: 'topping',
+                name: 'Topping Station',
+                icon: 'fa-cookie',
+                prompt: 'Pump / Drizzle / Torch',
+                objective: 'DIY/Guided toggles: pump syrup, pipe cream, or hold torch flame.',
+                render: renderToppingStation
+            },
+            {
+                id: 'sealer',
+                name: 'Cup Sealer',
+                icon: 'fa-stamp',
+                prompt: 'Timing Press Tap',
+                objective: 'Tap seal button when cup passes directly beneath press center.',
+                render: renderCupSealer
+            },
+            {
+                id: 'infusion',
+                name: 'Infusion Barrel',
+                icon: 'fa-wine-barrel',
+                prompt: 'Timing Peak Ready Tap',
+                objective: 'Tap READY when the aging needle hits the peak golden zone.',
+                render: renderInfusionBarrel
+            }
+        ];
+
+        let currentStationIdx = 0;
+
+        function initStationNav() {
+            const list = document.getElementById('stationNavList');
+            list.innerHTML = '';
+
+            STATIONS.forEach((st, idx) => {
+                const isActive = idx === currentStationIdx;
+                const btn = document.createElement('button');
+                btn.className = `w-full flex items-center justify-between p-2.5 rounded-xl text-left transition border ${
+                    isActive 
+                    ? 'glass-card bg-gradient-to-r from-caramel/40 to-goldAmber/20 border-goldBright/60 text-goldBright shadow-lg font-bold' 
+                    : 'hover:bg-blackGoldAlt/50 border-transparent text-creamSoft/70 hover:text-creamWhite'
+                }`;
+                btn.onclick = () => {
+                    currentStationIdx = idx;
+                    initStationNav();
+                    loadActiveStation();
+                };
+
+                btn.innerHTML = `
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <i class="fa-solid ${st.icon} ${isActive ? 'text-goldBright' : 'text-caramel'} text-sm w-4 text-center"></i>
+                        <span class="text-xs truncate">${st.name}</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-[10px] opacity-40"></i>
+                `;
+                list.appendChild(btn);
+            });
+        }
+
+        function loadActiveStation() {
+            clearTrackers();
+            const st = STATIONS[currentStationIdx];
+
+            document.getElementById('stationCategoryBadge').innerText = `STATION ${String(currentStationIdx + 1).padStart(2, '0')} / 14`;
+            document.getElementById('stationTitle').innerText = st.name;
+            document.getElementById('stationIconBadge').innerHTML = `<i class="fa-solid ${st.icon}"></i>`;
+            document.getElementById('gesturePromptText').innerText = st.prompt;
+            document.getElementById('stationObjectiveText').innerText = st.objective;
+
+            const canvas = document.getElementById('activeWidgetCanvas');
+            canvas.innerHTML = '';
+            st.render(canvas);
+        }
+
+        // ==========================================
+        // ==========================================
+        function renderFreezer(container) {
+            let fillLevel = 25;
+            let rollProgress = 0;
+            const target = 72;
+
+            container.innerHTML = `
+                <div class="flex flex-col md:flex-row items-center justify-center gap-8 w-full max-w-lg">
+                    <!-- Tap Scoop Level -->
+                    <div class="flex flex-col items-center gap-3 w-full max-w-xs">
+                        <span class="text-xs font-semibold text-creamSoft/80 tracking-wide uppercase">Ice Scoop Target Gauge</span>
+                        
+                        <!-- Sleek Bar with Triangle Pointer inspired by target reference -->
+                        <div class="w-full h-8 gauge-container relative">
+                            <div class="absolute top-0 bottom-0 bg-perfectGreen/30 border-x border-perfectGreen/60 z-10" style="left: 65%; width: 14%;"></div>
+                            <div id="freezerBar" class="h-full bg-gradient-to-r from-caramelDark via-caramel to-goldBright transition-all duration-150" style="width: ${fillLevel}%;"></div>
+                            
+                            <!-- Golden Triangle Pointer -->
+                            <div class="absolute -top-1.5 transform -translate-x-1/2 z-30 text-goldBright text-xs" style="left: ${target}%;">▼</div>
+                        </div>
+
+                        <button id="scoopBtn" class="px-6 py-2.5 glass-button rounded-xl text-xs font-bold text-creamWhite flex items-center gap-2">
+                            <i class="fa-solid fa-spoon text-goldBright"></i> Tap Scoop Ice
+                        </button>
+                    </div>
+
+                    <!-- Circular Roll Gesture -->
+                    <div class="flex flex-col items-center gap-2">
+                        <span class="text-xs font-semibold text-creamSoft/80 tracking-wide uppercase">Roll Scoop (Circle Drag)</span>
+                        <div id="rollPad" class="w-24 h-24 rounded-full glass-card border border-goldAmber/40 flex flex-col items-center justify-center relative cursor-pointer hover:border-goldBright transition">
+                            <div id="rollRing" class="w-16 h-16 rounded-full border-2 border-dashed border-goldAmber flex items-center justify-center">
+                                <i class="fa-solid fa-arrows-spin text-xl text-goldBright"></i>
+                            </div>
+                            <span id="rollText" class="text-[9px] font-mono text-creamSoft/80 mt-1">Roll: 0%</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const scoopBtn = document.getElementById('scoopBtn');
+            const bar = document.getElementById('freezerBar');
+
+            scoopBtn.onclick = () => {
+                playSfx('tap');
+                fillLevel += 10;
+                if (fillLevel > 100) fillLevel = 100;
+                bar.style.width = fillLevel + '%';
+
+                if (Math.abs(fillLevel - target) <= 6) {
+                    triggerGlassFeedback('PERFECT SCOOP!', 'perfect');
+                } else if (fillLevel > target + 12) {
+                    triggerGlassFeedback('OVER SCOOPED', 'bad');
+                }
+            };
+
+            // Circle gesture logic
+            const rollPad = document.getElementById('rollPad');
+            const rollRing = document.getElementById('rollRing');
+            const rollText = document.getElementById('rollText');
+            let isDragging = false;
+            let lastAngle = 0;
+
+            const handleCircle = (e) => {
+                if (!isDragging) return;
+                const rect = rollPad.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                const angle = Math.atan2(clientY - centerY, clientX - centerX);
+
+                if (Math.abs(angle - lastAngle) > 0.15) {
+                    rollProgress = Math.min(100, rollProgress + 3);
+                    rollRing.style.transform = `rotate(${rollProgress * 7.2}deg)`;
+                    rollText.innerText = `Roll: ${rollProgress}%`;
+                    if (rollProgress === 100) {
+                        triggerGlassFeedback('ICE CREAM ROLLED!', 'perfect');
+                        rollProgress = 0;
+                    }
+                    lastAngle = angle;
+                }
+            };
+
+            rollPad.onmousedown = rollPad.ontouchstart = () => { isDragging = true; };
+            window.onmouseup = window.ontouchend = () => { isDragging = false; };
+            rollPad.onmousemove = rollPad.ontouchmove = handleCircle;
+        }
+
+        // ==========================================
+        // ==========================================
+        function renderPantry(container) {
+            let level = 0;
+            let pouring = false;
+
+            container.innerHTML = `
+                <div class="flex flex-col items-center gap-4 w-full max-w-xs">
+                    <span class="text-xs font-semibold text-creamSoft/80 tracking-wide uppercase">Measuring Cup Hold Pour</span>
+
+                    <div class="w-24 h-40 glass-card rounded-b-2xl border-2 border-goldAmber/50 relative overflow-hidden flex flex-col justify-end p-1">
+                        <!-- Liquid fill -->
+                        <div id="pantryLiquid" class="w-full bg-gradient-to-t from-caramelDark via-caramel to-goldBright transition-all duration-75 rounded-b-xl" style="height: 0%;"></div>
+                        
+                        <!-- Target Sweet Spot Line -->
+                        <div class="absolute w-full left-0 border-y border-perfectGreen bg-perfectGreen/20 flex items-center justify-between px-2 text-[9px] font-bold text-perfectGreen" style="bottom: 65%; height: 14%;">
+                            <span>LINE</span>
+                            <span>🎯</span>
+                        </div>
+                    </div>
+
+                    <button id="pantryPourBtn" class="w-full py-3 glass-button rounded-xl text-xs font-bold text-goldBright flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-wine-bottle"></i> HOLD TO POUR
+                    </button>
+                </div>
+            `;
+
+            const liquid = document.getElementById('pantryLiquid');
+            const btn = document.getElementById('pantryPourBtn');
+
+            const start = () => {
+                pouring = true;
+                const inv = setInterval(() => {
+                    if (!pouring) return;
+                    level = Math.min(100, level + 1.6);
+                    liquid.style.height = level + '%';
+                }, 30);
+                activeIntervals.push(inv);
+            };
+
+            const stop = () => {
+                if (!pouring) return;
+                pouring = false;
+                if (level >= 65 && level <= 79) triggerGlassFeedback('PERFECT POUR!', 'perfect');
+                else if (level < 65) triggerGlassFeedback('UNDER FILLED', 'bad');
+                else triggerGlassFeedback('OVERFLOWED!', 'bad');
+            };
+
+            btn.onmousedown = btn.ontouchstart = (e) => { e.preventDefault(); start(); };
+            btn.onmouseup = btn.ontouchend = btn.onmouseleave = stop;
+        }
+
+        // ==========================================
+        // ==========================================
+        function renderSyrup(container) {
+            let syrup = 0;
+            let holding = false;
+            const target = 76;
+
+            container.innerHTML = `
+                <div class="flex flex-col items-center gap-4 w-full max-w-sm">
+                    <span class="text-xs font-semibold text-creamSoft/80 tracking-wide uppercase">Syrup Precision Bar</span>
+
+                    <div class="w-full h-8 gauge-container relative">
+                        <div class="absolute top-0 bottom-0 bg-perfectGreen/30 border-x border-perfectGreen z-10" style="left: 70%; width: 12%;"></div>
+                        <div id="syrupGauge" class="h-full bg-gradient-to-r from-caramelDark via-caramel to-goldBright" style="width: 0%;"></div>
+                        
+                        <!-- Triangle Pointer -->
+                        <div class="absolute -top-1.5 transform -translate-x-1/2 z-30 text-goldBright text-xs" style="left: ${target}%;">▼</div>
+                    </div>
+
+                    <button id="syrupBtn" class="px-8 py-3 glass-button rounded-xl text-xs font-bold text-goldBright flex items-center gap-2">
+                        <i class="fa-solid fa-bottle-droplet"></i> HOLD TO POUR SYRUP
+                    </button>
+                </div>
+            `;
+
+            const gauge = document.getElementById('syrupGauge');
+            const btn = document.getElementById('syrupBtn');
+
+            btn.onmousedown = btn.ontouchstart = (e) => {
+                e.preventDefault();
+                holding = true;
+                const inv = setInterval(() => {
+                    if (!holding) return;
+                    syrup = Math.min(100, syrup + 1.4);
+                    gauge.style.width = syrup + '%';
+                }, 30);
+                activeIntervals.push(inv);
+            };
+
+            btn.onmouseup = btn.ontouchend = btn.onmouseleave = () => {
+                if (!holding) return;
+                holding = false;
+                if (Math.abs(syrup - target) <= 6) triggerGlassFeedback('PERFECT SYRUP!', 'perfect');
+                else triggerGlassFeedback('MISSED TARGET', 'bad');
+            };
+        }
+
+        // ==========================================
+        // ==========================================
+        function renderCuttingBoard(container) {
+            container.innerHTML = `
+                <div class="flex flex-col items-center gap-3 w-full max-w-md">
+                    <div class="flex gap-2 glass-card p-1 rounded-xl text-xs">
+                        <button id="cutTab1" class="px-3 py-1 rounded-lg font-semibold bg-caramel/50 text-goldBright">Timing Slice</button>
+                        <button id="cutTab2" class="px-3 py-1 rounded-lg font-semibold text-creamSoft/70">Swipe Peel</button>
+                        <button id="cutTab3" class="px-3 py-1 rounded-lg font-semibold text-creamSoft/70">Tap Rings</button>
+                    </div>
+
+                    <div id="cutCanvas" class="w-full h-40 glass-card rounded-2xl flex flex-col items-center justify-center relative overflow-hidden">
+                        <!-- Dynamic submode rendered -->
+                    </div>
+                </div>
+            `;
+
+            const cutCanvas = document.getElementById('cutCanvas');
+
+            const setCutMode = (m) => {
+                clearTrackers();
+                document.getElementById('cutTab1').className = `px-3 py-1 rounded-lg font-semibold ${m === 1 ? 'bg-caramel/50 text-goldBright' : 'text-creamSoft/70'}`;
+                document.getElementById('cutTab2').className = `px-3 py-1 rounded-lg font-semibold ${m === 2 ? 'bg-caramel/50 text-goldBright' : 'text-creamSoft/70'}`;
+                document.getElementById('cutTab3').className = `px-3 py-1 rounded-lg font-semibold ${m === 3 ? 'bg-caramel/50 text-goldBright' : 'text-creamSoft/70'}`;
+
+                if (m === 1) {
+                    let knifePos = 0;
+                    let dir = 2.2;
+                    cutCanvas.innerHTML = `
+                        <div class="w-4/5 h-6 gauge-container relative mb-4">
+                            <div class="absolute top-0 bottom-0 bg-perfectGreen/40 border-x border-perfectGreen" style="left: 48%; width: 10%;"></div>
+                            <div id="knifeLine" class="absolute top-0 bottom-0 w-2 bg-goldBright shadow-[0_0_10px_#FFD700]" style="left: 0%;"></div>
+                        </div>
+                        <button id="chopBtn" class="px-6 py-2 glass-button rounded-xl text-xs font-bold text-creamWhite">
+                            <i class="fa-solid fa-knife-kitchen mr-1 text-goldBright"></i> TAP TO CHOP ON LINE!
+                        </button>
+                    `;
+
+                    const line = document.getElementById('knifeLine');
+                    const anim = () => {
+                        knifePos += dir;
+                        if (knifePos >= 98 || knifePos <= 0) dir *= -1;
+                        if (line) line.style.left = knifePos + '%';
+                        activeAnimFrames.push(requestAnimationFrame(anim));
+                    };
+                    anim();
+
+                    document.getElementById('chopBtn').onclick = () => {
+                        if (knifePos >= 48 && knifePos <= 58) triggerGlassFeedback('CLEAN CUT!', 'perfect');
+                        else triggerGlassFeedback('OFF LINE!', 'bad');
+                    };
+
+                } else if (m === 2) {
+                    cutCanvas.innerHTML = `
+                        <div id="peelZone" class="w-full h-full flex flex-col items-center justify-center cursor-pointer">
+                            <i class="fa-solid fa-hand-pointer text-2xl text-goldBright animate-bounce mb-2"></i>
+                            <span class="text-xs font-semibold text-creamWhite">SWIPE UP TO PEEL INGREDIENT</span>
+                        </div>
+                    `;
+                    let startY = 0;
+                    const zone = document.getElementById('peelZone');
+                    zone.ontouchstart = zone.onmousedown = (e) => { startY = e.touches ? e.touches[0].clientY : e.clientY; };
+                    zone.ontouchend = zone.onmouseup = (e) => {
+                        const endY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+                        if (startY - endY > 30) triggerGlassFeedback('PEELED!', 'perfect');
+                    };
+
+                } else if (m === 3) {
+                    cutCanvas.innerHTML = `
+                        <div class="flex gap-4">
+                            <button class="ring-btn w-12 h-12 rounded-full border-2 border-goldAmber glass-button flex items-center justify-center font-bold text-goldBright text-sm">1</button>
+                            <button class="ring-btn w-12 h-12 rounded-full border-2 border-goldAmber glass-button flex items-center justify-center font-bold text-goldBright text-sm">2</button>
+                            <button class="ring-btn w-12 h-12 rounded-full border-2 border-goldAmber glass-button flex items-center justify-center font-bold text-goldBright text-sm">3</button>
+                        </div>
+                        <span class="text-[10px] text-creamSoft/60 mt-3">Tap ring layers to crush</span>
+                    `;
+                    cutCanvas.querySelectorAll('.ring-btn').forEach((b) => {
+                        b.onclick = () => {
+                            b.style.opacity = '0.3';
+                            b.disabled = true;
+                            triggerGlassFeedback('CRUSHED!', 'good');
+                        };
+                    });
+                }
+            };
+
+            document.getElementById('cutTab1').onclick = () => setCutMode(1);
+            document.getElementById('cutTab2').onclick = () => setCutMode(2);
+            document.getElementById('cutTab3').onclick = () => setCutMode(3);
+
+            setCutMode(1);
+        }
+
+        // ==========================================
+        // ==========================================
+        function renderJuicer(container) {
+            let press = 0;
+            let holding = false;
+
+            container.innerHTML = `
+                <div class="flex flex-col items-center gap-4 w-full max-w-xs">
+                    <span class="text-xs font-semibold text-creamSoft/80 tracking-wide uppercase">Juicer Pressure Gauge</span>
+
+                    <div class="w-full h-8 gauge-container relative">
+                        <div class="absolute top-0 bottom-0 bg-perfectGreen/30 border-x border-perfectGreen z-10" style="left: 72%; width: 12%;"></div>
+                        <div id="juicerBar" class="h-full bg-gradient-to-r from-caramel via-goldAmber to-goldBright" style="width: 0%;"></div>
+                        <div class="absolute -top-1.5 transform -translate-x-1/2 z-30 text-goldBright text-xs" style="left: 78%;">▼</div>
+                    </div>
+
+                    <button id="juicerBtn" class="px-8 py-3 glass-button rounded-xl text-xs font-bold text-goldBright flex items-center gap-2">
+                        <i class="fa-solid fa-lemon"></i> HOLD LEVER TO PRESS
+                    </button>
+                </div>
+            `;
+
+            const bar = document.getElementById('juicerBar');
+            const btn = document.getElementById('juicerBtn');
+
+            btn.onmousedown = btn.ontouchstart = (e) => {
+                e.preventDefault();
+                holding = true;
+                const inv = setInterval(() => {
+                    if (!holding) return;
+                    press = Math.min(100, press + 1.8);
+                    bar.style.width = press + '%';
+                }, 30);
+                activeIntervals.push(inv);
+            };
+
+            btn.onmouseup = btn.ontouchend = btn.onmouseleave = () => {
+                if (!holding) return;
+                holding = false;
+                if (Math.abs(press - 78) <= 6) triggerGlassFeedback('JUICED PERFECT!', 'perfect');
+                else triggerGlassFeedback('PRESSURE MISMATCH', 'bad');
+            };
+        }
+
+        // ==========================================
+        // ==========================================
+        function renderBlender(container) {
+            let val = 0;
+            let blending = false;
+
+            container.innerHTML = `
+                <div class="flex flex-col items-center gap-3 w-full max-w-sm">
+                    <span class="text-xs font-semibold text-creamSoft/80 tracking-wide uppercase">Texture Blend Meter</span>
+
+                    <div class="w-full h-8 gauge-container relative flex items-center justify-between px-3 text-[10px] font-bold z-10">
+                        <span class="text-creamSoft/60">CHUNKY</span>
+                        <span class="text-perfectGreen">SMOOTH</span>
+                        <span class="text-dangerRed">WATERED</span>
+                        <div id="blenderFill" class="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-caramel via-goldBright to-dangerRed -z-10" style="width: 0%;"></div>
+                    </div>
+
+                    <button id="blendBtn" class="px-8 py-3 glass-button rounded-xl text-xs font-bold text-goldBright flex items-center gap-2">
+                        <i class="fa-solid fa-blender"></i> HOLD TO BLEND
+                    </button>
+                </div>
+            `;
+
+            const fill = document.getElementById('blenderFill');
+            const btn = document.getElementById('blendBtn');
+
+            btn.onmousedown = btn.ontouchstart = (e) => {
+                e.preventDefault();
+                blending = true;
+                const inv = setInterval(() => {
+                    if (!blending) return;
+                    val = Math.min(100, val + 1.3);
+                    fill.style.width = val + '%';
+                }, 30);
+                activeIntervals.push(inv);
+            };
+
+            btn.onmouseup = btn.ontouchend = btn.onmouseleave = () => {
+                if (!blending) return;
+                blending = false;
+                if (val >= 45 && val <= 75) triggerGlassFeedback('PERFECTLY SMOOTH!', 'perfect');
+                else triggerGlassFeedback('POOR TEXTURE', 'bad');
+            };
+        }
+
+        // ==========================================
+        // ==========================================
+        function renderCoffeeMachine(container) {
+            container.innerHTML = `
+                <div class="flex flex-col items-center gap-3 w-full max-w-md">
+                    <div class="flex gap-2 glass-card p-1 rounded-xl text-xs">
+                        <button id="cTab1" class="px-3 py-1 rounded-lg font-semibold bg-caramel/50 text-goldBright">Grind Beans</button>
+                        <button id="cTab2" class="px-3 py-1 rounded-lg font-semibold text-creamSoft/70">Espresso Tap</button>
+                        <button id="cTab3" class="px-3 py-1 rounded-lg font-semibold text-creamSoft/70">Steam Milk</button>
+                    </div>
+
+                    <div id="coffeeCanvas" class="w-full h-40 glass-card rounded-2xl flex flex-col items-center justify-center relative">
+                        <!-- Sub-modes -->
+                    </div>
+                </div>
+            `;
+
+            const coffeeCanvas = document.getElementById('coffeeCanvas');
+
+            const setCoffeeSub = (m) => {
+                clearTrackers();
+                document.getElementById('cTab1').className = `px-3 py-1 rounded-lg font-semibold ${m === 1 ? 'bg-caramel/50 text-goldBright' : 'text-creamSoft/70'}`;
+                document.getElementById('cTab2').className = `px-3 py-1 rounded-lg font-semibold ${m === 2 ? 'bg-caramel/50 text-goldBright' : 'text-creamSoft/70'}`;
+                document.getElementById('cTab3').className = `px-3 py-1 rounded-lg font-semibold ${m === 3 ? 'bg-caramel/50 text-goldBright' : 'text-creamSoft/70'}`;
+
+                if (m === 1) {
+                    let g = 0;
+                    coffeeCanvas.innerHTML = `
+                        <div id="grindBtn" class="w-20 h-20 rounded-full border-2 border-dashed border-goldAmber glass-card flex items-center justify-center cursor-pointer hover:scale-105 transition">
+                            <i class="fa-solid fa-arrows-spin text-2xl text-goldBright"></i>
+                        </div>
+                        <span id="gTxt" class="text-xs font-mono text-creamSoft mt-2">Grind: 0%</span>
+                    `;
+                    document.getElementById('grindBtn').onclick = () => {
+                        g = Math.min(100, g + 12);
+                        document.getElementById('gTxt').innerText = `Grind: ${g}%`;
+                        if (g === 100) triggerGlassFeedback('BEANS GROUND!', 'perfect');
+                    };
+
+                } else if (m === 2) {
+                    let fill = 0;
+                    let active = true;
+                    coffeeCanvas.innerHTML = `
+                        <div class="w-48 h-6 gauge-container relative mb-3">
+                            <div class="absolute top-0 bottom-0 bg-perfectGreen/40 border-x border-perfectGreen" style="left: 65%; width: 15%;"></div>
+                            <div id="eFill" class="h-full bg-caramelDark" style="width: 0%;"></div>
+                        </div>
+                        <button id="eStop" class="px-6 py-2 glass-button rounded-xl text-xs font-bold text-goldBright">
+                            TAP TO STOP POUR!
+                        </button>
+                    `;
+                    const bar = document.getElementById('eFill');
+                    const inv = setInterval(() => {
+                        if (!active) return;
+                        fill += 1.8;
+                        if (fill > 100) fill = 0;
+                        if (bar) bar.style.width = fill + '%';
+                    }, 30);
+                    activeIntervals.push(inv);
+
+                    document.getElementById('eStop').onclick = () => {
+                        active = false;
+                        if (fill >= 65 && fill <= 80) triggerGlassFeedback('GOLDEN SHOT!', 'perfect');
+                        else triggerGlassFeedback('MISSED SHOT', 'bad');
+                    };
+
+                } else if (m === 3) {
+                    let temp = 0;
+                    let holding = false;
+                    coffeeCanvas.innerHTML = `
+                        <div class="w-48 h-6 gauge-container relative mb-3">
+                            <div class="absolute top-0 bottom-0 bg-perfectGreen/40 border-x border-perfectGreen" style="left: 60%; width: 15%;"></div>
+                            <div id="sBar" class="h-full bg-gradient-to-r from-creamWhite to-goldBright" style="width: 0%;"></div>
+                        </div>
+                        <button id="sBtn" class="px-6 py-2 glass-button rounded-xl text-xs font-bold text-goldBright">
+                            HOLD TO STEAM MILK
+                        </button>
+                    `;
+                    const bar = document.getElementById('sBar');
+                    const btn = document.getElementById('sBtn');
+                    btn.onmousedown = btn.ontouchstart = (e) => {
+                        e.preventDefault();
+                        holding = true;
+                        const inv = setInterval(() => {
+                            if (!holding) return;
+                            temp = Math.min(100, temp + 1.8);
+                            if (bar) bar.style.width = temp + '%';
+                        }, 30);
+                        activeIntervals.push(inv);
+                    };
+                    btn.onmouseup = btn.ontouchend = () => {
+                        holding = false;
+                        if (temp >= 60 && temp <= 75) triggerGlassFeedback('SILKY FOAM!', 'perfect');
+                        else triggerGlassFeedback('OVERHEATED', 'bad');
+                    };
+                }
+            };
+
+            document.getElementById('cTab1').onclick = () => setCoffeeSub(1);
+            document.getElementById('cTab2').onclick = () => setCoffeeSub(2);
+            document.getElementById('cTab3').onclick = () => setCoffeeSub(3);
+
+            setCoffeeSub(1);
+        }
+
+        // ==========================================
+        // ==========================================
+        function renderStove(container) {
+            let heat = 0;
+            let active = true;
+
+            container.innerHTML = `
+                <div class="flex flex-col items-center gap-4 w-full max-w-xs">
+                    <span class="text-xs font-semibold text-creamSoft/80 tracking-wide uppercase">Stove Heat Timing</span>
+
+                    <div class="w-full h-8 gauge-container relative">
+                        <div class="absolute top-0 bottom-0 bg-perfectGreen/40 border-x border-perfectGreen" style="left: 65%; width: 14%;"></div>
+                        <div id="stoveBar" class="h-full bg-gradient-to-r from-caramel via-goldAmber to-dangerRed" style="width: 0%;"></div>
+                        <div class="absolute -top-1.5 transform -translate-x-1/2 z-30 text-goldBright text-xs" style="left: 72%;">▼</div>
+                    </div>
+
+                    <button id="stoveBtn" class="px-8 py-2.5 glass-button rounded-xl text-xs font-bold text-goldBright">
+                        TAKE OFF HEAT!
+                    </button>
+                </div>
+            `;
+
+            const bar = document.getElementById('stoveBar');
+            const inv = setInterval(() => {
+                if (!active) return;
+                heat += 1.4;
+                if (heat > 100) heat = 0;
+                if (bar) bar.style.width = heat + '%';
+            }, 30);
+            activeIntervals.push(inv);
+
+            document.getElementById('stoveBtn').onclick = () => {
+                active = false;
+                if (heat >= 65 && heat <= 79) triggerGlassFeedback('PERFECT COOK!', 'perfect');
+                else triggerGlassFeedback('BURNT SAUCE!', 'bad');
+            };
+        }
+
+        // ==========================================
+        // ==========================================
+        function renderTeaBoba(container) {
+            container.innerHTML = `
+                <div class="flex flex-col items-center gap-3 w-full max-w-sm">
+                    <span class="text-xs font-semibold text-creamSoft/80 tracking-wide uppercase">Floating Boba Pearl Tapper</span>
+
+                    <div class="w-full h-36 glass-card rounded-2xl relative overflow-hidden flex items-center justify-around px-4">
+                        <div class="boba-p w-9 h-9 rounded-full glass-button flex items-center justify-center text-sm cursor-pointer shadow-lg animate-bounce" style="animation-duration: 1.3s">🧋</div>
+                        <div class="boba-p w-9 h-9 rounded-full glass-button flex items-center justify-center text-sm cursor-pointer shadow-lg animate-bounce" style="animation-duration: 1.8s">🧋</div>
+                        <div class="boba-p w-9 h-9 rounded-full glass-button flex items-center justify-center text-sm cursor-pointer shadow-lg animate-bounce" style="animation-duration: 1.5s">🧋</div>
+                    </div>
+                </div>
+            `;
+
+            container.querySelectorAll('.boba-p').forEach((p) => {
+                p.onclick = () => {
+                    p.style.visibility = 'hidden';
+                    triggerGlassFeedback('PEARL DRAINED!', 'good');
+                };
+            });
+        }
+
+        // ==========================================
+        // ==========================================
+        function renderMixingStation(container) {
+            container.innerHTML = `
+                <div class="flex flex-col items-center gap-3 w-full max-w-sm">
+                    <span class="text-xs font-semibold text-creamSoft/80 tracking-wide uppercase">Vertical Shaker Gesture</span>
+
+                    <div id="shakeZone" class="w-full h-36 glass-card rounded-2xl flex flex-col items-center justify-center cursor-pointer">
+                        <i id="shakerIcon" class="fa-solid fa-wine-bottle text-3xl text-goldBright mb-2 transition-transform"></i>
+                        <span class="text-xs font-semibold text-creamWhite">SWIPE UP & DOWN TO SHAKE</span>
+                    </div>
+                </div>
+            `;
+
+            let lastY = 0;
+            let shakes = 0;
+            const zone = document.getElementById('shakeZone');
+            const icon = document.getElementById('shakerIcon');
+
+            zone.ontouchstart = zone.onmousedown = (e) => { lastY = e.touches ? e.touches[0].clientY : e.clientY; };
+            zone.ontouchmove = zone.onmousemove = (e) => {
+                if (!lastY) return;
+                const currentY = e.touches ? e.touches[0].clientY : e.clientY;
+                if (Math.abs(currentY - lastY) > 25) {
+                    shakes++;
+                    icon.style.transform = `translateY(${shakes % 2 === 0 ? -12 : 12}px)`;
+                    lastY = currentY;
+                    if (shakes >= 8) {
+                        triggerGlassFeedback('SHAKEN PERFECT!', 'perfect');
+                        shakes = 0;
+                    }
+                }
+            };
+        }
+
+        // ==========================================
+        // ==========================================
+        function renderSodaFountain(container) {
+            let fill = 0;
+            let holding = false;
+
+            container.innerHTML = `
+                <div class="flex flex-col items-center gap-4 w-full max-w-xs">
+                    <span class="text-xs font-semibold text-creamSoft/80 tracking-wide uppercase">Soda Fountain Carbonation</span>
+
+                    <div class="w-20 h-36 glass-card rounded-b-xl border-2 border-goldAmber/50 relative overflow-hidden flex flex-col justify-end p-1">
+                        <div id="sodaFill" class="w-full bg-gradient-to-t from-caramel via-goldAmber to-goldBright rounded-b-lg" style="height: 0%;"></div>
+                        <div class="absolute top-1 left-0 right-0 text-center text-[8px] font-bold text-dangerRed">OVERFLOW ZONE</div>
+                    </div>
+
+                    <button id="sodaBtn" class="px-8 py-3 glass-button rounded-xl text-xs font-bold text-goldBright">
+                        HOLD TO POUR SODA
+                    </button>
+                </div>
+            `;
+
+            const bar = document.getElementById('sodaFill');
+            const btn = document.getElementById('sodaBtn');
+
+            btn.onmousedown = btn.ontouchstart = (e) => {
+                e.preventDefault();
+                holding = true;
+                const inv = setInterval(() => {
+                    if (!holding) return;
+                    fill = Math.min(100, fill + 2);
+                    bar.style.height = fill + '%';
+                }, 30);
+                activeIntervals.push(inv);
+            };
+
+            btn.onmouseup = btn.ontouchend = () => {
+                holding = false;
+                if (fill >= 78 && fill <= 92) triggerGlassFeedback('PERFECT FIZZ!', 'perfect');
+                else if (fill > 92) triggerGlassFeedback('OVERFLOW!', 'bad');
+                else triggerGlassFeedback('UNDER FILLED', 'bad');
+            };
+        }
+
+        // ==========================================
+        // ==========================================
+        function renderToppingStation(container) {
+            let pumps = 0;
+
+            container.innerHTML = `
+                <div class="flex flex-col items-center gap-3 w-full max-w-sm">
+                    <span class="text-xs font-semibold text-creamSoft/80 tracking-wide uppercase">Topping Station Pump</span>
+
+                    <div class="w-full h-36 glass-card rounded-2xl flex flex-col items-center justify-center gap-3">
+                        <button id="pumpBtn" class="px-6 py-2.5 glass-button rounded-xl text-xs font-bold text-goldBright flex items-center gap-2">
+                            <i class="fa-solid fa-faucet"></i> TAP TO PUMP SYRUP
+                        </button>
+                        <span id="pumpCount" class="text-xs font-mono text-creamSoft">Pumps: 0 / 3</span>
+                    </div>
+                </div>
+            `;
+
+            const btn = document.getElementById('pumpBtn');
+            const txt = document.getElementById('pumpCount');
+
+            btn.onclick = () => {
+                pumps++;
+                txt.innerText = `Pumps: ${pumps} / 3`;
+                if (pumps === 3) {
+                    triggerGlassFeedback('TOPPED BEAUTIFULLY!', 'perfect');
+                    pumps = 0;
+                }
+            };
+        }
+
+        // ==========================================
+        // ==========================================
+        function renderCupSealer(container) {
+            let pos = 0;
+            let dir = 2;
+
+            container.innerHTML = `
+                <div class="flex flex-col items-center gap-4 w-full max-w-sm">
+                    <span class="text-xs font-semibold text-creamSoft/80 tracking-wide uppercase">Cup Sealer Press Alignment</span>
+
+                    <div class="w-full h-16 glass-card rounded-2xl relative overflow-hidden flex items-center">
+                        <div class="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-8 border-x border-goldBright bg-goldBright/20 z-10 flex items-center justify-center text-xs">
+                            🎯
+                        </div>
+                        <div id="sealerCup" class="absolute w-9 h-9 rounded-full glass-button flex items-center justify-center text-sm shadow-lg" style="left: 0%;">
+                            🥤
+                        </div>
+                    </div>
+
+                    <button id="sealBtn" class="px-8 py-2.5 glass-button rounded-xl text-xs font-bold text-goldBright">
+                        SEAL CUP NOW!
+                    </button>
+                </div>
+            `;
+
+            const cup = document.getElementById('sealerCup');
+            let active = true;
+
+            const anim = () => {
+                if (!active) return;
+                pos += dir;
+                if (pos >= 88 || pos <= 0) dir *= -1;
+                if (cup) cup.style.left = pos + '%';
+                activeAnimFrames.push(requestAnimationFrame(anim));
+            };
+            anim();
+
+            document.getElementById('sealBtn').onclick = () => {
+                active = false;
+                if (pos >= 40 && pos <= 52) triggerGlassFeedback('PERFECT SEAL!', 'perfect');
+                else triggerGlassFeedback('MISALIGNED!', 'bad');
+            };
+        }
+
+        // ==========================================
+        // ==========================================
+        function renderInfusionBarrel(container) {
+            let pos = 0;
+            let dir = 1.6;
+
+            container.innerHTML = `
+                <div class="flex flex-col items-center gap-4 w-full max-w-sm">
+                    <span class="text-xs font-semibold text-creamSoft/80 tracking-wide uppercase">Infusion Aging Peak Meter</span>
+
+                    <div class="w-full h-8 gauge-container relative">
+                        <div class="absolute top-0 bottom-0 bg-perfectGreen/40 border-x border-perfectGreen" style="left: 72%; width: 12%;"></div>
+                        <div id="barrelNeedle" class="absolute top-0 bottom-0 w-2 bg-goldBright shadow-[0_0_10px_#FFD700]" style="left: 0%;"></div>
+                        <div class="absolute -top-1.5 transform -translate-x-1/2 z-30 text-goldBright text-xs" style="left: 78%;">▼</div>
+                    </div>
+
+                    <button id="barrelBtn" class="px-8 py-3 glass-button rounded-xl text-xs font-bold text-goldBright">
+                        AGING READY!
+                    </button>
+                </div>
+            `;
+
+            const needle = document.getElementById('barrelNeedle');
+            let active = true;
+
+            const anim = () => {
+                if (!active) return;
+                pos += dir;
+                if (pos >= 98 || pos <= 0) dir *= -1;
+                if (needle) needle.style.left = pos + '%';
+                activeAnimFrames.push(requestAnimationFrame(anim));
+            };
+            anim();
+
+            document.getElementById('barrelBtn').onclick = () => {
+                active = false;
+                if (pos >= 72 && pos <= 84) triggerGlassFeedback('AGED TO PERFECTION!', 'perfect');
+                else triggerGlassFeedback('NOT READY!', 'bad');
+            };
+        }
+
+        // Universal Reset Button
+        document.getElementById('resetWidgetBtn').onclick = () => {
+            loadActiveStation();
+            triggerGlassFeedback('RESET WIDGET', 'good');
+        };
+
+        // Window Init
+        window.onload = () => {
+            initStationNav();
+            loadActiveStation();
+        };
+    </script>
+</body>
+</html>
